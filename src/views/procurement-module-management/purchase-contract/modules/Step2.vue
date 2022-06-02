@@ -1,19 +1,37 @@
 <template>
   <div class="purchase-contract-step2-wrapper">
     <a-form-model ref="ruleForm" :model="form" :rules="rules" layout="inline">
-      <h3>现款现货</h3>
+      <template v-if="settlementMode === 0">
+        <h3>现款现货</h3>
+        <a-form-model-item label="全款付款金额(元)" prop="fullTotalMoney">
+          <a-input-number
+            :disabled="addForm.isDisabled"
+            style="width:200px;"
+            v-model="form.fullTotalMoney"
+            :min="0"
+            :step="1"
+            :precision="2"
+            @change="handleFullTotalMoney"
+          />
+        </a-form-model-item>
+      </template>
 
-      <a-form-model-item label="全款付款金额(元)" prop="fullTotalMoney">
-        <a-input-number
-          :disabled="addForm.isDisabled"
-          style="width:200px;"
-          v-model="form.fullTotalMoney"
-          :min="0"
-          :step="1"
-          :precision="2"
-          @change="handleFullTotalMoney"
-        />
-      </a-form-model-item>
+      <template v-else>
+        <h3>账期结算</h3>
+        <div style="display:flex;">
+          <a-form-model-item label="票到付款周期" prop="paymentCycle">
+            <a-input-number
+              :disabled="addForm.isDisabled"
+              style="width:200px;"
+              v-model="form.paymentCycle"
+              :min="1"
+              :step="1"
+              :precision="0"
+            />
+          </a-form-model-item>
+          <span style="line-height:36px;">天</span>
+        </div>
+      </template>
 
       <a-table :columns="columns" :dataSource="form.settlementList" :pagination="false" size="small">
         <!-- :rowSelection="{ onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }" -->
@@ -55,21 +73,7 @@
         </div>
       </a-table>
 
-      <h3>账期结算</h3>
-
-      <div style="display:flex;">
-        <a-form-model-item label="票到付款周期" prop="paymentCycle">
-          <a-input-number
-            :disabled="addForm.isDisabled"
-            style="width:200px;"
-            v-model="form.paymentCycle"
-            :min="1"
-            :step="1"
-            :precision="0"
-          />
-        </a-form-model-item>
-        <span style="line-height:36px;">天</span>
-      </div>
+      
     </a-form-model>
   </div>
 </template>
@@ -140,11 +144,16 @@ export default {
       selectedRows: []
     }
   },
+  computed:{
+    settlementMode(){
+      return +this.addForm.submitParams.settlementMode
+    }
+  },
   activated() {
     console.log('stop2 activated called...')
-    const that = this
+    const that = this 
+    
     that.form = that.addForm.pick(that.addForm.submitParams, Object.keys(that.form))
-
     let { __calInfo } = that.addForm.submitParams
     if (that.addForm.isAdd) {
       let { contractSettlements, paymentCycle } = that.addForm.supplierInfo.supplierInfo
@@ -199,7 +208,8 @@ export default {
       let target = _settlementList.find(item => item.key === record.key)
       target.percentage = v
       let rate = v / 100
-      target.percentageMoeny = that.$root._f('moneyFormatNumber')(fullTotalMoney * rate)
+      target.amount = fullTotalMoney * rate
+      target.percentageMoeny = that.$root._f('moneyFormatNumber')(target.amount)
       that.form = {
         ...that.form,
         settlementList: _settlementList
@@ -211,7 +221,8 @@ export default {
         let { fullTotalMoney, settlementList } = that.form
         let _settlementList = [...settlementList]
         _settlementList = _settlementList.map(item => {
-          item.percentageMoeny = that.$root._f('moneyFormatNumber')((fullTotalMoney * (item.percentage || 0)) / 100)
+          item.amount = (fullTotalMoney * (item.percentage || 0)) / 100
+          item.percentageMoeny = that.$root._f('moneyFormatNumber')(item.amount)
           return item
         })
         that.form = {

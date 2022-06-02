@@ -3,7 +3,7 @@
     <div>
       <div class="top-ation clearfix margin-b">
         <a-button class="fl-r" type="primary" @click="goBackConstractList" icon="backward">返回</a-button>
-        <a v-download="detail.contractUrl" class="ant-btn ant-btn-primary fl-r">导出成PDF</a>
+        <a :href="detail.contractUrl" target="_blank" class="ant-btn ant-btn-primary fl-r">导出成PDF</a>
       </div>
 
       <div class="contract-wrap" id="pdfDom">
@@ -88,15 +88,18 @@
             <div class="content-p p-text-index">
               <div>2.2支付期限：一次性支付/分期支付</div>
               <div style="margin-left:20px;">
-                <div>
-                  全&nbsp;&nbsp;款应付金额:
+                <div v-if="+detail.settlementMode === 0">
+                  全款应付金额：
                   <span class="span-underline">{{ calInfo.total | moneyFormatNumber }}</span>
-                  &nbsp;&nbsp; 付款周期:<span class="span-underline">{{ detail.paymentCycle }}天</span>
+                </div>
+
+                <div v-if="+detail.settlementMode === 1">
+                  付款周期：<span class="span-underline">{{ detail.paymentCycle }}天</span>
                 </div>
                 <div v-for="item in detail.settlementList">
-                  {{ { 1: '预付款', 2: '提货款', 3: '验收款', 4: '质保金' }[item.moneyType] }}应付金额:
+                  {{ { 1: '预付款', 2: '提货款', 3: '验收款', 4: '质保金' }[item.moneyType] }}应付金额：
                   <span class="span-underline">{{ item.percentageMoeny | moneyFormatNumber }}</span>
-                  &nbsp;&nbsp;付款周期:<span class="span-underline">{{ item.paymentDate }}</span>
+                  &nbsp;&nbsp;付款周期：<span class="span-underline">{{ item.paymentDate }}</span>
                 </div>
               </div>
               <div>经双方约定，货款结算方式为固定账期结算，详见双方签订的战略合作协议条款。</div>
@@ -106,7 +109,7 @@
             <div class="content-p p-text-index">
               <div v-for="(item, idx) in detail.orderList" :key="idx">
                 <div>{{ idx + 1 }}.{{ item.materialName }}({{ item.materialCode }})</div>
-                <div>对应检验标准字段(目前尚未实现)</div>
+                <div style="margin-left:10px;">检验标准：{{item.purchaseTestStandard || '无'}}</div>
               </div>
             </div>
 
@@ -451,7 +454,7 @@ export default {
     async init() {
       let that = this
       that.spinning = true
-      purchaseContractDetail({ id: that.contractId })
+      await purchaseContractDetail({ id: that.contractId })
         .then(res => res.data)
         .then(result_detail => {
           if (result_detail) {
@@ -501,6 +504,44 @@ export default {
         })
         .finally(() => {
           that.spinning = false
+        })
+      
+      // 验收标准
+      let orderList = [...that.detail.orderList]
+      for(let order of orderList){
+        let purchaseTestStandard = await that.getRecord(record)
+        order.purchaseTestStandard = purchaseTestStandard
+      }
+
+      that.detail = {
+        ...that.detail,
+        orderList
+      }
+    },
+    getRecord(materialCode) {
+      return checkInspectionStandardSetPage({
+        searchStatus: 3,
+        materialCode,
+        current: 1,
+        size: 10
+      })
+        .then(res => {
+          if (Array.isArray(res.data.records) && res.data.records.length > 0) {
+            let purchaseTestStandard = null
+            try{
+              purchaseTestStandard = res.data.records[0].purchaseTestStandard
+            }catch(err){
+              console.error(err)
+              purchaseTestStandard = null
+            }
+            return purchaseTestStandard
+          } else {
+            return null
+          }
+        })
+        .catch(err => {
+          console.log(err)
+          return null
         })
     },
     // 返回

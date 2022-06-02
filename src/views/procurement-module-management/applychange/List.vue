@@ -31,34 +31,18 @@
             </a-select>
           </a-form-item>
 
-          <!-- <a-form-item v-if="+activeKey === 3">
-            <a-select placeholder="审核结果" style="width: 150px" allowClear v-model="queryParam.result">
-              <a-select-option :value="1">通过</a-select-option>
-              <a-select-option :value="2">不通过</a-select-option>
-              <a-select-option :value="3">被驳回</a-select-option>
-            </a-select>
-          </a-form-item> -->
           <a-form-item>
             <a-button type="primary" icon="search" @click="search({ current: 1 })">查询</a-button>
-          </a-form-item>
-
-          <a-form-item style="float:right;">
-            <a-button type="primary" icon="plus" @click="doAction('add', null)">新增</a-button>
           </a-form-item>
         </a-form>
       </div>
 
       <div class="main-wrapper">
         <a-tabs :activeKey="activeKey" :defaultActiveKey="activeKey" @change="tabChange">
-          <!-- <template v-if="$auth('requestApply:all')"> -->
+          <!-- <template v-if="$auth('requestApplyChange:all')"> -->
           <a-tab-pane tab="我的" :key="1" />
-
-          <template v-if="$auth('requestApply:approval')">
-            <a-tab-pane tab="待审批" :key="2" />
-
-            <a-tab-pane tab="通过" :key="4" />
-            <a-tab-pane tab="不通过" :key="5" />
-          </template>
+          <a-tab-pane tab="待我审核" :key="2" />
+          <a-tab-pane tab="我已审核" :key="3" />
         </a-tabs>
         <a-table
           :columns="columns"
@@ -84,46 +68,8 @@
           </div>
 
           <div slot="action" slot-scope="text, record, index">
+            <a @click="doAction('view', record)">详情</a>
             <template v-if="+activeKey === 1">
-              <a @click="doAction('view', record)">查看</a>
-              <!--待审批 -->
-              <!-- <template v-if="+record.approveStatus === 1 && +record.createdId === +userInfo.id"> -->
-              <template
-                v-if="
-                  (+record.approveStatus === 1 || +record.approveStatus === 2) && +record.createdId === +userInfo.id
-                "
-              >
-                <a-divider type="vertical" />
-                <a @click="doAction('cancel', record)">取消申请</a>
-              </template>
-
-              <!--通过 -->
-              <template v-if="+record.approveStatus === 2">
-                <!-- <a-divider type="vertical" />
-                <a @click="doAction('reject',record)">驳回</a> -->
-
-                <template v-if="[3, 4, 5, 6, 7, 8].includes(+record.purchaseProgress)">
-                  <a-divider type="vertical" />
-
-                  <a-popover title="选择变更类型">
-                    <template slot="content">
-                      <div style="width:260px;">
-                        <a-button block @click="doAction('changeNumber', record)">需求数量减少</a-button>
-                        <a-button block style="margin-top:10px;" @click="doAction('changeMaterial', record)"
-                          >更换物料代码</a-button
-                        >
-                        <a-button block style="margin-top:10px;" @click="doAction('changeNumberAndMaterial', record)"
-                          >需求数量减少且更换物料代码</a-button
-                        >
-                      </div>
-                    </template>
-                    <a-button type="link" style="padding:0;">
-                      变更需求
-                    </a-button>
-                  </a-popover>
-                </template>
-              </template>
-
               <!--3不通过，4已经撤销，5已被驳回 -->
               <template v-if="[3, 4, 5].includes(+record.approveStatus) && +record.createdId === +userInfo.id">
                 <a-divider type="vertical" />
@@ -131,36 +77,15 @@
                 <a-divider type="vertical" />
                 <a @click="doAction('del', record)">删除</a>
               </template>
+              <template v-if="[1].includes(+record.approveStatus) && +record.createdId === +userInfo.id">
+                <a-divider type="vertical" />
+                <a @click="doAction('reback', record)">撤回</a>
+              </template>
             </template>
 
-            <template v-if="+activeKey === 2 && $auth('requestApply:approval')">
-              <a @click="doAction('view', record)">查看</a>
+            <template v-if="+activeKey === 2">
               <a-divider type="vertical" />
               <a @click="doAction('approval', record)">审批</a>
-            </template>
-
-            <template v-if="+activeKey === 4">
-              <a @click="doAction('view', record)">查看</a>
-
-              <template v-if="+record.createdId === +userInfo.id">
-                <a-divider type="vertical" />
-                <a @click="doAction('cancel', record)">取消申请</a>
-              </template>
-              <!-- <a-divider type="vertical" />
-              <a @click="doAction('reject',record)">驳回</a> -->
-            </template>
-
-            <template v-if="+activeKey === 5">
-              <a @click="doAction('view', record)">查看</a>
-              <!-- <a-divider type="vertical" />
-              <a @click="doAction('reject',record)">驳回</a> -->
-            </template>
-
-            <template v-if="+activeKey === 5 && +record.createdId === +userInfo.id">
-              <a-divider type="vertical" />
-              <a @click="doAction('edit', record)">编辑</a>
-              <a-divider type="vertical" />
-              <a @click="doAction('del', record)">删除</a>
             </template>
           </div>
 
@@ -170,7 +95,7 @@
                 <p>物料名称：{{ record.materialName }}</p>
                 <p>物料代码：{{ record.materialCode }}</p>
                 <p>规格型号：{{ record.materialModelType }}</p>
-                <p>单位：{{ { 1: '支', 2: '把', 3: '件' }[record.unit] }}</p>
+                <p>单位：{{ record.unit }}</p>
               </template>
               <a href="javascript:void(0);" @click="doAction('materialView', record)">
                 {{ text }}
@@ -178,7 +103,7 @@
             </a-popover>
           </div>
 
-          <div slot="requestNum" slot-scope="text, record, index">
+          <div slot="presentRequestNum" slot-scope="text, record, index">
             <a-popover :title="`${record.materialName}（${record.materialCode}）数量预警`" trigger="hover">
               <template slot="content">
                 <p>需求数量：{{ text }}</p>
@@ -222,49 +147,6 @@
           <div slot="createdTime" slot-scope="text, record, index">
             {{ record.updateTime || record.createdTime }}
           </div>
-
-          <!-- <template
-            slot="footer"
-            slot-scope="text"
-          >
-            <div class="__table-footer-action-wrapper">
-              <template v-if="+activeKey === 2">
-                <a-button
-                  :disabled="!btnOneEnabled"
-                  @click="doAction('changeQty',{...selectedRows[0]})"
-                >调整需求数量</a-button>
-                <a-button
-                  :disabled="!btnMulEnabled"
-                  @click="doAction('cancel',{...selectedRows[0]})"
-                >取消申请</a-button>
-                <a-button
-                  :disabled="!btnMulEnabled"
-                  @click="doAction('batchApproval',[...selectedRows])"
-                >批量审核</a-button>
-              </template>
-              <template v-if="+activeKey === 4">
-                <a-button
-                  :disabled="!btnMulEnabled"
-                  @click="doAction('cancel',{...selectedRows[0]})"
-                >取消申请</a-button>
-              </template>
-
-              <template v-if="+activeKey === 5">
-                <a-button
-                  :disabled="!btnOneEnabled"
-                  @click="doAction('changeQty',{...selectedRows[0]})"
-                >调整需求数量</a-button>
-                <a-button
-                  :disabled="!btnMulEnabled"
-                  @click="doAction('batchDel',[...selectedRows])"
-                >批量删除</a-button>
-                <a-button
-                  :disabled="!btnMulEnabled"
-                  @click="doAction('batchApproval',[...selectedRows])"
-                >批量审核</a-button>
-              </template>
-            </div>
-          </template> -->
         </a-table>
       </div>
       <AddForm ref="addForm" @finish="() => search()" />
@@ -272,8 +154,6 @@
       <MaterialView :key="normalAddFormKeyCount" ref="materialView" />
       <ApproveInfo ref="approveInfoCard" />
       <RejectForm ref="rejectForm" @finished="() => search()" />
-
-      <ChangeForm ref="changeForm" @finish="() => search()" />
     </a-spin>
   </a-card>
 </template>
@@ -286,14 +166,13 @@ import ChangeQtyForm from './ChangeQtyForm'
 import MaterialView from '@/views/material-management/library/module/NormalAddForm'
 import ApproveInfo from '@/components/CustomerList/ApproveInfo'
 import RejectForm from '../grab/RejectForm'
-import ChangeForm from '../applychange/AddForm'
 import { getBuyRequirement } from '@/api/routineMaterial'
 import {
-  requestApplyPageList,
-  requestApplyDelete,
-  requestApplyApproval,
-  requestApplyRevocation,
-  hasAuthApprove
+  applyChangeAudit,
+  applyChangeDetail,
+  applyChangePageList,
+  applyChangeRevocation,
+  applyChangeAddOrUpdate
 } from '@/api/procurementModuleManagement'
 
 const columns = [
@@ -312,8 +191,8 @@ const columns = [
     scopedSlots: { customRender: 'materialName' }
   },
   {
-    title: '需求类型',
-    dataIndex: 'requestTypeText'
+    title: '变更类型',
+    dataIndex: 'changeStatusText'
   },
   {
     title: '关联单号',
@@ -327,8 +206,8 @@ const columns = [
   },
   {
     title: '需求数量',
-    dataIndex: 'requestNum',
-    scopedSlots: { customRender: 'requestNum' }
+    dataIndex: 'presentRequestNum',
+    scopedSlots: { customRender: 'presentRequestNum' }
   },
   {
     title: '需求日期',
@@ -377,7 +256,7 @@ const columns = [
 ]
 
 export default {
-  name: 'procurement-module-management-apply',
+  name: 'procurement-module-management-applychange',
   components: {
     DepartmentSelect,
     CommonDictionarySelect,
@@ -385,8 +264,7 @@ export default {
     MaterialView,
     ChangeQtyForm,
     ApproveInfo,
-    RejectForm,
-    ChangeForm
+    RejectForm
   },
   data() {
     return {
@@ -411,18 +289,10 @@ export default {
       userInfo: this.$store.getters.userInfo // 当前登录人
     }
   },
-  computed: {
-    btnOneEnabled() {
-      return this.selectedRows.length === 1
-    },
-    btnMulEnabled() {
-      return this.selectedRows.length > 0
-    }
-  },
   watch: {
     $route: {
       handler: function(to, from) {
-        if (to.name === 'procurement-module-management-apply') {
+        if (to.name === 'procurement-module-management-applychange') {
           this.init()
         }
       },
@@ -449,12 +319,15 @@ export default {
       }
       const _searchParam = Object.assign({}, { ...that.queryParam }, paginationParam, params)
       that.loading = true
-      requestApplyPageList(_searchParam)
+      applyChangePageList(_searchParam)
         .then(res => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {
             item.key = index + 1
             item.requestTime = item.requestTime.slice(0, -3)
+            item.changeStatusText = { 1: '需求数量减少', 2: '更换物料代码', 3: '需求数量减少且更换物料代码' }[
+              item.changeStatus
+            ]
             return item
           })
 
@@ -494,8 +367,8 @@ export default {
               let dataSource = [...that.dataSource]
               let target = dataSource.find(_item => _item.key === item.key)
               target.__safetyStock = n //安全库存
-              target.__difNum = (target.requestNum || 0) - n
-              target.__isWarning = (target.requestNum || 0) > n //是否超安全库存
+              target.__difNum = (target.presentRequestNum || 0) - n
+              target.__isWarning = (target.presentRequestNum || 0) > n //是否超安全库存
               that.dataSource = dataSource
             })
             .catch(err => {
@@ -517,15 +390,6 @@ export default {
     tabChange(tagKey) {
       this.activeKey = +tagKey
       let queryParam = { ...this.queryParam, queryType: this.activeKey }
-      if (+tagKey === 4) {
-        queryParam.queryType = 3
-        queryParam.result = 1
-      } else if (+tagKey === 5) {
-        queryParam.queryType = 3
-        queryParam.result = 2
-      } else {
-        queryParam.result = undefined
-      }
       this.queryParam = queryParam
       this.selectedRowKeys = []
       this.selectedRows = []
@@ -533,38 +397,9 @@ export default {
     },
     customRowFunction(record) {
       const that = this
-      const __from = +that.type === 1 ? 'normal' : 'product'
-      const { materialId } = record
-      return {
-        on: {
-          mouseenter: event => {
-            // if('__safetyStock' in record){
-            //   return
-            // }
-            // getBuyRequirement({ materialId })
-            //   .then(res => {
-            //     let n = 0
-            //     try{
-            //       n = res.data.pageNum || 0
-            //     }catch(e){
-            //       n = 0
-            //     }
-            //     let dataSource = [...that.dataSource]
-            //     let target = dataSource.find(item => item.key === record.key)
-            //     target.__safetyStock = n //安全库存
-            //     target.__difNum = (target.requestNum || 0) - n
-            //     target.__isWarning = (target.requestNum || 0) > n  //是否超安全库存
-            //     that.dataSource = dataSource
-            //   })
-            //   .catch(err => {
-            //     console.log(err)
-            //   })
-          }
-        }
-      }
     },
     approvalPreview(record) {
-      this.$refs.approveInfoCard.init(record.instanceId,'material')
+      this.$refs.approveInfoCard.init(record.instanceId)
     },
     async betachAction({ promiseList, type }) {
       const that = this
@@ -618,28 +453,34 @@ export default {
     async doAction(type, record) {
       const that = this
       if (['add', 'edit', 'view', 'approval'].includes(type)) {
-        if (type === 'approval') {
-          let _hasAuthApprove = await hasAuthApprove({ instanceId: record.instanceId })
-            .then(res => {
-              return +res.code === 200
-            })
-            .catch(err => {
-              console.log(err)
-              return false
-            })
-          if (!_hasAuthApprove) {
-            that.$message.info('您没有审批权限')
-            return
-          }
-        }
-
         that.$refs['addForm'].query(type, { ...record })
         return
+      } else if (type === 'reback') {
+        that.confirmModel({
+          content: '确认撤回该条数据吗?',
+          success: () => {
+            applyChangeRevocation({ id: record.id })
+              .then(res => {
+                that.$message.info(res.msg)
+                if (+res.code === 200) {
+                  that.search()
+                }
+              })
+              .catch(err => {
+                console.error(err)
+                that.$message.error(err)
+              })
+            return
+          }
+        })
+        return
       } else if (type === 'del') {
+        that.$message.info(`功能尚未开发...`)
+        return
         that.confirmModel({
           content: '删除后无法恢复，请谨慎操作，确认删除该条数据吗?',
           success: () => {
-            requestApplyDelete(`id=${record.id}`)
+            requestApplyDelete({ id: record.id })
               .then(res => {
                 that.$message.info(res.msg)
                 if (+res.code === 200) {
@@ -671,7 +512,7 @@ export default {
         })
         return
       } else if (type === 'changeQty') {
-        that.$refs['changeQtyForm'].query({ ...record })
+        // that.$refs['changeQtyForm'].query({ ...record })
         return
       } else if (type === 'cancel') {
         that.confirmModel({
@@ -696,7 +537,7 @@ export default {
 
         return
         let promiseList = that.selectedRows.map(row => {
-          return requestApplyApproval({ isAdopt: 0, opinion: '通过', approveId: row.id }).then(res => {
+          return applyChangeAudit({ isAdopt: 0, opinion: '通过', approveId: row.id }).then(res => {
             return {
               in: { ...row },
               out: res
@@ -719,18 +560,6 @@ export default {
         return
       } else if (type === 'reject') {
         that.$refs.rejectForm.query({ requestId: record.id })
-        return
-      } else if (['changeNumber', 'changeMaterial', 'changeNumberAndMaterial'].includes(type)) {
-        let m = {
-          changeNumber: '1',
-          changeMaterial: '2',
-          changeNumberAndMaterial: '3'
-        }
-
-        that.$refs.changeForm.query('add', {
-          requestApplyRecord: { ...record },
-          changeStatus: m[type]
-        })
         return
       }
     }

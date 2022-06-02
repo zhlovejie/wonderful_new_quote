@@ -209,10 +209,8 @@ export default {
       approvalNetworkPaymentRequest(values)
         .then((res) => {
           that.spinning = false
-          console.log(res)
-          that.form.resetFields() // 清空表
-          that.visible = false
           that.$message.info(res.msg)
+          that.$emit('ok')
           that.close()
         })
         .catch((err) => (that.spinning = false))

@@ -11,7 +11,7 @@
         <a-form-model ref="ruleForm" :model="form" :rules="rules" :label-col="labelCol" :wrapper-col="wrapperCol">
           <h3>物料基本信息</h3>
           <a-row>
-            <a-col :span="10">
+            <a-col :span="16">
               <a-form-model-item prop="materialCode" label="物料编码">
                 <a-select
                   v-if="isCopy && !isDisabled"
@@ -38,19 +38,19 @@
                 <span v-else>{{ record.materialCode }}</span>
               </a-form-model-item>
             </a-col>
-            <a-col :span="10">
+            <a-col :span="16">
               <!-- <p>物料名称：{{record.materialName}}</p> -->
               <a-form-model-item prop="materialCode" label="物料名称">
                 {{ record.materialName }}
               </a-form-model-item>
             </a-col>
-            <a-col :span="10">
+            <a-col :span="16">
               <!-- <p>规格型号：{{record.specification}}</p> -->
               <a-form-model-item prop="materialCode" label="规格型号">
                 {{ record.specification }}
               </a-form-model-item>
             </a-col>
-            <a-col :span="10">
+            <a-col :span="16">
               <!-- <p>物料来源：{{ {1:'自制',2:'外购',3:'委外',4:'标准件'}[record.materialSource] }}</p> -->
               <a-form-model-item prop="materialCode" label="物料来源">
                 {{ { 1: '自制', 2: '通用外购', 3: '委外加工', 4: '定制外购' }[record.materialSource] }}
@@ -60,7 +60,7 @@
 
           <h3>检验标准明细</h3>
           <a-row>
-            <a-col :span="10">
+            <a-col :span="16">
               <a-form-model-item label="检验类别" prop="inspectionStatus">
                 <a-select :disabled="isDisabled" v-model="form.inspectionStatus" placeholder="检验类别">
                   <a-select-option :value="1">
@@ -78,7 +78,7 @@
                 </a-select>
               </a-form-model-item>
             </a-col>
-            <a-col :span="10">
+            <a-col :span="16">
               <a-form-model-item label="是否检验" prop="inspectionType">
                 <a-radio-group
                   :disabled="isDisabled"
@@ -95,7 +95,7 @@
               </a-form-model-item>
             </a-col>
 
-            <a-col :span="10">
+            <a-col :span="16">
               <a-form-model-item
                 label="检验方案"
                 prop="inspectionSchemeId"
@@ -192,6 +192,28 @@
               </tr>
             </tbody>
           </table>
+
+          <a-row>
+            <a-col :span="16">
+              <a-form-model-item
+                prop="purchaseTestStandard"
+                label="采购检验标准"
+                :rules="{
+                  required: true,
+                  message: '请输入采购检验标准',
+                  trigger: 'blur'
+                }"
+              >
+                <a-textarea
+                  :disabled="isDisabled"
+                  placeholder="采购检验标准"
+                  :rows="3"
+                  v-model="form.purchaseTestStandard"
+                />
+              </a-form-model-item>
+            </a-col>
+          </a-row>
+
           <p style="text-align:center;">
             <template v-if="isAdd || isEdit">
               <a-button @click="handleCancel">取消</a-button>

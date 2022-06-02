@@ -80,6 +80,17 @@ export default {
         keepAlive: false,
         permission: ['permission']
       }
+    },
+    {
+      path: '/procurement-module-management/applychange',
+      name: 'procurement-module-management-applychange',
+      component: () => import('@/views/procurement-module-management/applychange/List'),
+      meta: {
+        title: '采购需求变更单',
+        icon: 'setting',
+        keepAlive: false,
+        permission: ['permission']
+      }
     }
   ]
 }

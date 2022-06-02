@@ -17,6 +17,8 @@
         <a-tab-pane tab="历史价格信息" :key="4" />
         <a-tab-pane tab="采购信息" :key="5" />
         <a-tab-pane tab="采购进程" :key="6" />
+        <a-tab-pane tab="采购合同" :key="7" v-if="detail.contractId" />
+        <a-tab-pane tab="变更报价" :key="8" v-if="detail.quotationChange" />
       </a-tabs>
 
       <div v-show="+activeKey === 1">
@@ -177,6 +179,91 @@
         <OrderProcessView ref="orderProcessView" />
       </div>
 
+      <div v-show="+activeKey === 7">
+        <a-button type="primary" @click="handlePurchaseContract">查看采购合同</a-button>
+      </div>
+
+      <div v-show="+activeKey === 8">
+        <template v-if="detail.quotationChange">
+          <div class="__hd">变更报价</div>
+          <a-card title="详情" size="small">
+            <a-row :gutter="[16, 16]">
+              <a-col :span="4" class="lbl">供应商名称：</a-col>
+              <a-col :span="8">{{ `${detail.quotationChange.supplierName}` }}</a-col>
+              <a-col :span="4" class="lbl">结算方式：</a-col>
+              <a-col :span="8">{{
+                `${{ 0: '现款现货', 1: '账期结算' }[detail.quotationChange.settlementMode]}`
+              }}</a-col>
+            </a-row>
+            <a-row :gutter="[16, 16]">
+              <a-col :span="4" class="lbl">物料名称：</a-col>
+              <a-col :span="8">{{ `${detail.materialName}` }}</a-col>
+              <a-col :span="4" class="lbl">发票类型：</a-col>
+              <a-col :span="8">{{
+                `${{ 0: '不限', 1: '增值税专用发票', 2: '普通发票' }[detail.quotationChange.invoiceType]}`
+              }}</a-col>
+            </a-row>
+            <a-row :gutter="[16, 16]">
+              <a-col :span="4" class="lbl">规格型号：</a-col>
+              <a-col :span="8">{{ `${detail.quotationChange.materialModelType}` }}</a-col>
+              <a-col :span="4" class="lbl">裸价标准：</a-col>
+              <a-col :span="8">{{ `${{ 1: '含税运', 2: '含税不含运' }[detail.quotationChange.nakedPrice]}` }}</a-col>
+            </a-row>
+            <a-row :gutter="[16, 16]">
+              <a-col :span="4" class="lbl">包装方式：</a-col>
+              <a-col :span="8">{{
+                `${detail.quotationChange.packageCount}/${detail.quotationChange.packageType}`
+              }}</a-col>
+              <a-col :span="4" class="lbl">抢单报价：</a-col>
+              <a-col :span="8">{{ `${detail.quotationChange.newPrice}` | moneyFormatNumber }}</a-col>
+            </a-row>
+            <a-row :gutter="[16, 16]">
+              <a-col :span="4" class="lbl">品牌型号：</a-col>
+              <a-col :span="8">
+                <div v-for="s in String(detail.quotationChange.model).split(';')">
+                  {{ s }}
+                </div>
+              </a-col>
+              <a-col :span="4" class="lbl">物料税率：</a-col>
+              <a-col :span="8">{{ `${detail.quotationChange.materialRate} %` }}</a-col>
+            </a-row>
+            <a-row :gutter="[16, 16]">
+              <template v-if="detail.quotationChange.nowPrice">
+                <a-col :span="4" class="lbl">最后一次采购单价：</a-col>
+                <a-col :span="8">{{ `${detail.quotationChange.nowPrice}` | moneyFormatNumber }}</a-col>
+              </template>
+              <a-col :span="4" class="lbl">运费税率：</a-col>
+              <a-col :span="8">{{ `${detail.quotationChange.freightRate} %` }}</a-col>
+            </a-row>
+            <a-row :gutter="[16, 16]">
+              <a-col :span="4" class="lbl">最低采购数量：</a-col>
+              <a-col :span="8">{{ `${detail.quotationChange.lowestNum}` }}</a-col>
+              <a-col :span="4" class="lbl">交货周期：</a-col>
+              <a-col :span="8">{{ `${detail.quotationChange.deliveryCycle} 天` }}</a-col>
+            </a-row>
+            <a-row :gutter="[16, 16]">
+              <a-col :span="4" class="lbl">保质期：</a-col>
+              <a-col :span="8">{{ `${detail.quotationChange.shelfLife} 天` }}</a-col>
+              <a-col :span="4"></a-col>
+              <a-col :span="8"></a-col>
+            </a-row>
+            <a-row :gutter="[16, 16]">
+              <a-col :span="4" class="lbl">变更人：</a-col>
+              <a-col :span="8">{{
+                `${detail.quotationChange.createdDepName}/${detail.quotationChange.createdName}`
+              }}</a-col>
+              <a-col :span="4" class="lbl">变更时间：</a-col>
+              <a-col :span="8">{{ `${detail.quotationChange.createdTime}` }}</a-col>
+            </a-row>
+          </a-card>
+        </template>
+        <template v-else>
+          <span>无</span>
+        </template>
+
+        <!-- quotationChange -->
+      </div>
+
       <XdocView ref="xdocView" />
       <Approval ref="approval" @opinionChange="opinionChange" />
     </a-spin>
@@ -255,7 +342,7 @@ export default {
       that.type = type
       that.record = { ...record }
       that.visible = true
-      orderDetail({ id: that.record.requestId })
+      orderDetail({ id: that.record.id })
         .then(res => {
           that.detail = res.data
         })
@@ -269,7 +356,7 @@ export default {
 
         that.$refs.offerPriceView.query(that.record.quotationId)
 
-        that.$refs.orderProcessView.query(that.record.requestId)
+        that.$refs.orderProcessView.query(that.record.id)
       })
     },
     handleCancel() {
@@ -318,6 +405,17 @@ export default {
     //审批部分
     tabChange(key) {
       this.activeKey = +key
+    },
+    handlePurchaseContract() {
+      this.$router.push({
+        name: 'procurement-module-management-purchase-contract-action',
+        params: {
+          record: { id: this.record.contractId },
+          action: 'view',
+          from: 'procurement-module-management-purchase-contract'
+        }
+      })
+      return
     }
   }
 }

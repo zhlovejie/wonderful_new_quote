@@ -21,10 +21,10 @@
         <a @click="doAction('view', record)">查看</a>
         <a-divider type="vertical" />
         <a @click="doAction('saveMaterial', record)">收料</a>
-        <a-divider type="vertical" />
+        <!-- <a-divider type="vertical" />
         <a @click="doAction('takeGoods', record)">提货</a>
         <a-divider type="vertical" />
-        <a @click="doAction('over', record)">采购完成</a>
+        <a @click="doAction('over', record)">采购完成</a> -->
       </div>
 
       <div slot="materialName" slot-scope="text, record, index">

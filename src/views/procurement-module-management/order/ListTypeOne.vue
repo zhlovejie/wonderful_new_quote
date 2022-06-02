@@ -18,8 +18,8 @@
 
       <div slot="action" slot-scope="text, record, index">
         <a @click="doAction('view', record)">查看</a>
-        <a-divider type="vertical" />
-        <a @click="doAction('offer', record)">下单</a>
+        <!-- <a-divider type="vertical" />
+        <a @click="doAction('offer', record)">下单</a> -->
       </div>
 
       <div slot="materialName" slot-scope="text, record, index">
@@ -312,7 +312,7 @@ export default {
     doAction(type, record) {
       const that = this
       if (type === 'view') {
-        that.$refs.offerPriceView.query('view', record)
+        that.$refs.offerPriceView.query('view', {...record,id:record.quotationId})
         return
       } else if (type === 'offer') {
         that.$refs.orderForm.query('add', record)

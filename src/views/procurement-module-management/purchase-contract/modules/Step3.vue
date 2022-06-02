@@ -83,11 +83,11 @@ const columns = [
   },
   {
     title: '预计到货日期',
-    dataIndex: 'preDeliveryCycle'
+    dataIndex: 'deliveryDate'
   },
   {
     title: '预计质保时间',
-    dataIndex: 'preShelfLife'
+    dataIndex: 'shelfLifeTime'
   },
   {
     title: '验收标准',
@@ -122,12 +122,13 @@ export default {
       'remark'
     ])
     that.orderList = that.$_.cloneDeep(orderList).map(item => {
-      item.preDeliveryCycle = moment(item.requestTime)
-        .add('days', item.deliveryCycle)
-        .format('YYYY-MM-DD')
-      item.preShelfLife = moment(item.requestTime)
-        .add('days', item.shelfLife)
-        .format('YYYY-MM-DD')
+      // debugger
+      // item.deliveryDate = moment(item.requestTime)
+      //   .add('days', item.deliveryCycle)
+      //   .format('YYYY-MM-DD')
+      // item.shelfLifeTime = moment(item.requestTime)
+      //   .add('days', item.shelfLife)
+      //   .format('YYYY-MM-DD')
       return item
     })
     that.form = {
@@ -141,11 +142,16 @@ export default {
       const that = this
       if (type === 'view') {
         let _record = await that.getRecord(record)
-        if (!_record) {
+        if (!_record || !_record.purchaseTestStandard) {
           that.$message.info(`查不到物料代码【${record.materialCode}】的验收标准`)
           return
         }
-        that.$refs.qualityStandardView.query('view', _record)
+        that.confirmModel({
+          title: '验收标准',
+          content: _record.purchaseTestStandard
+        })
+        return
+        // that.$refs.qualityStandardView.query('view', _record)
       }
     },
     getRecord(record) {
@@ -166,6 +172,22 @@ export default {
           console.log(err)
           return null
         })
+    },
+    confirmModel(opt) {
+      const that = this
+      let { title, content, success, attrs } = opt
+      that.$confirm({
+        title: title || '提示',
+        content: h => {
+          return h('div', null, content)
+        },
+        onOk() {
+          success && success()
+        },
+        onCancel() {},
+        ...(attrs || {})
+      })
+      return
     },
     validate() {
       const that = this

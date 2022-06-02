@@ -162,6 +162,7 @@
 import { turnTheCapital } from '@/api/contractListManagement'
 import { purchaseContractOrderListRefresh } from '@/api/procurementModuleManagement'
 import SelectOrder from './SelectOrder'
+import moment from 'moment'
 const columns = [
   {
     title: '序号',
@@ -262,6 +263,14 @@ export default {
         o._sourcePurchaseNum = o._sourcePurchaseNum || o.purchaseNum
         o.amount = Number(o.newPrice || 0) * o.purchaseNum
         o.amountText = that.$root._f('moneyFormatNumber')(o.amount)
+
+        o.deliveryDate = moment(o.requestTime)
+          .add('days', o.deliveryCycle)
+          .format('YYYY-MM-DD HH:mm:ss')
+        o.shelfLifeTime = moment(o.requestTime)
+          .add('days', o.shelfLife)
+          .format('YYYY-MM-DD HH:mm:ss')
+
         return o
       })
     } else {
@@ -273,19 +282,35 @@ export default {
         obj._sourcePurchaseNum = obj._sourcePurchaseNum || obj.purchaseNum
         obj.amountText = that.$root._f('moneyFormatNumber')(obj.amount)
         obj.isChange = 0
-        return obj
-      })
 
-      that.orderListForChange = that.$_.cloneDeep(orderList).map(o => {
-        let obj = { ...o }
-        obj.key = that._uuid()
-        // o.purchaseNum = o.requestNum || 0
-        // o.amount = Number(o.newPrice || 0) * o.purchaseNum
-        obj._sourcePurchaseNum = obj._sourcePurchaseNum || obj.purchaseNum
-        obj.amountText = that.$root._f('moneyFormatNumber')(obj.amount)
-        obj.isChange = 1
+        o.deliveryDate = moment(o.requestTime)
+          .add('days', o.deliveryCycle)
+          .format('YYYY-MM-DD HH:mm:ss')
+        o.shelfLifeTime = moment(o.requestTime)
+          .add('days', o.shelfLife)
+          .format('YYYY-MM-DD HH:mm:ss')
         return obj
       })
+      if(that.addForm.isChange){
+        that.orderListForChange = that.$_.cloneDeep(orderList).map(o => {
+          let obj = { ...o }
+          obj.key = that._uuid()
+          // o.purchaseNum = o.requestNum || 0
+          // o.amount = Number(o.newPrice || 0) * o.purchaseNum
+          obj._sourcePurchaseNum = obj._sourcePurchaseNum || obj.purchaseNum
+          obj.amountText = that.$root._f('moneyFormatNumber')(obj.amount)
+          obj.isChange = 1
+  
+          o.deliveryDate = moment(o.requestTime)
+            .add('days', o.deliveryCycle)
+            .format('YYYY-MM-DD HH:mm:ss')
+          o.shelfLifeTime = moment(o.requestTime)
+            .add('days', o.shelfLife)
+            .format('YYYY-MM-DD HH:mm:ss')
+  
+          return obj
+        })
+      }
     }
     that.$nextTick(() => {
       that.calc()
@@ -293,6 +318,7 @@ export default {
   },
 
   methods: {
+    moment,
     doAction(type, record) {
       const that = this
       let keyName = type === 'add' ? record.key : that.getKeyName(record.key)
@@ -439,7 +465,8 @@ export default {
             let params = {
               orderList: [...that.orderList],
               changeReason: that.form.changeReason,
-              __calInfo: that.calInfo
+              __calInfo: that.calInfo,
+              totalAmount: that.calInfo.total
             }
             console.log(JSON.stringify(params, null, 2))
             resolve({ hasError: false, data: params })

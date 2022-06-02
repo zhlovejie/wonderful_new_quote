@@ -327,6 +327,7 @@
           <span>无</span>
         </template>
       </div>
+
     </a-spin>
     <Approval ref="approval" @opinionChange="opinionChange" />
   </a-modal>
@@ -461,13 +462,13 @@ export default {
       that.visible = true
 
       const [d1, d2] = await Promise.all([
-        quotationDetail({ id: that.record.requestId })
+        quotationDetail({ id: that.record.id })
           .then(res => res.data)
           .catch(err => {
             that.$message.error(err)
             return null
           }),
-        quotationDetailForUpdate({ id: that.record.requestId })
+        quotationDetailForUpdate({ id: that.record.id })
           .then(res => res.data)
           .catch(err => {
             that.$message.error(err)

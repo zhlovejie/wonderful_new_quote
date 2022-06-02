@@ -82,7 +82,7 @@
       </s-table>
     </div>
 
-    <Modal ref="modal" @filet="handleSaveClose" />
+    <Modal ref="modal" @ok="handleSaveClose" />
     <ApproveInfo ref="approveInfoCard" />
   </a-card>
 </template>

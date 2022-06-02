@@ -418,6 +418,7 @@ export default {
   methods: {
     async query(type, record) {
       const that = this
+      debugger
       that.type = type
       that.record = { ...record }
       that.visible = true
@@ -594,7 +595,7 @@ export default {
         })
       await getSupplierOffer({ materialId: that.record.materialId, supplierId: v })
         .then(res => {
-          that.supplierRequirement = res.data
+          that.supplierRequirement = res.data || that.supplierRequirement
           that.isvalidateMaterialRequiredAndSupplierRequired = false
           const supplierRequirement = { ...that.supplierRequirement }
           const {
@@ -702,6 +703,9 @@ export default {
               ? materialRequirement.minWarranty
               : undefined
           }
+
+
+
         })
         .catch(err => {
           console.log(err)
@@ -720,7 +724,6 @@ export default {
             return
           }
 
-          that.spinning = true
           let params = that.$_.cloneDeep(that.form)
           const { manageBrands } = params
           if (Array.isArray(manageBrands)) {
@@ -737,6 +740,13 @@ export default {
             params.lastId = that.record.id
           }
 
+          // 只获取参数
+          if (that.record.__isGetParams) {
+            that.$emit('change', { ...params })
+            that.handleCancel()
+            return
+          }
+          that.spinning = true
           quotationAdd(params)
             .then(res => {
               that.spinning = false

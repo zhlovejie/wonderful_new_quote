@@ -296,7 +296,10 @@ export default {
       let programme = [...this[key]]
       let target = programme.find((item) => item._key === keys)
       if (target) {
-        target[field] = event instanceof Event ? event.target.value : event
+        let _value = String(event instanceof Event ? event.target.value : event)
+        // 过滤 , ; 符号
+        _value = _value.replace(/[,:]/g,'')
+        target[field] = _value
         this[key] = [...programme]
       }
     },

@@ -12,7 +12,7 @@
     <a-spin :spinning="spinning">
       <a-alert type="warning">
         <div slot="description">
-          采购部门会严格按照需求数量执行采购，为避免资金流转浪费及仓库占用，请确保每次物料需求数量合理，如需求量大建议分批申请采购。
+          需求说明：变更需求只允许减少需求数量，需求数量增加要新增需求；更改物料代码，只试用于相同物料代码变更，切记不可用于不同物料替换。
         </div>
       </a-alert>
       <a-form-model ref="ruleForm" :model="form" :rules="rules" class="addform-wrapper">
@@ -23,10 +23,17 @@
               <tr>
                 <td style="width:150px;">申请人</td>
                 <td>
-                  <a-form-model-item prop="applyUser" v-if="!isDisabled">
-                    <DepartmentUserCascade allowClear :info.sync="form.applyUser" style="width:360px;" />
+                  <a-form-model-item prop="applyUser">
+                    <span> {{ detail.applyDepName }}/{{ detail.proposerName }} </span>
                   </a-form-model-item>
-                  <span v-else> {{ detail.applyDepName }}/{{ detail.proposerName }} </span>
+                </td>
+              </tr>
+              <tr>
+                <td style="width:150px;">变更类型</td>
+                <td>
+                  <span>{{
+                    { 1: '需求数量减少', 2: '更换物料代码', 3: '需求数量减少且更换物料代码' }[detail.changeStatus]
+                  }}</span>
                 </td>
               </tr>
               <tr>
@@ -61,53 +68,28 @@
               <tr>
                 <td style="width:150px;">需求类型</td>
                 <td>
-                  <a-form-model-item prop="requestType" v-if="!isDisabled">
-                    <a-select v-model="form.requestType" @change="handleRequestType">
-                      <a-select-option
-                        v-for="item in requestTypeList"
-                        :key="item.id"
-                        :value="item.id"
-                      >{{ item.text }}</a-select-option>
-                    </a-select>
-                  </a-form-model-item>
-                  <span v-else>
-                    {{ detail.requestTypeText }}
-                  </span>
-                </td>
-              </tr>
-              <tr v-if="isRelatedOrder">
-                <td style="width:150px;">关联单号</td>
-                <td>
-                  <a-form-model-item prop="relatedNum">
-                    <a-input
-                      v-model="form.relatedNum"
-                      read-only="read-only"
-                      style="width:360px;"
-                      @click="handleChoiceRelatedNum"
-                    />
+                  <a-form-model-item>
+                    <span>{{ detail.requestTypeText }}</span>
                   </a-form-model-item>
                 </td>
               </tr>
+
               <tr>
                 <td style="width:150px;">紧急程度</td>
                 <td>
-                  <div style="display:flex;align-items: center;">
-                    <div>
-                      <a-form-model-item prop="urgencyDegree" v-if="!isDisabled">
-                        <a-select placeholder="紧急程度" style="width:360px;" allowClear v-model="form.urgencyDegree">
-                          <a-select-option :value="1">一般</a-select-option>
-                          <a-select-option :value="2">加急</a-select-option>
-                          <a-select-option :value="3">特急</a-select-option>
-                        </a-select>
-                      </a-form-model-item>
-                      <span v-else>{{ { 1: '一般', 2: '加急', 3: '特急' }[form.urgencyDegree] }}</span>
-                    </div>
-                    <span style="color:red;margin-left:20px;"
-                      >注:谨慎选择紧急,必须当天到达,当天使用的才可以标记为紧急!</span
-                    >
-                  </div>
+                  <a-form-model-item prop="urgencyDegree" v-if="!isDisabled">
+                    <a-select placeholder="紧急程度" style="width: 360px" allowClear v-model="form.urgencyDegree">
+                      <a-select-option :value="1">一般</a-select-option>
+                      <a-select-option :value="2">加急</a-select-option>
+                      <a-select-option :value="3">特急</a-select-option>
+                    </a-select>
+                  </a-form-model-item>
+                  <span v-else>
+                    {{ { 1: '一般', 2: '加急', 3: '特急' }[detail.urgencyDegree] }}
+                  </span>
                 </td>
               </tr>
+
               <tr>
                 <td style="width:150px;">需求日期</td>
                 <td>
@@ -142,28 +124,13 @@
                 <span>{{ record.requestApplyNum || '自动生成' }}</span>
               </div>
               <div slot="action" slot-scope="text, record, index">
-                <template v-if="isAdd">
+                <template v-if="(isAdd || isEdit) && (isChangeMaterial || isChangeNumberAndMaterial)">
                   <a href="javascript:void(0);" @click="materialAction('del', record)">删除</a>
                 </template>
               </div>
 
-              <div slot="specification" slot-scope="text, record, index">
-                <a-popover :title="text" trigger="hover">
-                  <template slot="content">
-                    <p>物料名称：{{ record.materialName }}</p>
-                    <p>物料代码：{{ record.materialCode }}</p>
-                    <p>规格型号：{{ record.materialModelType }}</p>
-                    <p>单位：{{ record.mainUnit }}</p>
-                    <p>路径：{{ record.materialRoute }}</p>
-                  </template>
-                  <a href="javascript:void(0);">
-                    查看
-                  </a>
-                </a-popover>
-              </div>
-
               <div slot="materialCode" slot-scope="text, record, index">
-                <a-form-model-item v-if="!isDisabled">
+                <a-form-model-item v-if="!isDisabled && (isChangeMaterial || isChangeNumberAndMaterial)">
                   <a-select
                     show-search
                     :value="record.materialCode"
@@ -190,9 +157,9 @@
               </div>
 
               <div slot="requestNum" slot-scope="text, record, index">
-                <a-form-model-item v-if="!isDisabled">
+                <a-form-model-item v-if="!isDisabled && (isChangeNumber || isChangeNumberAndMaterial)">
                   <a-input-number
-                    v-model="record.requestNum"
+                    v-model="record.presentRequestNum"
                     style="width:80px;"
                     :min="0"
                     :step="1"
@@ -231,16 +198,17 @@
               </div>
 
               <div slot="relatedNumText" slot-scope="text, record, index">
-                <span>{{ record.relatedNum }}</span>
-                <!-- <a-form-model-item prop="relatedNum" v-if="!isDisabled && record.__isRelated">
+                <a-form-model-item prop="presentRequestNum" v-if="!isDisabled && record.__isRelated">
                   <a-input
-                    v-model="record.relatedNum"
+                    v-model="record.presentRequestNum"
                     read-only="read-only"
                     style="width:260px;"
-                    @click="handleRelatedNumChange"
+                    @click="
+                      openModel('choiceOrderFactory', { callback: args => tableRelatedNumCallback(record, ...args) })
+                    "
                   />
                 </a-form-model-item>
-                <span v-else>{{ text }}</span> -->
+                <span v-else>{{ text }}</span>
               </div>
             </a-table>
             <a-button
@@ -248,7 +216,9 @@
               type="dashed"
               icon="plus"
               @click="materialAction('add')"
-              v-if="isAdd && form.requestType && dataSource.length < 20"
+              v-if="
+                isAdd && form.requestType && (isChangeMaterial || isChangeNumberAndMaterial) && dataSource.length < 20
+              "
               >新增需求物料</a-button
             >
           </div>
@@ -302,17 +272,26 @@
             </table>
           </div>
         </div>
+
+        <!-- 采购负责人审批 可以修改报价 -->
+        <div v-if="isApproval && +userInfo.id === +purchaseUserId">
+          <a-form-model-item label="是否变更报价">
+            <a-radio-group :value="changeQuotationType" @change="handleQuotationType">
+              <a-radio :value="0">否</a-radio>
+              <a-radio :value="1">是</a-radio>
+            </a-radio-group>
+          </a-form-model-item>
+        </div>
       </a-form-model>
     </a-spin>
     <!--选择销售订单-->
     <ChoiceOrderFactory ref="choiceOrderFactory" @change="contractChange" />
-    <ChoiceTaskListDetailed ref="choiceTaskListDetailed" @change="taskListChange" />
     <Approval ref="approval" @opinionChange="opinionChange" />
+    <OfferPriceForm ref="offerPriceForm" @change="handleOfferPriceChange" />
   </a-modal>
 </template>
 <script>
 import moment from 'moment'
-import { getDictionary } from '@/api/common'
 //物料代码模糊搜索
 import { routineMaterialInfoPageList, productMaterialInfoPageList } from '@/api/routineMaterial'
 import { getBuyRequirement } from '@/api/routineMaterial'
@@ -320,16 +299,15 @@ import { findApprovedNodeList } from '@/api/common'
 import Approval from './Approval'
 import {
   requestApplyDetail,
-  requestApplyAdd,
-  requestApplyUpdate,
-  requestApplyApproval,
-  listRecursiveSuperiorMaterialId
+  applyChangeDetail,
+  applyChangeAudit,
+  applyChangeAddOrUpdate
 } from '@/api/procurementModuleManagement'
 
 import DepartmentUserCascade from '@/components/CustomerList/DepartmentUserCascade'
 import CommonDictionarySelect from '@/components/CustomerList/CommonDictionarySelect'
 import ChoiceOrderFactory from './ChoiceOrderFactory'
-import ChoiceTaskListDetailed from './ChoiceTaskListDetailed'
+import OfferPriceForm from '../grab/OfferPriceForm'
 const columns = [
   {
     title: '序号',
@@ -355,11 +333,6 @@ const columns = [
     title: '物料代码',
     dataIndex: 'materialCode',
     scopedSlots: { customRender: 'materialCode' }
-  },
-  {
-    title: '规格型号',
-    dataIndex: 'specification',
-    scopedSlots: { customRender: 'specification' }
   },
   // {
   //   title: '物料名称',
@@ -396,8 +369,8 @@ export default {
     DepartmentUserCascade,
     CommonDictionarySelect,
     ChoiceOrderFactory,
-    ChoiceTaskListDetailed,
-    Approval
+    Approval,
+    OfferPriceForm
   },
   data() {
     this.materialFuzzyAction = this.$_.debounce(this.materialFuzzyAction, 800)
@@ -408,17 +381,16 @@ export default {
       spinning: false,
       treeData: [],
       value: [],
-      form: {
-        urgencyDegree: 1
-      },
+      form: {},
       rules: {
         applyUser: [{ required: true, message: '请选择申请人' }],
         reason: [{ required: true, message: '请输入申请原因' }],
-        remark: [{ required: true, message: '请输入申请备注' }],
-        requestType: [{ required: true, message: '请选择需求类型' }],
+        remark: [{ required: false, message: '请输入申请备注' }],
+        requestType: [{ required: false, message: '请选择需求类型' }],
         relatedNum: [{ required: false, message: '请选择关联单号' }],
         requestTime: [{ required: true, message: '请选择需求日期' }],
-        urgencyDegree: [{ required: true, message: '请选择紧急程度' }]
+        urgencyDegree: [{ required: true, message: '请选择紧急程度' }],
+        presentRequestNum: [{ required: true, message: '请输入需求数量' }]
       },
       detail: {},
       userInfo: this.$store.getters.userInfo, // 当前登录人
@@ -428,9 +400,14 @@ export default {
         item: {},
         fetching: false
       },
+      relatedNumList: [
+        { id: '1', label: '测试关联订单1', orderId: 1 },
+        { id: '2', label: '测试关联订单2', orderId: 2 },
+        { id: '3', label: '测试关联订单3', orderId: 3 }
+      ],
       priewData: [],
-
-      requestTypeList:[]
+      changeQuotationType: 0,
+      OfferPriceParams: {}
     }
   },
   created() {},
@@ -460,7 +437,7 @@ export default {
         // 查看是 不显示操作列
         col = col.slice(0, -1)
       }
-      if (!this.isRelatedOrder) {
+      if (!this.isRelatedSellOrder) {
         //不关联订单的，不显示 关联订单列
         let idx = col.findIndex(item => item.dataIndex === 'relatedNumText')
         if (idx >= 0) {
@@ -493,7 +470,7 @@ export default {
               on: { click: () => that.handleSubmit(that.isAdd ? 1 : 2) },
               props: { type: 'primary', loading: that.spinning }
             },
-            '提交'
+            '提交审核'
           )
         )
       } else if (that.isApproval) {
@@ -515,105 +492,103 @@ export default {
       return btn
     },
     isRelatedSellOrder() {
+      //需求 销售订单需要管理 单号
       const that = this
-      let { requestType } = that.form
-      let target = that.requestTypeList.find(item => +item.id === +requestType)
-      return target && target.text.includes('销售订单')
+      let { requestType, relatedNum, requestTime } = that.form
+      let relatedNumItem = that.relatedNumList.find(item => item.id === relatedNum)
+      if (that.$refs['requestType']) {
+        let requestTypeItem = that.$refs['requestType'].getTarget()
+        return requestTypeItem && requestTypeItem.text && requestTypeItem.text.includes('销售订单')
+      }
+      return !!relatedNum
     },
-    isTaskOrder(){
-      const that = this
-      let { requestType } = that.form
-      let target = that.requestTypeList.find(item => +item.id === +requestType)
-      return target && target.text.includes('售后任务单')
+    /** let m = {
+          changeNumber: '1',
+          changeMaterial: '2',
+          changeNumberAndMaterial: '3'
+        } */
+
+    isChangeNumber() {
+      return +this.detail.changeStatus === 1
     },
-    isRelatedOrder(){
-      return this.isRelatedSellOrder || this.isTaskOrder
+    isChangeMaterial() {
+      return +this.detail.changeStatus === 2
+    },
+    isChangeNumberAndMaterial() {
+      return +this.detail.changeStatus === 3
+    },
+    purchaseUserId() {
+      return +this.detail.purchaseUserId
     }
   },
   methods: {
     moment,
-    handleChoiceRelatedNum(){
-      const that = this
-      if(!(that.isAdd || that.isEdit)){
-        return
-      }
-      if(that.isRelatedSellOrder){
-        that.$refs['choiceOrderFactory'].query({ callback: that.relatedNumCallback })
-        return
-      }else if(that.isTaskOrder){
-        that.$refs['choiceTaskListDetailed'].query()
-        return
-      }else{
-        return
-      }
-    },
     async query(type, record) {
       const that = this
       that.type = type
       that.detail = {}
       that.form = {}
       that.dataSource = []
+      that.OfferPriceParams = {}
+      that.changeQuotationType = 0
       that.visible = true
 
-      await getDictionary({text:'采购模块-需求类型'}).then(res => {
-        that.requestTypeList = res.data
-      });
-
+      let result = null
       if (that.isAdd) {
-        that.form = {
-          urgencyDegree: 1,
-          applyUser: {
-            depId: that.userInfo.departmentId,
-            depName: that.userInfo.departmentName,
-            userId: that.userInfo.id,
-            userName: that.userInfo.trueName
-          }
-        }
-      }
-      if (!that.isAdd) {
-        let result = await requestApplyDetail({ id: record.id })
+        const { requestApplyRecord, changeStatus } = record
+        result = await requestApplyDetail({ id: requestApplyRecord.id })
           .then(res => res.data)
           .catch(err => {
             console.log(err)
             return null
           })
-        if (!result) {
-          that.$message.info('采购申请单详情接口【/requestApply】报错，请联系管理员')
-          return
+        result = {
+          ...result,
+          applyId: requestApplyRecord.id,
+          changeStatus,
+          id: null
         }
-
-        let materialRequirement = await getBuyRequirement({ materialId: result.materialId })
-          .then(res => res.data || {})
+      } else {
+        result = await applyChangeDetail({ id: record.id })
+          .then(res => res.data)
           .catch(err => {
             console.log(err)
-            return {}
+            return null
           })
-
-        that.detail = result
-        that.form = {
-          ...result,
-          applyUser: {
-            depId: result.applyDepId,
-            depName: result.applyDepName,
-            userId: result.proposerId,
-            userName: result.proposerName
-          },
-          requestTime: moment(result.requestTime)
-        }
-        that.dataSource = [
-          {
-            key: that._uuid(),
-            ...that.detail,
-            mainUnit: that.detail.unit,
-            inventory: that.detail.inventory || materialRequirement.pageNum || 0,
-            requestTime: moment(that.detail.requestTime),
-            unsafetyInventory: that.detail.requestNum > (materialRequirement.pageNum || 0) ? 1 : 2,
-            __maxBuyNumber: materialRequirement.pageNum || 0,
-            relatedNumText: result.relatedNum,
-            __isRelated:!!result.requestType
-          }
-        ]
       }
+
+      let materialRequirement = await getBuyRequirement({ materialId: result.materialId })
+        .then(res => res.data || {})
+        .catch(err => {
+          console.log(err)
+          return {}
+        })
+
+      that.detail = result
+      that.form = {
+        ...result,
+        applyUser: {
+          depId: result.applyDepId,
+          depName: result.applyDepName,
+          userId: result.proposerId,
+          userName: result.proposerName
+        },
+        requestTime: moment(result.requestTime)
+      }
+      that.dataSource = [
+        {
+          key: that._uuid(),
+          ...that.detail,
+          mainUnit: that.detail.unit,
+          inventory: that.detail.inventory || materialRequirement.pageNum || 0,
+          requestTime: moment(that.detail.requestTime),
+          unsafetyInventory: that.detail.requestNum > (materialRequirement.pageNum || 0) ? 1 : 2,
+          __maxBuyNumber: materialRequirement.pageNum || 0,
+          relatedNumText: result.relatedNum,
+          __isRelated: that.detail.requestTypeText.includes('销售订单'),
+          presentRequestNum: that.detail.requestNum
+        }
+      ]
 
       if (that.isView || that.isApproval) {
         // 获取审批预览信息
@@ -654,20 +629,8 @@ export default {
       const that = this
       that.$refs.ruleForm.validate(async valid => {
         if (valid) {
-          let { depId, depName, userId, userName } = that.form.applyUser
-          let { id, applyUser, reason, remark, requestType, relatedNum, requestTime } = that.form
-          let baseInfo = {
-            id,
-            reason,
-            remark,
-            requestType,
-            relatedNum,
-            // requestTime,
-            applyDepId: depId,
-            applyDepName: depName,
-            proposerId: userId,
-            proposerName: userName,
-            saveType: saveType
+          let params = {
+            ...that.form
           }
           let arr = []
           that.dataSource.map(item => {
@@ -682,12 +645,17 @@ export default {
           if (!materialStatus.result) {
             return
           }
+          params.requestTime = params.requestTime ? params.requestTime.format('YYYY-MM-DD HH:mm:ss') : undefined
+          // params.quotationChange = { ...arr[0] }
+          params.changeQuotationType = 0
 
+          params = {
+            ...params,
+            ...arr[0]
+          }
           that.spinning = true
 
-          let api = that.isEdit ? requestApplyUpdate : requestApplyAdd
-
-          api({ ...baseInfo, requestManageBos: arr }).then(res => {
+          applyChangeAddOrUpdate(params).then(res => {
             that.spinning = false
             that.$message.info(res.msg)
             if (+res.code === 200) {
@@ -696,6 +664,39 @@ export default {
             }
             return res
           })
+
+          // const result = await Promise.all(arr.map(item => {
+          //   return api(item).then(res => {
+          //     console.log(res)
+          //     return res
+          //   })
+          // })).catch(err => {
+          //   that.spinning = false
+          //   that.$message.info(err)
+          //   return null
+          // })
+          // that.spinning = false
+
+          // console.log(result)
+          // if(result !== null){
+          //     let msg = ''
+          //     result.filter(res => res.code !== 200).map(res => {
+          //       msg += `${res.msg}`
+          //     })
+          //     msg = msg || '操作成功'
+          //     that.$message.info(msg)
+          //     that.$emit('finish')
+          //     that.handleCancel()
+          // }
+
+          // priceQuotedZktListAddOrUpdate(params)
+          //   .then(res => {
+          //     that.spinning = false
+          //     that.$message.info(res.msg)
+          //     that.$emit('finish')
+          //     that.handleCancel()
+          //   })
+          //   .catch(err => (that.spinning = false))
         } else {
           console.log('error submit!!')
           return false
@@ -713,16 +714,23 @@ export default {
       const that = this
       let dataSource = [...that.dataSource]
       if (type === 'add') {
-        let { requestType,requestTypeText, relatedId,relatedNum,relatedNumText, requestTime } = that.form
-        
+        let { requestType, relatedNum, requestTime } = that.form
+        let relatedNumItem = that.relatedNumList.find(item => item.id === relatedNum)
+        let requestTypeItem = that.$refs['requestType'].getTarget()
+        that.form = {
+          ...that.form,
+          relatedNumText: relatedNumItem ? relatedNumItem.label : undefined,
+          requestTypeText: requestTypeItem.text
+        }
         dataSource.push({
           key: that._uuid(),
-          relatedId,
-          relatedNum,
-          relatedNumText,
-          requestType,
-          requestTypeText,
-          __isRelated: that.isRelatedOrder,
+          relatedId: relatedNumItem ? relatedNumItem.orderId : undefined,
+          relatedNum: relatedNum,
+          relatedNumText: relatedNumItem ? relatedNumItem.label : undefined,
+          presentRequestNum: relatedNum,
+          requestType: requestType,
+          requestTypeText: requestTypeItem.text,
+          __isRelated: requestTypeItem && requestTypeItem.text.includes('销售订单'),
           unsafetyInventory: 2, //是否大于安全库存：1是，2否
           materialId: undefined,
           requestNum: 0, //需求数量
@@ -744,25 +752,6 @@ export default {
         return
       }
     },
-    handleRequestType(val){
-      const that = this
-      let target = that.requestTypeList.find(item => +item.id === +val)
-      that.form = {
-        ...that.form,
-        relatedNum: undefined,
-        requestType:target.id,
-        requestTypeText:target.text
-      }
-    },
-    taskListChange({id,taskDocumentNum,accessoriesNum,orgName}){
-      const that = this
-      that.form = {
-        ...that.form,
-        relatedId:id,
-        relatedNum: taskDocumentNum,
-        relatedNumText:orgName
-      }
-    },
     contractChange({ selectedKey, record, input }) {
       let that = this
       switch (selectedKey) {
@@ -778,13 +767,11 @@ export default {
           break
       }
     },
-    relatedNumCallback({orderNum,contractNum,customerName}) {
+    relatedNumCallback(record) {
       const that = this
       that.form = {
         ...that.form,
-        relatedId:orderNum,
-        relatedNum: contractNum,
-        relatedNumText:customerName
+        relatedNum: record.orderNum
       }
     },
     tableRelatedNumCallback(record, selectRecord) {
@@ -793,6 +780,9 @@ export default {
       let item = dataSource.find(item => item.key === record.key)
       item.relatedNum = selectRecord.orderNum
       that.dataSource = dataSource
+    },
+    openModel(name, input) {
+      this.$refs[name].query(input)
     },
     async materialFuzzyAction(wd, isFilter = false) {
       const that = this
@@ -870,10 +860,6 @@ export default {
       const that = this
       const material = that.materialFuzzySearch.list.find(item => item.materialCodeFormat === key)
 
-      let materialRoute = await listRecursiveSuperiorMaterialId({ruleId:material.ruleId,type:0}).then(res => {
-        return res.data
-      })
-
       let materialRequirement = await getBuyRequirement({ materialId: material.id })
         .then(res => res.data)
         .catch(err => {
@@ -885,7 +871,7 @@ export default {
         materialRequirement = {}
       }
 
-      if (!materialRequirement.maxPurchase) {
+      if (!materialRequirement.pageNum) {
         that.$message.info(`物料【${material.materialName}】未设置最大采购量`)
       }
 
@@ -895,8 +881,6 @@ export default {
       target.materialName = material.materialName
       target.mainUnit = material.mainUnit
       target.specification = 'specification' in material ? material.specification || material.specifications : '无'
-      target.materialModelType = target.specification
-      target.materialRoute = materialRoute
       target.materialCode = material.materialCodeFormat
       // target.inventory = Math.floor(1+Math.random() * 1000) //测试数据，等仓库开发完再修改
       target.inventory = materialRequirement.pageNum || 0
@@ -921,7 +905,7 @@ export default {
       const that = this
       let dataSource = [...that.dataSource]
       let target = dataSource.find(item => item.key === record.key)
-      target.requestNum = v
+      target.presentRequestNum = v
       target.unsafetyInventory = +v > +target.__maxBuyNumber ? 1 : 2
 
       if (target.unsafetyInventory === 1) {
@@ -935,7 +919,7 @@ export default {
             that.dataSource = dataSource
           },
           onCancel() {
-            target.requestNum = 0
+            target.presentRequestNum = 0
             target.unsafetyInventory = 2
             that.dataSource = dataSource
           }
@@ -953,7 +937,7 @@ export default {
       const that = this
       let values = Object.assign({}, opt || {}, { approveId: that.detail.id })
       that.spinning = true
-      requestApplyApproval(values)
+      applyChangeAudit(values)
         .then(res => {
           that.spinning = false
           that.$message.info(res.msg)
@@ -968,7 +952,10 @@ export default {
         })
     },
     passAction(opt = {}) {
-      this.submitAction(Object.assign({}, { isAdopt: 0, opinion: '通过' }, opt || {}))
+      let params = Object.assign({}, { isAdopt: 0, opinion: '通过' }, opt || {})
+      params.changeQuotationType = this.changeQuotationType
+      params.quotationChange = this.OfferPriceParams
+      this.submitAction(params)
     },
     noPassAction() {
       this.$refs.approval.query()
@@ -979,8 +966,21 @@ export default {
         isAdopt: 1,
         opinion: opinion
       })
-    }
+    },
     //审批部分
+    handleQuotationType(e) {
+      const that = this
+      that.changeQuotationType = +e.target.value
+      if (that.changeQuotationType === 1) {
+        that.$refs.offerPriceForm.query('add', { ...that.detail, __isGetParams: true })
+      } else {
+        this.OfferPriceParams = {}
+      }
+      return
+    },
+    handleOfferPriceChange(params) {
+      this.OfferPriceParams = params
+    }
   }
 }
 </script>

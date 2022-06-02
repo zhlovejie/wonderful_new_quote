@@ -5,6 +5,17 @@ import system from '@/config/defaultSettings'
 
 const materialBaseUrl = system.materialBaseUrl
 /**采购申请单 */
+
+/**详情 */
+export function listRecursiveSuperiorMaterialId(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/requestApply/listRecursiveSuperiorMaterialId',
+    method: 'GET',
+    params: parameter
+  })
+}
+
 /**详情 */
 export function requestApplyDetail(parameter) {
   return axios({
@@ -103,7 +114,7 @@ export function quotationDetailForUpdate(parameter) {
 /**新增 */
 export function quotationAdd(parameter) {
   return axios({
-    baseURL: system.baseURL,
+    baseURL: system.materialBaseUrl,
     url: '/quotation',
     method: 'POST',
     data: parameter
@@ -112,7 +123,7 @@ export function quotationAdd(parameter) {
 /**修改 */
 export function quotationUpdate(parameter) {
   return axios({
-    baseURL: system.baseURL,
+    baseURL: system.materialBaseUrl,
     url: '/quotation',
     method: 'PUT',
     data: parameter
@@ -121,7 +132,7 @@ export function quotationUpdate(parameter) {
 /**审批 */
 export function quotationApproval(parameter) {
   return axios({
-    baseURL: system.baseURL,
+    baseURL: system.materialBaseUrl,
     url: '/quotation/audit',
     method: 'POST',
     data: parameter
@@ -288,12 +299,25 @@ export function receiveAdd(parameter) {
 //新增收料单申请
 export function receiveAddApply(parameter) {
   return axios({
-    baseURL: system.baseURL,
+    baseURL: system.materialBaseUrl,
     url: '/receive/addReceive',
     method: 'POST',
     data: parameter
   })
 }
+
+//新增收料单申请
+export function receiveAddApplyNew(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: '/warehouse/receive/saveSourceReceive',
+    method: 'POST',
+    data: parameter
+  })
+}
+
+
+
 
 //提货单列表查询
 export function receivePageList(parameter) {
@@ -392,7 +416,7 @@ export function orderProcessList(parameter) {
 /**新增或修改（变更） */
 export function purchaseContractAddOrUpdate(parameter) {
   return axios({
-    baseURL: system.baseURL,
+    baseURL: system.materialBaseUrl,
     url: '/purchase/contract/addOrUpdate',
     method: 'POST',
     data: parameter
@@ -402,7 +426,7 @@ export function purchaseContractAddOrUpdate(parameter) {
 /**审批 */
 export function purchaseContractApproval(parameter) {
   return axios({
-    baseURL: system.baseURL,
+    baseURL: system.materialBaseUrl,
     url: '/purchase/contract/approval',
     method: 'POST',
     data: parameter
@@ -492,7 +516,7 @@ export function purchaseContractOrderListRefresh(parameter) {
 /**合同附件-新增 */
 export function purchaseContractAttachmentAddOrUpdate(parameter) {
   return axios({
-    baseURL: system.baseURL,
+    baseURL: materialBaseUrl,
     url: '/purchase/contract-attachment/addOrUpdate',
     method: 'POST',
     data: parameter
@@ -539,3 +563,56 @@ export function quotationRequestApplyPageList(parameter) {
     params: parameter
   })
 }
+
+/**采购需求变更单 */
+
+/**审批 */
+export function applyChangeAudit(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: '/requestApplyChange/audit',
+    method: 'POST',
+    data: parameter
+  })
+}
+
+/**详情 */
+export function applyChangeDetail(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/requestApplyChange/detail',
+    method: 'GET',
+    params: parameter
+  })
+}
+
+/**分页列表，全部权限码：requestApplyChange:all */
+export function applyChangePageList(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/requestApplyChange/pageList',
+    method: 'GET',
+    params: parameter
+  })
+}
+
+/**撤回 */
+export function applyChangeRevocation(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/requestApplyChange/revocation',
+    method: 'GET',
+    params: parameter
+  })
+}
+
+/**新增或修改 */
+export function applyChangeAddOrUpdate(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: '/requestApplyChange/saveAndUpdate',
+    method: 'POST',
+    data: parameter
+  })
+}
+/**采购需求变更单END */

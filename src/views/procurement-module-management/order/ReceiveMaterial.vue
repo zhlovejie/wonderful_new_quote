@@ -27,9 +27,6 @@
               <th>供应商名称</th>
               <th>紧急程度</th>
               <th>物料名称</th>
-              <th>规格型号</th>
-              <th>物料代码</th>
-              <th>包装方式</th>
               <th>采购数量</th>
               <th>到货数量</th>
             </tr>
@@ -40,10 +37,19 @@
               <td>{{detail.requestApplyNum}}</td>
               <td>{{detail.supplierName}}</td>
               <td>{{ {1:'一般',2:'加急',3:'特急'}[detail.urgencyDegree] }}</td>
-              <td>{{detail.materialName}}</td>
-              <td style="width:200px;">{{detail.materialModelType}}</td>
-              <td>物料代码</td>
-              <td>{{`${detail.packageCount}/${detail.packageType}`}}</td>
+              <td>
+                <a-popover title="物料信息" trigger="hover">
+                  <template slot="content">
+                    <p>物料名称：{{ detail.materialName }}</p>
+                    <p>物料代码：{{ detail.materialCode }}</p>
+                    <p>规格型号：{{ detail.materialModelType }}</p>
+                    <p>包装：{{`${detail.packageCount}/${detail.packageType}`}}</p>
+                  </template>
+                  <a href="javascript:void(0);">
+                    物料信息
+                  </a>
+                </a-popover>
+              </td>
               <td>{{detail.requestNum}}</td>
               <td>
                 <a-form-model-item prop="arrivalCount">
@@ -62,31 +68,6 @@
 
           </table>
         </div>
-        <div class="__hd">仓库信息</div>
-        <div class="__bd">
-          <table class="custom-table custom-table-border">
-            <tr>
-              <td>收料仓库</td>
-              <td>
-                <a-form-model-item prop="warehouseId">
-                  <a-select
-                    style="width: 360px"
-                    allowClear
-                    v-model="form.warehouseId"
-                  >
-                    <a-select-option
-                      v-for="item in warehouseList"
-                      :key="item.id"
-                      :value="item.id"
-                    >
-                      {{item.label}}
-                    </a-select-option>
-                  </a-select>
-                </a-form-model-item>
-              </td>
-            </tr>
-          </table>
-        </div>
       </div>
     </a-form-model>
 
@@ -94,7 +75,7 @@
 </template>
 
 <script>
-import { orderDetail, receiveAddApply } from '@/api/procurementModuleManagement'
+import { orderDetail, receiveAddApply,receiveAddApplyNew } from '@/api/procurementModuleManagement'
 export default {
   data() {
     return {
@@ -108,20 +89,7 @@ export default {
       },
       record: {},
       detail: {},
-      warehouseList: Object.freeze([
-        {
-          id: 1,
-          label: '测试仓库1'
-        },
-        {
-          id: 2,
-          label: '测试仓库2'
-        },
-        {
-          id: 3,
-          label: '测试仓库3'
-        }
-      ])
+
     }
   },
   computed: {
@@ -168,17 +136,11 @@ export default {
         if (valid) {
           that.spinning = true
           const param = {
-            ...that.form
+            ...that.form,
+            receiveType:1
           }
 
-          //仓库信息
-          const warehouseTarget = that.warehouseList.find(item => item.id === that.form.warehouseId)
-          if (warehouseTarget) {
-            param.warehouseId = warehouseTarget.id
-            param.warehouseName = warehouseTarget.label
-          }
-
-          receiveAddApply(param)
+          receiveAddApplyNew(param)
             .then(res => {
               that.spinning = false
               that.$message.info(res.msg)

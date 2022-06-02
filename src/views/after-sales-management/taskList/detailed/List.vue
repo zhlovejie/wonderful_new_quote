@@ -503,7 +503,7 @@ export default {
       // 查询参数
       queryParam: {
         taskDetailStatus: '1',
-        myTask: 0,
+        myTask: 2,
       },
       Totalmessages: {},
       recordResult: {},
