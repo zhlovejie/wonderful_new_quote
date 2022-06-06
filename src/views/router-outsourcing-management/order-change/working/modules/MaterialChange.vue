@@ -14,7 +14,7 @@
           <span :class="{ newStyle: record.state === 2, replaceStyle: record.state === 3 }">{{ text }}</span>
         </div>
       </a-table>
-      <Parameter ref="parameter" :list="parameterList"></Parameter>
+      <Parameter :list="parameterList"/>
     </a-spin>
   </a-modal>
 </template>
@@ -102,15 +102,7 @@ export default {
               return item
             })
             //替换后的参数/属性
-            that.parameterList = res.data.newParameterList.map((item, index) => {
-              item.key = index + 1
-              //变更后的参数相较于之前的参数状态变化：1、原参数 2、新参数 3、被替换
-              item.stateText = { 1: '原参数', 2: '新参数', 3: '被替换' }[item.state] || '未知'
-              let subIndex = item.fileUrl.lastIndexOf('//')
-              item.fileName = item.fileUrl.substring(subIndex + 2, item.fileUrl.length) //截取fileURL//后的字符
-              return item
-            })
-            that.$refs.parameter.query(that.parameterList)
+            that.parameterList = res.data.newParameterList || []
           } else {
             that.$message.error(res.msg)
           }
@@ -125,10 +117,10 @@ export default {
     },
     //预览
     viewFormat(record) {
-      let url = String(record.fileUrl)
-      let isWord = url => ['.doc', '.docx', '.xls', '.xlsx'].some(suffix => url.endsWith(suffix))
-      let isPdf = url => url.endsWith('.pdf')
-      let isImage = url => ['.png', '.jpg', 'jpeg', '.gif', '.bmp'].some(suffix => url.endsWith(suffix))
+      const url = String(record.fileUrl)
+      const isWord = url => ['.doc', '.docx', '.xls', '.xlsx'].some(suffix => url.endsWith(suffix))
+      const isPdf = url => url.endsWith('.pdf')
+      const isImage = url => ['.png', '.jpg', 'jpeg', '.gif', '.bmp'].some(suffix => url.endsWith(suffix))
       if (url) {
         if (isPdf(url) || isImage(url)) {
           return url

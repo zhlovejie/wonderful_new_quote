@@ -26,7 +26,7 @@
             <td style="width:150px;">换料单号</td>
             <td style="width:350px;">
               <a-form-model-item>
-                {{ detail.applyCode ? detail.applyCode : '' }}
+                {{ detail.applyCode ? detail.applyCode : '*' }}
               </a-form-model-item>
             </td>
             <td style="width:150px;">关联技改单</td>
@@ -187,6 +187,22 @@ import MaterialFuzzySearch from '@/components/CustomerList/MaterialFuzzySearch'
 import Approval from '@/views/after-sales-management/Accessories/module/Approval.vue'
 import Quotation from './Quotation.vue'
 
+const renderContent = (text,record,index) => {
+  // $attrs：当前组件的属性，通俗的讲也就是在组件标签定义的一系列属性，如input的value，placeholder等，但是不包括在当前组件里面定义的props属性
+  // $props：当前组件从父组件那里接收的参数，通俗的讲和$attr差不多，但是只包括在当前组件中定义了的props属性。
+  // $data：Vue 实例观察的数据对象。Vue 实例代理了对其 data 对象 property 的访问。
+  const obj = {
+    children: text,
+    attrs: {}
+  }
+  if (index === 0) {
+    obj.attrs.rowSpan = record.rowSpan
+  } else {
+    obj.attrs.rowSpan = 0
+  }
+  return obj
+}
+
 const proColumns = [
   {
     title: '序号',
@@ -196,15 +212,18 @@ const proColumns = [
   },
   {
     title: '成品物料名称',
-    dataIndex: 'proMaterialName'
+    dataIndex: 'proMaterialName',
+    customRender: renderContent
   },
   {
     title: '成品物料代码',
-    dataIndex: 'proMaterialCode'
+    dataIndex: 'proMaterialCode',
+    customRender: renderContent
   },
   {
     title: '成品需求数量',
-    dataIndex: 'proNeedCount'
+    dataIndex: 'proNeedCount',
+    customRender: renderContent
   },
   {
     title: '原料名称',
@@ -400,6 +419,12 @@ export default {
               item.type = 1 //新增时候的标示 原材料类型：1 原需求单材料 2、新增材料
               return item
             })
+
+            const len = detail.oldSourceList.length
+            if(len > 0){
+              detail.oldSourceList[0].rowSpan = len //表格行合并
+            } 
+
             let newSourceList = res.data.newSourceList.map((item, index) => {
               item.key = index + 1
               item.proNeedCount = needCount
@@ -459,6 +484,10 @@ export default {
               item.type = 1 //新增时候的标示 原材料类型：//1、原物料 2、新物料 3、被替换
               return item
             })
+            const len = oldSourceList.length
+            if(len > 0){
+              oldSourceList[0].rowSpan = len //表格行合并
+            }
             that.detail = {
               ...that.detail,
               craftChangeCode: '', //关联技改单编号
@@ -479,6 +508,7 @@ export default {
                 return item
               })
             }
+            
           } else {
             that.$message.error(res.msg)
           }
@@ -606,6 +636,7 @@ export default {
           that.loading = false
           if (res.code === 200) {
             that.$message.success(res.msg)
+            that.$emit('ok')
             that.handleCancel()
           } else {
             that.$message.error(res.msg)

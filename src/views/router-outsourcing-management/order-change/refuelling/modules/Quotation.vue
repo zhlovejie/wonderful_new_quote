@@ -43,17 +43,17 @@
 
     <div class="__hd">原料等用品信息</div>
     <div class="__bd">
-      <a-table :columns="columns" :dataSource="detail.materialVoList" :pagination="false">
+      <a-table :columns="columns" :dataSource="detail.materialVoList" :scroll="{ x: 1230}" :pagination="false">
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
         <div slot="materialName" slot-scope="text, record, index">
           <a-form-model-item
             v-if="bEdit && record.bAdd"
-            :prop="`materialVoList.${index}.materialCode`"
+            :prop="`record.materialCode`"
             :rules="{ required: true, message: '请选择原料信息', target: ['change'] }"
           >
-            <!-- materialType：1是常规的物料基本数据 2是成品物料基本数据 -->
+            <!-- materialType：1是常规的物料基本数据 2是成品物料基本数据 0是两者均查 -->
             <MaterialFuzzySearch
               style="width:150px;"
               :materialType="1"
@@ -87,14 +87,14 @@
           </span>
         </div>
         <!-- 是否需要付费(1:是,2:否) -->
-        <div slot="payType" slot-scope="text, record, index">
+        <div slot="payType" slot-scope="text, record">
           <a-form-model-item
             v-if="bEdit && (record.bAdd || +record.state === 2)"
-            :prop="`materialVoList.${index}.payType`"
+            :prop="`record.payType`"
             :rules="{ required: true, message: '请选择是否需要付费' }"
           >
             <!-- @change="onSelPayType($event, index)" -->
-            <a-select placeholder="是否需要付费" :allowClear="true" v-model="record.payType">
+            <a-select placeholder="需付费" :allowClear="true" v-model="record.payType">
               <a-select-option :value="1">是</a-select-option>
               <a-select-option :value="2">否</a-select-option>
             </a-select>
@@ -103,7 +103,22 @@
             {{ { 1: '是', 2: '否' }[record.payType] || '未知' }}
           </span>
         </div>
-
+        <div slot="needCount" slot-scope="text, record">
+          <a-form-model-item
+            v-if="bEdit && record.bAdd"
+            :prop="`record.needCount`"
+            :rules="{ required: true, message: '请输入需求数量' }"
+          >
+            <a-input-number
+              :step="1"
+              v-model="record.needCount"
+              placeholder="需求数量"
+            />
+          </a-form-model-item>
+          <span v-else>
+             {{record.needCount}}
+          </span>
+        </div>
         <div slot="changeAmount" slot-scope="text, record, index">
           <a-form-model-item v-if="bEdit">
             <a-input-number
@@ -126,9 +141,19 @@
 
     <div class="__hd">送取信息</div>
     <div class="__bd">
-      <a-table :columns="sendColumns" :dataSource="detail.sendTakeVoList" :pagination="false">
-        <div slot="materialName" slot-scope="text, record">
-          {{ `${text}+${record.materialCode}` }}
+      <a-table :columns="sendColumns" :dataSource="detail.sendTakeVoList" :pagination="false" :scroll="{ x: 1100}">
+        <div slot="order" slot-scope="text, record, index">
+          <span>{{ index + 1 }}</span>
+        </div>
+        <div slot="materialName" slot-scope="text">
+          {{ text }}
+        </div>
+        <div slot="provider" slot-scope="text, record">
+          {{ { 1: '委托方提供', 2: '加工商提供' }[record.provider] || '未知' }}
+        </div>
+        <!-- 是否需要付费(1:是,2:否) -->
+        <div slot="payType" slot-scope="text, record">
+          {{ { 1: '是', 2: '否' }[record.payType] || '未知' }}
         </div>
         <div slot="changeAmount" slot-scope="text, record, index">
           <a-form-model-item>
@@ -148,7 +173,7 @@
         <template slot="footer">
           <a-row class="row">
             <a-col :span="4">
-              成品加工数量:
+              成品加工数量
             </a-col>
             <a-col :span="10"> 原成品加工数量:{{ detail.oldProcessCount }} </a-col>
             <a-col :span="10">
@@ -158,21 +183,21 @@
           </a-row>
           <a-row class="row">
             <a-col :span="4">
-              加工费总计:
+              加工费总计
             </a-col>
             <a-col :span="10"> 原加工费用(元):{{ oldProcessAmount }} </a-col>
             <a-col :span="10"> 变更加工费(元):{{ changeProcessAmount }} </a-col>
           </a-row>
           <a-row class="row">
             <a-col :span="4">
-              合计:
+              合计
             </a-col>
             <a-col :span="10"> 原合计费用(元):{{ oldSumAmount }} </a-col>
             <a-col :span="10"> 变更合计费用(元):{{ changeSumAmount }} </a-col>
           </a-row>
           <a-row class="row">
             <a-col :span="4">
-              变更后总费用:
+              变更后总费用
             </a-col>
             <a-col :span="20">
               {{ changeAllAmount }}
@@ -217,7 +242,7 @@ const columns = [
   {
     title: '原料',
     dataIndex: 'materialName',
-    width: '150px',
+    width: '200px',
     scopedSlots: { customRender: 'materialName' }
   },
   {
@@ -233,48 +258,21 @@ const columns = [
     scopedSlots: { customRender: 'payType' }
   },
   {
+    title: '所需数量',
+    dataIndex: 'needCount',
+    width: '150px',
+    scopedSlots: { customRender: 'needCount' }
+  },
+  {
     title: '费用金额（元）',
+    width: '150px',
     dataIndex: 'oldAmount'
   },
   {
     title: '操作',
-    dataIndex: 'changeAmount',
     width: '220px',
-    scopedSlots: { customRender: 'changeAmount' }
-  }
-]
-
-const sendColumns = [
-  {
-    title: '序号',
-    key: 'order',
-    width: '70px',
-    dataIndex: 'key'
-  },
-  {
-    title: '类型',
-    width: '100px',
-    dataIndex: 'typeText' //类型(1:原料送取,2:成品送取)
-  },
-  {
-    title: '原料',
-    dataIndex: 'materialName'
-  },
-  {
-    title: '提供者',
-    dataIndex: 'providerText' //提供者(1:委托方提供,2:加工商提供)
-  },
-  {
-    title: '是否需要付费',
-    dataIndex: 'payTypeText' //是否需要付费(1:是,2:否)
-  },
-  {
-    title: '费用金额（元）',
-    dataIndex: 'oldAmount'
-  },
-  {
-    title: '操作',
     dataIndex: 'changeAmount',
+    fixed: 'right',
     scopedSlots: { customRender: 'changeAmount' }
   }
 ]
@@ -297,7 +295,7 @@ export default {
   data() {
     return {
       columns,
-      sendColumns,
+      sendColumns:columns.filter(item => item.title !== '所需数量'),
       detail: {}
     }
   },
@@ -377,7 +375,7 @@ export default {
     //新增的模具信息
     proMaterialChange(item, index) {
       console.log('换料后成品物品信息-item:', item)
-      const { materialCode, type } = item
+      const { materialCode, materialId, materialName, modelType, materialUnit, type } = item
       const list = this.detail.materialVoList
       var temp = list.find(element => element.materialCode === materialCode)
       if (temp) {
@@ -385,6 +383,11 @@ export default {
       } else {
         var dataItem = list[index]
         dataItem.materialCode = materialCode
+        dataItem.materialId = materialId
+        dataItem.materialName = materialName
+        dataItem.specification = modelType
+        dataItem.subUnit = materialUnit
+        dataItem.type = type
         list[index] = { ...dataItem, ...item, typeText: { 1: '原料', 2: '模具' }[type] || '未知' }
       }
     },

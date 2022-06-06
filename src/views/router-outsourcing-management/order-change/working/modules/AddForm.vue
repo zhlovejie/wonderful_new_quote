@@ -19,6 +19,7 @@
             <span>{{ index + 1 }}</span>
           </div>
         </a-table>
+        <Parameter :list="detail.oldParameterList || []"></Parameter>
 
         <div class="__hd" style="margin-top:20px;">工序变更说明</div>
         <table class="custom-table custom-table-border">
@@ -26,7 +27,7 @@
             <td style="width:150px;">工序变更单号</td>
             <td style="width:350px;">
               <a-form-model-item>
-                {{ detail.applyCode ? detail.applyCode : '' }}
+                {{ detail.applyCode ? detail.applyCode : '*' }}
               </a-form-model-item>
             </td>
             <td style="width:150px;">关联技改单</td>
@@ -53,7 +54,11 @@
           <tr>
             <td style="width:150px;">工序变更后成品物料信息</td>
             <td style="width:350px;">
-              <a-form-model-item v-if="isEdit">
+              <a-form-model-item
+                v-if="isEdit"
+                :prop="`newMaterialCode`"
+                :rules="{ required: true, message: '请选择物料' }"
+              >
                 <MaterialFuzzySearch
                   :materialInfo="{ materialCode: detail.newMaterialCode }"
                   @change="proMaterialChange"
@@ -100,37 +105,21 @@
                 {{ text }}
               </a-form-model-item>
             </div>
-            <div slot="needCount" slot-scope="text, record, index">
-              <a-form-model-item
-                v-if="isEdit && record.state === 2"
-                :prop="`newCraftList.${index}.needCount`"
-                :rules="{ required: true, message: '请输入单个加工原料量' }"
-              >
-                <a-input-number
-                  style="width:80px;"
-                  :min="1"
-                  :max="record.notExWarehouseNum"
-                  :step="1"
-                  :precision="0"
-                  :value="record.needCount"
-                  @change="val => handleNumChange(index, record, val)"
-                />
-              </a-form-model-item>
-              <a-form-model-item v-else>
-                {{ record.needCount }}
-              </a-form-model-item>
-            </div>
             <div slot="stateText" slot-scope="text, record">
               <a-form-model-item>
                 <span :class="{ newStyle: record.state === 2, replaceStyle: record.state === 3 }">{{ text }}</span>
               </a-form-model-item>
             </div>
             <div slot="action" slot-scope="text, record, index" style="width:80px;" v-if="isEdit">
-              <a type="primary" @click="doItemAction('del', record, index)">删除</a>
+              <a type="primary" @click="addCraftItem('del', record, index)">删除</a>
             </div>
           </a-table>
-          <a-button v-if="isEdit" style="width: 100%" type="dashed" icon="plus" @click="actionItem('add')"
-            >添加</a-button
+          <a-button v-if="isEdit" style="width: 100%" type="dashed" icon="plus" @click="addCraftItem('add')"
+            >添加工序</a-button
+          >
+          <Parameter :list="detail.newParameterList || []" :bEdit="isEdit" @delete="onDel"></Parameter>
+          <a-button v-if="isEdit" style="width: 100%" type="dashed" icon="plus" @click="addParameterItem('add')"
+            >添加参数</a-button
           >
         </div>
         <!-- 提交人 -->
@@ -181,11 +170,25 @@
 </template>
 
 <script>
-import { getOrderChangeInfo, craftDetail, craftAdd, craftApprove } from '@/api/orderChange'
+import { getOrderChangeCraftInfo, craftDetail, craftAdd, craftApprove, getCraftFile } from '@/api/orderChange'
 import MaterialSelect from '@/views/storageManagement/storage-export/materialApply/MaterialSelect'
 import MaterialFuzzySearch from '@/components/CustomerList/MaterialFuzzySearch'
 import Approval from '@/views/after-sales-management/Accessories/module/Approval.vue'
 import Quotation from '../../refuelling/modules/Quotation.vue'
+import Parameter from './Parameter.vue'
+
+const renderContent = (text, record, index) => {
+  const obj = {
+    children: text,
+    attrs: {}
+  }
+  if (index === 0) {
+    obj.attrs.rowSpan = record.rowSpan
+  } else {
+    obj.attrs.rowSpan = 0
+  }
+  return obj
+}
 
 const proColumns = [
   {
@@ -196,15 +199,18 @@ const proColumns = [
   },
   {
     title: '成品物料名称',
-    dataIndex: 'proMaterialName'
+    dataIndex: 'proMaterialName',
+    customRender: renderContent
   },
   {
     title: '成品物料代码',
-    dataIndex: 'proMaterialCode'
+    dataIndex: 'proMaterialCode',
+    customRender: renderContent
   },
   {
     title: '成品需求数量',
-    dataIndex: 'proNeedCount'
+    dataIndex: 'proNeedCount',
+    customRender: renderContent
   },
   {
     title: '工作中心部门',
@@ -253,12 +259,12 @@ const columns = [
   },
   {
     title: '人工费（元）',
-    width:'150px',
+    width: '150px',
     dataIndex: 'personCost'
   },
   {
     title: '状态',
-    width:'150px',
+    width: '150px',
     dataIndex: 'stateText', //变更后的工序相较于之前的工序状态变化：1、原工序 2、新工序 3、被替换
     scopedSlots: { customRender: 'stateText' }
   }
@@ -270,7 +276,8 @@ export default {
     MaterialSelect,
     MaterialFuzzySearch,
     Approval,
-    Quotation
+    Quotation,
+    Parameter
   },
   data() {
     return {
@@ -280,8 +287,12 @@ export default {
       spinning: false,
       detail: {
         oldCraftList: [],
-        newCraftList: []
+        newCraftList: [],
+        oldParameterList: [],
+        newParameterList: []
       },
+      craftList: [], //工序列表
+      parameterList: [], //参数列表
       type: 'view',
       loading: false
     }
@@ -302,47 +313,102 @@ export default {
     }
   },
   methods: {
+    //获取工序和参数列表  //materialType: 1 成品物料 2 常规物料
+    getCraftAndParameter(materialId, materialType) {
+      const that = this
+      getCraftFile({ materialId: materialId, materialType: materialType })
+        .then(res => {
+          let { fileVoList, routeDetailVo } = res.data
+          let { processes } = routeDetailVo
+          let craftBoList = processes.map(item => {
+            item.key = that.$uuid()
+            return item
+          })
+
+          let __parameterBoList = []
+          fileVoList.map(item => {
+            if (Array.isArray(item.fileList)) {
+              item.fileList.map(file => {
+                __parameterBoList.push({
+                  ...item,
+                  ...file
+                })
+              })
+            }
+          })
+          that.parameterList = __parameterBoList
+          that.craftList = craftBoList
+          console.log('工序列表：', that.craftList)
+          console.log('参数列表：', that.parameterList)
+        })
+        .catch(err => {
+          that.parameterList = []
+          that.craftList = []
+        })
+    },
     //选择物料代码
     openModel(record, orderId) {
       this.$refs.materialSelect.query(record, orderId)
     },
-    //单个加工原料量改变
-    handleNumChange(index, record, val) {
-      console.log('改变>>>', val, record.proNeedCount)
-      const that = this
-      const newCraftList = [...that.detail.newCraftList]
-      const target = newCraftList[index]
-      target.needCount = val
-      target.needCountSum = +val * record.proNeedCount
-      console.log('总计>>>', target.needCountSum)
-      console.log('sum:', this.detail.newCraftList[index].needCountSum)
-      this.detail.newCraftList = newCraftList
-      // if (+val > +record.notExWarehouseNum) {
-      //   that.$message.warning(`单个加工原料量已大于原材料剩余数量(${record.notExWarehouseNum})`)
-      // }
+    //参数-删除
+    onDel(index, record) {
+      console.log('删除：', index, record)
+      this.detail.newParameterList.splice(index, 1)
     },
-    //物料信息-添加
-    actionItem(type, record) {
+    //参数-添加
+    addParameterItem(type, record) {
+      const that = this
+      let newParameterList = [...that.detail.newParameterList]
+      if (type === 'add') {
+        if (that.detail.newMaterialCode && that.detail.newMaterialId) {
+          newParameterList.push({
+            key: that._uuid(),
+            //测试假数据
+            fileUrl:
+              'http://linkbin.net/images/cloud/20210624/德澜仕服务号二维码5096c54a-8a4a-46c5-9e7d-87f15873a88a.jpg',
+            propertiesDicCode: 'out_store_paremeter_pic',
+            propertiesDicId: 952,
+            propertiesDicName: '图纸',
+            fileName: '文件名称哦哦',
+            stateText: '新参数',
+            state: 2,
+            type: 2
+          })
+        } else {
+          that.$message.warning('请先选择物料')
+        }
+      } else if (type === 'del') {
+        newParameterList = newParameterList.filter(item => item.key !== record.key)
+      }
+      that.detail = {
+        ...that.detail,
+        newParameterList
+      }
+    },
+    //工序-添加
+    addCraftItem(type, record) {
       const that = this
       let newCraftList = [...that.detail.newCraftList]
       if (type === 'add') {
-        newCraftList.push({
-          key: that._uuid(),
-          //测试假数据
-          materialCode: '8.3.1.27',
-          materialId: 4040,
-          materialName: '哈哈',
-          needCount: 10,
-          needCountSum: 500,
-          orderId: 1,
-          specification: ' uuuuuuu',
-          subUnit: '台',
-          proNeedCount: 55,
-          stateText: '新工序',
-          type: 2,
-          state: 2
-        })
-      } else if (type === 'delete') {
+        if (that.detail.newMaterialCode && that.detail.newMaterialId) {
+          newCraftList.push({
+            key: that._uuid(),
+            //测试假数据
+            duration: 7,
+            personCost: 7,
+            processCode: '下料车间00001',
+            processName: 'LED组件安装',
+            processId: 38,
+            workshopId: 9,
+            workshopName: '下料车间',
+            stateText: '新工序',
+            type: 2,
+            state: 2
+          })
+        } else {
+          that.$message.warning('请先选择物料')
+        }
+      } else if (type === 'del') {
         newCraftList = newCraftList.filter(item => item.key !== record.key)
       }
       that.detail = {
@@ -382,29 +448,42 @@ export default {
             var detail = { ...that.detail, ...res.data }
             detail.oldCraftList = res.data.oldCraftList.map((item, index) => {
               item.key = index + 1
-              item.needCountSum = item.needCount * needCount
               item.proMaterialName = oldMaterialName
               item.proMaterialId = oldMaterialId
               item.proMaterialCode = oldMaterialCode
               item.proNeedCount = needCount
               item.stateText = { 1: '原工序', 2: '新工序', 3: '被替换' }[item.state] || '未知' //1、原工序 2、新工序 3、被替换
-              item.type = 1 //新增时候的标示 原材料类型：1 原需求单材料 2、新增材料
+              item.type = 1 //新增时候的标示 原数据：1 原 2、新
               return item
             })
+            const len = detail.oldCraftList.length
+            if (len > 0) {
+              detail.oldCraftList[0].rowSpan = len //表格行合并
+            }
             let newCraftList = res.data.newCraftList.map((item, index) => {
               item.key = index + 1
               item.proNeedCount = needCount
-              item.needCountSum = item.needCount * needCount
               item.stateText = { 1: '原工序', 2: '新工序', 3: '被替换' }[item.state] || '未知'
-              item.type = 2 //新增时候的标示 原材料类型：1 原需求单材料 2、新增材料
+              item.type = 2 //新增时候的标示 原数据：1 原 2、新
+              return item
+            })
+            detail.oldParameterList = detail.oldParameterList.map((item, index) => {
+              item.type = 1
+              return item
+            })
+            let  newParameterList = detail.newParameterList.map((item, index) => {
+              item.type = 2
               return item
             })
             //编辑的时候，需剔除被替换的数据
             if (type === 'edit') {
               detail.newCraftList = newCraftList.filter(item => item.state !== 3)
+              detail.newParameterList = newParameterList.filter(item => item.state !== 3)
             } else {
               detail.newCraftList = newCraftList
+              detail .newParameterList = newParameterList
             }
+            
             //变更报价
             if (res.data.quotationVo) {
               detail.quotationVo.materialVoList = res.data.quotationVo.materialVoList.map((item, index) => {
@@ -423,12 +502,13 @@ export default {
               })
             }
             that.detail = detail
+            console.log('工序变更单详情：', that.detail)
           } else {
             that.$message.error(res.msg)
           }
         })
       } else {
-        getOrderChangeInfo({ oderId: this.detail.orderId }).then(res => {
+        getOrderChangeCraftInfo({ oderId: this.detail.orderId }).then(res => {
           if (res.code === 200) {
             const {
               materialName,
@@ -438,16 +518,25 @@ export default {
               specification,
               subUnit,
               type
-            } = res.data.finishMaterial
-            const oldCraftList = res.data.partMaterialList.map((item, index) => {
+            } = res.data.changeMaterialNewstVo.finishMaterial
+            let oldCraftList = res.data.changeCraftList.map((item, index) => {
               item.key = index + 1
-              item.needCountSum = item.needCount * needCount
               item.proMaterialName = materialName
               item.proMaterialId = materialId
               item.proMaterialCode = materialCode
               item.proNeedCount = needCount
               item.stateText = '原工序'
               item.type = 1 //新增时候的标示 原材料类型：//1、原工序 2、新工序 3、被替换
+              return item
+            })
+            const len = oldCraftList.length
+            if (len > 0) {
+              oldCraftList[0].rowSpan = len //表格行合并
+            }
+            const parameterList = res.data.changeParameterList.map((item, index) => {
+              item.key = index + 1
+              item.state = 1 //1、原工序 2、新工序 3、被替换
+              item.type = 1
               return item
             })
             that.detail = {
@@ -465,8 +554,14 @@ export default {
               oldCraftList: oldCraftList,
               oldUseFlag: 1,
               newCraftList: JSON.parse(JSON.stringify(oldCraftList)).map(item => {
-                item.type = 2
+                item.type = 1
                 item.state = 1 //1、原工序 2、新工序 3、被替换
+                return item
+              }),
+              oldParameterList: parameterList,
+              newParameterList: JSON.parse(JSON.stringify(parameterList)).map(item => {
+                item.type = 2
+                item.state = 1 //1、原参数 2、新参数 3、被替换
                 return item
               })
             }
@@ -530,6 +625,14 @@ export default {
       this.detail.newSpecification = modelType //更换后规格型号
       this.detail.newSubUnit = materialUnit //更换后的辅助计量单位
       this.detail.newType = type //新成品物料类型：1 成品物料 2 常规物料
+      // this.getCraftAndParameter(materialId,type)
+      //测试用 materiallId:31 materialType:1
+      this.detail.newMaterialId = 31 //更换后的物料id
+      this.detail.newType = 1 //新成品物料类型：1 成品物料 2 常规物料
+      this.getCraftAndParameter(this.detail.newMaterialId, this.detail.newType)
+      //更换物料信息后-删除原来新增的工序和参数
+      // this.detail.newCraftList = this.detail.newCraftList.filter(item => item.type == 1)
+      // this.detail.newParameterList = this.detail.newParameterList.filter(item => item.type == 1)
     },
 
     handleSubmit(type) {
@@ -541,11 +644,14 @@ export default {
           if (valid) {
             const params = {
               ...that.detail,
-              detailBoList: that.detail.newCraftList.concat(that.detail.oldCraftList), //老的新的都要上传
+              craftDetailBoList: that.detail.newCraftList.concat(that.detail.oldCraftList), //老的新的都要上传 老的type:1 新的type:2
+              parameterDetailCraftBoList: that.detail.newParameterList.concat(that.detail.oldParameterList),
               operationFlag: type === 'submit' ? 2 : 1 //操作类型: 1 保存 2 提交审核
             }
             delete params.newCraftList
             delete params.oldCraftList
+            delete params.newParameterList
+            delete params.oldParameterList
             console.log('新增参数：', params)
             that.spinning = true
             craftAdd(params)
@@ -580,12 +686,6 @@ export default {
       console.log('原成品物料是否可用:', e)
       this.detail.oldUseFlag = e ? 1 : 0
     },
-    //原料删除
-    doItemAction(type, record, index) {
-      if (type === 'del') {
-        this.detail.newCraftList.splice(index, 1)
-      }
-    },
     opinionChange(opinion) {
       this.submitApprove(1, opinion)
     },
@@ -597,6 +697,7 @@ export default {
           that.loading = false
           if (res.code === 200) {
             that.$message.success(res.msg)
+            that.$emit('ok')
             that.handleCancel()
           } else {
             that.$message.error(res.msg)

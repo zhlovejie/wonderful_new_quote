@@ -168,4 +168,13 @@ export function craftQuotationSave(parameter) {
     data: parameter
   })
 }
+//工序变更单-根据物料id和type 获取工序 和 属性/参数
+export function getCraftFile(parameter) {
+  return axios({
+    baseURL,
+    url: '/outsource/fac-info-need/getCraftFile',
+    method: 'get',
+    params: parameter
+  })
+}
 /* 委外管理-加工需求变更单-工序变更单-End */

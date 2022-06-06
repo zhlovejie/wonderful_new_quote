@@ -83,20 +83,20 @@
         <div class="action-btns" slot="action" slot-scope="text, record">
           <a type="primary" @click="doAction('view', record)">详情</a>
           <template
-            v-if="(record.approveStatus === 1 || record.approveStatus === 5) && +userInfo.id === +record.createdId"
+            v-if="(record.approveStatus === 1 || record.approveStatus === 5) && +activeKey === 0"
           >
             <a-divider type="vertical" />
             <a type="primary" @click="doAction('edit', record)">编辑</a>
           </template>
           <template
-            v-if="(record.approveStatus === 1 || record.approveStatus === 2) && +userInfo.id === +record.createdId"
+            v-if="record.approveStatus === 2 && +activeKey === 0"
           >
             <a-divider type="vertical" />
-            <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('del', record)">
-              <a type="primary" @click="doAction('withdraw', record)">撤回</a>
+            <a-popconfirm title="确认撤回该条数据吗?" @confirm="() => doAction('withdraw', record)">
+              <a type="primary" href="javascript:;">撤回</a>
             </a-popconfirm>
           </template>
-          <template v-if="record.approveStatus === 5 && +userInfo.id === +record.createdId">
+          <template v-if="record.approveStatus === 5 && +activeKey === 0">
             <a-divider type="vertical" />
             <a-popconfirm title="确认删除该条数据吗?" @confirm="() => doAction('del', record)">
               <a type="primary" href="javascript:;">删除</a>
@@ -118,6 +118,7 @@
     <MaterialChange ref="materialChangeModal" />
     <AddForm ref="addForm" @ok="() => searchAction({ current: 1 })" />
     <ApproveInfo ref="approveInfoCard" />
+    <ChangeQuotation ref="changeQuotation"></ChangeQuotation>
   </div>
 </template>
 
@@ -133,6 +134,7 @@ import {
 import MaterialChange from './modules/MaterialChange.vue' //原工序变化-查看
 import AddForm from './modules/AddForm.vue' //新增/详情
 import ApproveInfo from '@/components/CustomerList/ApproveInfo' //审批预览
+import ChangeQuotation from '../refuelling/modules/ChangeQuotation.vue' //变更报价
 
 const columns = [
   {
@@ -181,7 +183,8 @@ export default {
   components: {
     AddForm,
     MaterialChange,
-    ApproveInfo
+    ApproveInfo,
+    ChangeQuotation
   },
   data() {
     return {
@@ -291,7 +294,7 @@ export default {
     doAction(actionType, record) {
       const that = this
       if (actionType === 'del') {
-        craftDelete(`idList=${record.id}`)
+        craftDelete(`id=${record.id}`)
           .then(res => {
             that.$message.info(res.msg)
             if (res.code === 200) {
@@ -312,6 +315,8 @@ export default {
           .catch(err => {
             that.$message.info(`错误：${err.message}`)
           })
+      } else if (actionType === 'change') {
+        that.$refs.changeQuotation.query(record || {},2)
       } else {
         that.$refs.addForm.query(actionType, record || {})
       }
