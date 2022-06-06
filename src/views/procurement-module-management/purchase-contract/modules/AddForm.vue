@@ -41,10 +41,10 @@
         <a-button type="primary" v-if="isView || currentTab === stepList.length - 1" @click="doAction('preview', { submitStatus: 1 })"
           >合同预览</a-button
         >
-        <a-button type="danger" v-if="currentTab === stepList.length - 1" @click="doAction('exceptionPoints')"
+        <a-button type="danger" v-if="currentTab === stepList.length - 1 && hasExceptionPoints" @click="doAction('exceptionPoints')"
           >异常原因</a-button
         >
-        <a-button type="primary" @click="doAction('cancel')">退出</a-button>
+        <a-button type="primary" v-show="showExitButton" @click="doAction('cancel')">退出</a-button>
       </div>
       <ExceptionPoints ref="exceptionPoints" />
       <Approval ref="approval" @opinionChange="opinionChange" />
@@ -100,6 +100,10 @@ export default {
     record: {
       type: Object,
       default: () => {}
+    },
+    showExitButton:{
+      type:Boolean,
+      default:() => true
     }
   },
   data() {
@@ -141,7 +145,8 @@ export default {
       currentTab: -1,
       submitParams: {},
       supplierInfo: null, // 供应商信息
-      changeReasonsDefaults: null
+      changeReasonsDefaults: null,
+      hasExceptionPoints: false
     }
   },
   computed: {
@@ -249,6 +254,20 @@ export default {
           invoiceType: that.supplierInfo.invoiceType,
           materialRate: that.supplierInfo.materialRate,
           settlementMode: that.supplierInfo.settlementMode,
+          freightRate : that.supplierInfo.freightRate,
+
+          secondPartyInfo : {
+            cfullName:supplierInfo.cfullName || '',
+            address:supplierInfo.address || '',
+            phone:supplierInfo.phone || '',
+            weChat:supplierInfo.weChat || '',
+            supplierEmail:supplierInfo.supplierEmail || '',
+            postalCode:supplierInfo.postalCode || '',
+            bankName:supplierInfo.bankName || '',
+            taxpayerNumber:supplierInfo.taxpayerNumber || '',
+            cardName:supplierInfo.cardName || '',
+            cardNumber:supplierInfo.cardNumber || ''
+          },
 
           otherAppoint: {
             disputeSolveType: 1,
@@ -326,7 +345,7 @@ export default {
             name: 'procurement-module-management-purchase-contract-preview',
             params: {
               contractId: that.submitParams.id,
-              from: 'procurement-module-management-purchase-contract'
+              from: that.from || 'procurement-module-management-purchase-contract'
             }
           })
           return
@@ -369,7 +388,7 @@ export default {
           })
       } else if (type === 'cancel') {
         that.$router.push({
-          name: 'procurement-module-management-purchase-contract'
+          name: that.from || 'procurement-module-management-purchase-contract'
         })
         return
       } else if (type === 'exceptionPoints') {

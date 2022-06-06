@@ -41,7 +41,7 @@
         </a-form-model-item>
       </div>
       <div>
-        <a-form-model-item prop="transportType" label="备注">
+        <a-form-model-item prop="remark" label="备注">
           <a-textarea :disabled="addForm.isDisabled" placeholder="备注" :rows="3" v-model="form.remark" />
         </a-form-model-item>
       </div>

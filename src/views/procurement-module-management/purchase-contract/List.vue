@@ -4,20 +4,20 @@
       <div class="search-wrapper">
         <a-form layout="inline">
           <a-form-item>
-            <a-input placeholder="合同编号模糊查询" v-model="queryParam.keyword" allowClear style="width: 160px" />
+            <a-input placeholder="合同编号模糊查询" v-model="queryParam.contractNum" allowClear style="width: 160px" />
           </a-form-item>
           <a-form-item>
-            <a-input placeholder="采购需求单号模糊查询" v-model="queryParam.keyword" allowClear style="width: 160px" />
+            <a-input placeholder="采购需求单号模糊查询" v-model="queryParam.orderNum" allowClear style="width: 160px" />
           </a-form-item>
           <a-form-item>
-            <a-input placeholder="供应商名称模糊查询" v-model="queryParam.keyword" allowClear style="width: 160px" />
+            <a-input placeholder="供应商名称模糊查询" v-model="queryParam.supplierName" allowClear style="width: 160px" />
           </a-form-item>
 
           <a-form-item>
-            <a-input placeholder="物料代码模糊查询" v-model="queryParam.keyword" allowClear style="width: 160px" />
+            <a-input placeholder="物料代码模糊查询" v-model="queryParam.materialCode" allowClear style="width: 160px" />
           </a-form-item>
           <a-form-item>
-            <a-input placeholder="物料名称模糊查询" v-model="queryParam.keyword" allowClear style="width: 160px" />
+            <a-input placeholder="物料名称模糊查询" v-model="queryParam.materialName" allowClear style="width: 160px" />
           </a-form-item>
 
           <a-form-item>
@@ -133,10 +133,6 @@
             <template v-if="+activeKey === 2">
               <a @click="doAction('view', record)">详情</a>
             </template>
-            <a-divider type="vertical" />
-            <a @click="doAction('files', record)">附件</a>
-            <a-divider type="vertical" />
-            <a-button type="primary" @click="doAction('preview', record)">合同预览</a-button>
           </div>
         </a-table>
       </div>

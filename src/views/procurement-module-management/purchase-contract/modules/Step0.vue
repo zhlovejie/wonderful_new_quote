@@ -38,13 +38,13 @@
               <span>发票类型</span>
             </td>
             <td>
-              <a-form-model-item prop="invoiceType">
-                {{ { 1: '不限', 2: '增值税专用发票', 3: '普通发票' }[form.invoiceType] }}
-                <!-- <a-select placeholder="发票类型" v-model="form.invoiceType" :allowClear="true">
-                  <a-select-option :value="1">不限</a-select-option>
-                  <a-select-option :value="2">增值税专用发票</a-select-option>
-                  <a-select-option :value="3">普通发票</a-select-option>
-                </a-select> -->
+              <a-form-model-item prop="invoiceType" >
+                <!-- {{ { 1: '不限', 2: '增值税专用发票', 3: '普通发票' }[form.invoiceType] }} -->
+                <a-select placeholder="发票类型" v-model="form.invoiceType" :allowClear="true" :disabled="addForm.isDisabled">
+                  <a-select-option :value="0">不限</a-select-option>
+                  <a-select-option :value="1">增值税专用发票</a-select-option>
+                  <a-select-option :value="2">普通发票</a-select-option>
+                </a-select>
               </a-form-model-item>
             </td>
           </tr>
@@ -83,12 +83,11 @@
               <span>是否含运费</span>
             </td>
             <td>
-              <a-form-model-item prop="freightType">
-                {{ { 0: '否', 1: '是' }[form.freightType] }}
-                <!-- <a-radio-group v-model="form.freightType">
+              <a-form-model-item prop="freightType" >
+                <a-radio-group v-model="form.freightType" :disabled="addForm.isDisabled">
                   <a-radio :value="0">否</a-radio>
                   <a-radio :value="1">是</a-radio>
-                </a-radio-group> -->
+                </a-radio-group>
               </a-form-model-item>
             </td>
 

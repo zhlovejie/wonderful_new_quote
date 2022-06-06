@@ -33,7 +33,7 @@
               </a-form-model-item>
             </td>
           </tr>
-          <tr>
+          <tr v-if="+form.signType === 1">
             <td style="width:200px;">
               <span><i class="wdf-required"></i>双方邮箱信息</span>
             </td>
@@ -58,7 +58,7 @@
               </div>
             </td>
           </tr>
-          <tr>
+          <tr v-if="+form.signType === 3">
             <td style="width:200px;">
               <span><i class="wdf-required"></i>双方微信信息</span>
             </td>
@@ -163,9 +163,9 @@
               </div>
             </td>
           </tr>
-          <tr>
+          <tr v-if="hasExceptionPoints">
             <td style="width:200px;">
-              <span><i v-if="hasExceptionPoints" class="wdf-required"></i>变更原因</span>
+              <span><i class="wdf-required"></i>变更原因</span>
             </td>
             <td>
               <div class="block">
@@ -243,12 +243,17 @@ export default {
   activated() {
     console.log('stop5 activated called...')
     const that = this
-    let result = that.addForm.pick(that.addForm.submitParams, ['otherAppoint'])
+    let result = that.addForm.pick(that.addForm.submitParams, ['otherAppoint','secondPartyInfo'])
     that.form = {
-      ...result.otherAppoint
+      ...result.otherAppoint,
     }
 
     if (that.addForm.isAdd) {
+      that.form = {
+        ...that.form,
+        secondWeChat:result.secondPartyInfo.weChat,
+        secondEmail:result.secondPartyInfo.supplierEmail
+      }
     }
     that.handleExceptionPoints()
   },
@@ -257,6 +262,7 @@ export default {
       const that = this
       let exceptionPoints = that.addForm.getExceptionPoints()
       that.hasExceptionPoints = !!exceptionPoints.find(e => e.abnormalType === '违约责任修改')
+      that.addForm.hasExceptionPoints = that.hasExceptionPoints
     },
     validate() {
       const that = this

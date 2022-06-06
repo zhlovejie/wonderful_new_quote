@@ -31,49 +31,47 @@
           </a-form-model-item>
           <span style="line-height:36px;">天</span>
         </div>
+        <a-table :columns="columns" :dataSource="form.settlementList" :pagination="false" size="small">
+          <!-- :rowSelection="{ onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }" -->
+          <div slot="order" slot-scope="text, record, index">
+            <span>{{ index + 1 }}</span>
+          </div>
+
+          <div slot="percentage" slot-scope="text, record, index">
+            <a-form-model-item>
+              {{ record.percentage }}%
+              <!-- <a-input-number
+                style="width:100%;"
+                :value="record.percentage"
+                :min="0"
+                :max="100"
+                :step="1"
+                :precision="0"
+                @change="v => handleFreightRate(v, record)"
+              /> -->
+            </a-form-model-item>
+          </div>
+
+          <div slot="paymentDate" slot-scope="text, record, index">
+            <a-form-model-item>
+              <a-date-picker
+                :disabled="addForm.isDisabled"
+                v-model="record.paymentDate"
+                valueFormat="YYYY-MM-DD"
+                style="width:100%;"
+                :allowClear="true"
+              />
+            </a-form-model-item>
+          </div>
+
+          <div slot="remark" slot-scope="text, record, index">
+            <a-form-model-item>
+              <a-input :disabled="addForm.isDisabled" v-model="record.remark" style="width:100%;" :allowClear="true" />
+            </a-form-model-item>
+          </div>
+        </a-table>
       </template>
 
-      <a-table :columns="columns" :dataSource="form.settlementList" :pagination="false" size="small">
-        <!-- :rowSelection="{ onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }" -->
-        <div slot="order" slot-scope="text, record, index">
-          <span>{{ index + 1 }}</span>
-        </div>
-
-        <div slot="percentage" slot-scope="text, record, index">
-          <a-form-model-item>
-            {{ record.percentage }}%
-            <!-- <a-input-number
-              style="width:100%;"
-              :value="record.percentage"
-              :min="0"
-              :max="100"
-              :step="1"
-              :precision="0"
-              @change="v => handleFreightRate(v, record)"
-            /> -->
-          </a-form-model-item>
-        </div>
-
-        <div slot="paymentDate" slot-scope="text, record, index">
-          <a-form-model-item>
-            <a-date-picker
-              :disabled="addForm.isDisabled"
-              v-model="record.paymentDate"
-              valueFormat="YYYY-MM-DD"
-              style="width:100%;"
-              :allowClear="true"
-            />
-          </a-form-model-item>
-        </div>
-
-        <div slot="remark" slot-scope="text, record, index">
-          <a-form-model-item>
-            <a-input :disabled="addForm.isDisabled" v-model="record.remark" style="width:100%;" :allowClear="true" />
-          </a-form-model-item>
-        </div>
-      </a-table>
-
-      
     </a-form-model>
   </div>
 </template>
@@ -253,6 +251,9 @@ export default {
     },
     validate_self() {
       const that = this
+      if(that.settlementMode === 0){
+        return false
+      }
       // if (that.selectedRows.length === 0) {
       //   that.$message.info(`请选择结算方式`)
       //   return true

@@ -180,7 +180,12 @@
       </div>
 
       <div v-show="+activeKey === 7">
-        <a-button type="primary" @click="handlePurchaseContract">查看采购合同</a-button>
+        <PurchaseContractView
+          ref="purchaseContractView"
+          action="view"
+          :record="{ id: detail.contractId }"
+          :showExitButton="false"
+        />
       </div>
 
       <div v-show="+activeKey === 8">
@@ -276,6 +281,7 @@ import Approval from './Approval'
 import ApplyView from '../apply/ApplyView'
 import OfferPriceView from './OfferPriceView'
 import OrderProcessView from './OrderProcessView'
+import PurchaseContractView from '../purchase-contract/modules/AddForm'
 import moment from 'moment'
 export default {
   components: {
@@ -283,7 +289,8 @@ export default {
     Approval,
     ApplyView,
     OfferPriceView,
-    OrderProcessView
+    OrderProcessView,
+    PurchaseContractView
   },
   data() {
     return {
@@ -405,6 +412,13 @@ export default {
     //审批部分
     tabChange(key) {
       this.activeKey = +key
+      if (this.activeKey === 7) {
+        try {
+          this.$refs.purchaseContractView.init()
+        } catch (err) {
+          console.error(err)
+        }
+      }
     },
     handlePurchaseContract() {
       this.$router.push({

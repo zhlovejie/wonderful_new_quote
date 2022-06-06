@@ -39,9 +39,9 @@
         <a-col :span="12">
           <a-form-item label="发票类型">
             <a-select placeholder="发票类型" v-decorator="['invoiceType']" :allowClear="true">
-              <a-select-option :value="1">不限</a-select-option>
-              <a-select-option :value="2">增值税专用发票</a-select-option>
-              <a-select-option :value="3">普通发票</a-select-option>
+              <a-select-option :value="0">不限</a-select-option>
+              <a-select-option :value="1">增值税专用发票</a-select-option>
+              <a-select-option :value="2">普通发票</a-select-option>
             </a-select>
           </a-form-item>
         </a-col>

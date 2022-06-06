@@ -95,12 +95,12 @@
                     <div>
                       <a-form-model-item prop="urgencyDegree" v-if="!isDisabled">
                         <a-select placeholder="紧急程度" style="width:360px;" allowClear v-model="form.urgencyDegree">
-                          <a-select-option :value="1">一般</a-select-option>
-                          <a-select-option :value="2">加急</a-select-option>
-                          <a-select-option :value="3">特急</a-select-option>
+                          <a-select-option :value="0">一般</a-select-option>
+                          <!-- <a-select-option :value="1">紧急</a-select-option> -->
+                          <a-select-option :value="2">紧急</a-select-option>
                         </a-select>
                       </a-form-model-item>
-                      <span v-else>{{ { 1: '一般', 2: '加急', 3: '特急' }[form.urgencyDegree] }}</span>
+                      <span v-else>{{ { 0: '一般', 1: '紧急', 2: '紧急' }[form.urgencyDegree] }}</span>
                     </div>
                     <span style="color:red;margin-left:20px;"
                       >注:谨慎选择紧急,必须当天到达,当天使用的才可以标记为紧急!</span
@@ -217,7 +217,7 @@
                 <span v-else>
                   {{
                     record.requestTime instanceof moment
-                      ? record.requestTime.format('YYYY-MM-DD HH:mm:ss')
+                      ? record.requestTime.format('YYYY-MM-DD HH:mm')
                       : record.requestTime
                   }}
                 </span>
@@ -409,7 +409,7 @@ export default {
       treeData: [],
       value: [],
       form: {
-        urgencyDegree: 1
+        urgencyDegree: 0
       },
       rules: {
         applyUser: [{ required: true, message: '请选择申请人' }],
@@ -561,7 +561,7 @@ export default {
 
       if (that.isAdd) {
         that.form = {
-          urgencyDegree: 1,
+          urgencyDegree: 0,
           applyUser: {
             depId: that.userInfo.departmentId,
             depName: that.userInfo.departmentName,
@@ -655,14 +655,15 @@ export default {
       that.$refs.ruleForm.validate(async valid => {
         if (valid) {
           let { depId, depName, userId, userName } = that.form.applyUser
-          let { id, applyUser, reason, remark, requestType, relatedNum, requestTime } = that.form
+          let { id, applyUser, reason, remark, requestType, relatedNum, requestTime,urgencyDegree } = that.form
           let baseInfo = {
             id,
             reason,
             remark,
             requestType,
             relatedNum,
-            // requestTime,
+            urgencyDegree,
+            requestTime,
             applyDepId: depId,
             applyDepName: depName,
             proposerId: userId,
@@ -672,7 +673,8 @@ export default {
           let arr = []
           that.dataSource.map(item => {
             let param = {
-              ...item
+              ...item,
+              urgencyDegree
             }
             param.requestTime = param.requestTime ? param.requestTime.format('YYYY-MM-DD HH:mm:ss') : undefined
             arr.push(param)
@@ -806,7 +808,9 @@ export default {
         current: 1,
         size: 50,
         materialCode: wd,
-        materialName: wd
+        materialName: wd,
+        auditStatus:3,// auditStatus审核状态：1未审核，2审批中，3已审核
+        isForbidden:2 // isForbidden是否禁用：1禁用，2启用
       }
       if (ischina(wd)) {
         _searchParam.materialCode = undefined

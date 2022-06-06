@@ -231,12 +231,12 @@ const columns = [
     scopedSlots: { customRender: 'approveStatus' },
     width: 120
   },
-  {
-    title: '备注',
-    dataIndex: 'remark',
-    width: 200,
-    scopedSlots: { customRender: 'remark' }
-  },
+  // {
+  //   title: '备注',
+  //   dataIndex: 'remark',
+  //   width: 200,
+  //   scopedSlots: { customRender: 'remark' }
+  // },
   {
     title: '制单人',
     dataIndex: 'createdName',

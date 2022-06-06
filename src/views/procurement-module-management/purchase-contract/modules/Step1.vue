@@ -246,18 +246,19 @@ export default {
     }
   },
   activated() {
+    debugger
     console.log('stop1 activated called...')
     const that = this
-    const { orderList, changeReason } = that.addForm.pick(that.addForm.submitParams, ['orderList', 'changeReason'])
-    that.orderList = orderList
+    const { orderList, changeReason,signDate } = that.addForm.pick(that.addForm.submitParams, ['orderList', 'changeReason','signDate'])
+    // that.orderList = orderList
     // that.changeReason = changeReason
     that.form = {
       changeReason
     }
     // console.log(JSON.stringify(that.form, null, 2))
     if (that.addForm.isAdd) {
-      let orderList = that.$_.cloneDeep(that.addForm.selectedRows || [])
-      that.orderList = orderList.map(o => {
+      let _orderList = that.$_.cloneDeep(that.addForm.selectedRows || [])
+      that.orderList = _orderList.map(o => {
         o.key = that._uuid()
         o.purchaseNum = o.requestNum || 0
         o._sourcePurchaseNum = o._sourcePurchaseNum || o.purchaseNum
@@ -266,50 +267,39 @@ export default {
 
         o.deliveryDate = moment(o.requestTime)
           .add('days', o.deliveryCycle)
-          .format('YYYY-MM-DD HH:mm:ss')
+          .format('YYYY-MM-DD')
         o.shelfLifeTime = moment(o.requestTime)
           .add('days', o.shelfLife)
-          .format('YYYY-MM-DD HH:mm:ss')
+          .format('YYYY-MM-DD')
 
         return o
       })
     } else {
-      that.orderList = that.$_.cloneDeep(orderList).map(o => {
+
+      let _orderList = that.$_.cloneDeep(orderList || []).map(o => {
         let obj = { ...o }
         obj.key = that._uuid()
         // o.purchaseNum = o.requestNum || 0
         // o.amount = Number(o.newPrice || 0) * o.purchaseNum
         obj._sourcePurchaseNum = obj._sourcePurchaseNum || obj.purchaseNum
         obj.amountText = that.$root._f('moneyFormatNumber')(obj.amount)
-        obj.isChange = 0
+        obj.isChange = obj.isChange || 0
 
-        o.deliveryDate = moment(o.requestTime)
-          .add('days', o.deliveryCycle)
-          .format('YYYY-MM-DD HH:mm:ss')
-        o.shelfLifeTime = moment(o.requestTime)
-          .add('days', o.shelfLife)
-          .format('YYYY-MM-DD HH:mm:ss')
+        obj.deliveryDate = moment(obj.requestTime || signDate)
+          .add('days', obj.deliveryCycle)
+          .format('YYYY-MM-DD')
+        obj.shelfLifeTime = moment(obj.requestTime || signDate)
+          .add('days', obj.shelfLife)
+          .format('YYYY-MM-DD')
         return obj
       })
+
+      that.orderList = _orderList.filter(o => +o.isChange === 0)
+
       if(that.addForm.isChange){
-        that.orderListForChange = that.$_.cloneDeep(orderList).map(o => {
-          let obj = { ...o }
-          obj.key = that._uuid()
-          // o.purchaseNum = o.requestNum || 0
-          // o.amount = Number(o.newPrice || 0) * o.purchaseNum
-          obj._sourcePurchaseNum = obj._sourcePurchaseNum || obj.purchaseNum
-          obj.amountText = that.$root._f('moneyFormatNumber')(obj.amount)
-          obj.isChange = 1
-  
-          o.deliveryDate = moment(o.requestTime)
-            .add('days', o.deliveryCycle)
-            .format('YYYY-MM-DD HH:mm:ss')
-          o.shelfLifeTime = moment(o.requestTime)
-            .add('days', o.shelfLife)
-            .format('YYYY-MM-DD HH:mm:ss')
-  
-          return obj
-        })
+        that.orderListForChange = _orderList.filter(o => +o.isChange === 1)
+      }else{
+        that.orderListForChange = []
       }
     }
     that.$nextTick(() => {
@@ -332,6 +322,9 @@ export default {
         that[keyName] = orderList
       } else if (type === 'del') {
         that[keyName] = orderList.filter(o => o.key !== record.key)
+        that.$nextTick(() => {
+          that.calc()
+        })
       } else if (type === 'refresh') {
         that.addForm.spinning = true
         purchaseContractOrderListRefresh({ requestId: record.requestId })
@@ -464,6 +457,7 @@ export default {
           if (valid) {
             let params = {
               orderList: [...that.orderList],
+              orderListForChange:[...that.orderListForChange],
               changeReason: that.form.changeReason,
               __calInfo: that.calInfo,
               totalAmount: that.calInfo.total

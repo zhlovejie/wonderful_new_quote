@@ -83,7 +83,8 @@
 
             <div class="content-p">二、付款方式</div>
             <div class="content-p p-text-index">
-              2.1.货款结算方式：现款现货/账期结算
+              
+              2.1.货款结算方式：{{ { 0: '现款现货', 1: '账期结算' }[detail.settlementMode] }}
             </div>
             <div class="content-p p-text-index">
               <div>2.2支付期限：一次性支付/分期支付</div>
@@ -102,7 +103,10 @@
                   &nbsp;&nbsp;付款周期：<span class="span-underline">{{ item.paymentDate }}</span>
                 </div>
               </div>
-              <div>经双方约定，货款结算方式为固定账期结算，详见双方签订的战略合作协议条款。</div>
+              <div>
+                <span v-if="+detail.settlementMode === 1">经双方约定，</span>
+                <span>货款结算方式为固定账期结算，详见双方签订的战略合作协议条款。</span>
+              </div>
             </div>
 
             <div class="content-p">三、技术标准约定</div>
@@ -256,6 +260,7 @@
                 <p>
                   供方代表签字：
                   <img
+                    v-if="detail.purchaseUserSeal"
                     style="height: 50px;width: auto;vertical-align: middle;"
                     :src="detail.purchaseUserSeal"
                     alt="采购人员章"
@@ -343,13 +348,13 @@ const productColumns = [
     scopedSlots: { customRender: 'materialName' }
   },
   {
-    title: '品牌',
+    title: '品牌型号',
     dataIndex: 'model'
   },
-  {
-    title: '型号',
-    dataIndex: 'specification'
-  },
+  // {
+  //   title: '型号',
+  //   dataIndex: 'specification'
+  // },
   {
     title: '单位',
     dataIndex: 'subUnit'
@@ -471,7 +476,7 @@ export default {
             result_detail.orderList = result_detail.orderList.map(o => {
               let obj = { ...o }
               obj.key = that._uuid()
-              obj.amountText = that.$root._f('moneyFormatNumber')(obj.amount)
+              obj.amountText = that.$root._f('moneyFormatNumber')(obj.amount + (obj.amount * Number(result_detail.materialRate || 0) / 100))
               obj.preDeliveryCycle = moment(obj.requestTime)
                 .add('days', obj.deliveryCycle)
                 .format('YYYY-MM-DD')
@@ -509,7 +514,7 @@ export default {
       // 验收标准
       let orderList = [...that.detail.orderList]
       for(let order of orderList){
-        let purchaseTestStandard = await that.getRecord(record)
+        let purchaseTestStandard = await that.getRecord(order)
         order.purchaseTestStandard = purchaseTestStandard
       }
 
