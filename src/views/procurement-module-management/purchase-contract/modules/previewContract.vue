@@ -82,9 +82,30 @@
               </div>
 
               <template slot="footer" slot-scope="currentPageData">
-                <span>合计：（人民币）{{ calInfo.totalUpper }} </span>
+                <div>
+                  <span>运费(人民币)：{{ calInfo.freightFullAmountWithTax | moneyFormatNumber }}</span>
+                  <span>(</span>
+                  <span>运费：{{ calInfo.freightFullAmount | moneyFormatNumber }}</span>
+                  <span>&nbsp;&nbsp;税率：{{ calInfo.freightRate || 0 }}%</span>
+                  <span>)</span>
+                </div>
+                <div>
+                  <span>物料(人民币)：{{ calInfo.materialFullAmountWithTax | moneyFormatNumber }}</span>
+                  <span>(</span>
+                  <span>物料：{{ calInfo.materialFullAmount | moneyFormatNumber }}</span>
+                  <span>&nbsp;&nbsp;税率：{{ calInfo.materialRate || 0 }}%</span>
+                  <span>)</span>
+                </div>
+                <div style="font-weight:700;">
+                  <span>合计(人民币)：{{ calInfo.totalUpper }}</span>
+                  <span style="margin:0 10px;">({{ calInfo.total | moneyFormatNumber }})</span>
+                  <span>此价格含税、含运费</span>
+                </div>
+
+
+                <!-- <span>合计：（人民币）{{ calInfo.totalUpper }} </span>
                 <span style="margin:0 10px;">({{ calInfo.total | moneyFormatNumber }})</span>
-                <span>此价格含税、含运费。</span>
+                <span>此价格含税、含运费。</span> -->
               </template>
             </a-table>
 
@@ -482,9 +503,7 @@ export default {
             result_detail.orderList = result_detail.orderList.map(o => {
               let obj = { ...o }
               obj.key = that._uuid()
-              obj.amountText = that.$root._f('moneyFormatNumber')(
-                obj.amount + (obj.amount * Number(result_detail.materialRate || 0)) / 100
-              )
+              obj.amountText = that.$root._f('moneyFormatNumber')( obj.amount )
               obj.preDeliveryCycle = moment(obj.requestTime)
                 .add('days', obj.deliveryCycle)
                 .format('YYYY-MM-DD')

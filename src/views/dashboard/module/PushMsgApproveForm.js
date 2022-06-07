@@ -30,6 +30,10 @@ import ApproveResearchCommissionBonus from '@/views/salary-management/commission
 
 import ApproveSaleCommissionBonus from '@/views/salary-management/commission/sale-commission-bonus/module/AddForm.vue'
 import ApproveSoftwareAndHardware from '@/views/salary-management/commission/softwareAndHardware/module/Formadd.vue'
+
+
+import ApproveProcurementApply from '@/views/procurement-module-management/apply/AddForm.vue'
+import ApprovePurchaseContract from '@/views/procurement-module-management/purchase-contract/modules/MsgView.vue'
 export default {
   //考勤模块
   42: ApproveBusinessTrip, //出差申请
@@ -106,5 +110,6 @@ export default {
   102: ApproveSaleCommissionBonus, // 销售提成奖金
   // 103: ApproveSalaryAccounting, // 薪资核算
   103: 'ROUTE:Salary_accounting', // 薪资核算
-
+  132:ApproveProcurementApply, // 采购管理-采购需求申请
+  161:ApprovePurchaseContract, // 采购合同
 }
