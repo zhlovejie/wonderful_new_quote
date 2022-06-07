@@ -28,6 +28,14 @@
             </a>
           </a-popover>
         </div>
+
+        <div slot="deliveryDate" slot-scope="text, record, index">
+          {{String(text).slice(0,10)}}
+        </div>
+        <div slot="shelfLifeTime" slot-scope="text, record, index">
+          {{String(text).slice(0,10)}}
+        </div>
+        
         <div slot="action" slot-scope="text, record, index">
           <a @click="doAction('view', record)">查看</a>
         </div>
@@ -83,11 +91,13 @@ const columns = [
   },
   {
     title: '预计到货日期',
-    dataIndex: 'deliveryDate'
+    dataIndex: 'deliveryDate',
+    scopedSlots: { customRender: 'deliveryDate' }
   },
   {
     title: '预计质保时间',
-    dataIndex: 'shelfLifeTime'
+    dataIndex: 'shelfLifeTime',
+    scopedSlots: { customRender: 'shelfLifeTime' }
   },
   {
     title: '验收标准',

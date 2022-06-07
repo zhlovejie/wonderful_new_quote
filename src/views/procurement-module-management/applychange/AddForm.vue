@@ -168,7 +168,7 @@
                   />
                 </a-form-model-item>
                 <span v-else>
-                  {{ record.requestNum }}
+                  {{ record.presentRequestNum }}
                 </span>
               </div>
               <div slot="requestTime" slot-scope="text, record, index">
@@ -358,10 +358,10 @@ const columns = [
     dataIndex: 'requestTime',
     scopedSlots: { customRender: 'requestTime' }
   },
-  {
-    title: '操作',
-    scopedSlots: { customRender: 'action' }
-  }
+  // {
+  //   title: '操作',
+  //   scopedSlots: { customRender: 'action' }
+  // }
 ]
 
 export default {
@@ -414,7 +414,8 @@ export default {
   computed: {
     modalTitle() {
       let type = this.type
-      return type === 'add' ? '新增' : type === 'edit' ? '修改' : type === 'view' ? '查看' : '审批'
+      
+      return (type === 'add' && this.detail.changeStatus) ? '变更需求' : type === 'edit' ? '修改' : type === 'view' ? '查看' : '审批'
     },
     isAdd() {
       return this.type === 'add'
@@ -573,7 +574,9 @@ export default {
           userId: result.proposerId,
           userName: result.proposerName
         },
-        requestTime: moment(result.requestTime)
+        requestTime: moment(result.requestTime),
+        reason:'',
+        remark:''
       }
       that.dataSource = [
         {

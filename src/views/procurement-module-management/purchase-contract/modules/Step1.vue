@@ -17,18 +17,23 @@
         </div>
 
         <div slot="purchaseNum" slot-scope="text, record, index">
-          <a-input-number
-            :disabled="addForm.isDisabled"
-            :key="record.key"
-            style="width:100px;"
-            placeholder="采购量"
-            :value="record.purchaseNum"
-            :min="record._sourcePurchaseNum"
-            :max="999999999999999"
-            :step="1"
-            :precision="0"
-            @change="e => handlePurchaseNumChange(e, record)"
-          />
+          <template v-if="addForm.isChange">
+            <span>{{text}}</span>
+          </template>
+          <template v-else>
+            <a-input-number
+              :disabled="addForm.isDisabled"
+              :key="record.key"
+              style="width:100px;"
+              placeholder="采购量"
+              :value="record.purchaseNum"
+              :min="record._sourcePurchaseNum"
+              :max="999999999999999"
+              :step="1"
+              :precision="0"
+              @change="e => handlePurchaseNumChange(e, record)"
+            />
+          </template>
         </div>
         <div slot="materialName" slot-scope="text, record, index">
           <a-popover :title="text" trigger="hover">
@@ -56,14 +61,16 @@
           </template>
         </div>
       </a-table>
-      <a-button
-        v-if="!addForm.isDisabled"
-        style="width: 100%"
-        type="dashed"
-        icon="plus"
-        @click="doAction('add', { key: 'orderList' })"
-        >添加</a-button
-      >
+      <div v-if="!addForm.isChange">
+        <a-button
+          v-if="!addForm.isDisabled"
+          style="width: 100%"
+          type="dashed"
+          icon="plus"
+          @click="doAction('add', { key: 'orderList' })"
+          >添加</a-button
+        >
+      </div>
 
       <template v-if="addForm.isChange">
         <div class="sub-title">变动部分</div>
@@ -138,7 +145,7 @@
         </h3>
       </div>
 
-      <div v-show="isPurchaseNumChange">
+      <div v-show="isPurchaseNumChange || addForm.isDisabled">
         <a-form-model-item
           prop="changeReason"
           label="变更原因"
@@ -148,7 +155,7 @@
             trigger: 'blur'
           }"
         >
-          <a-textarea placeholder="变更原因" :rows="3" v-model="form.changeReason" />
+          <a-textarea placeholder="变更原因" :rows="3" v-model="form.changeReason" :disabled="addForm.isDisabled"/>
         </a-form-model-item>
       </div>
     </a-form-model>
@@ -246,12 +253,10 @@ export default {
     }
   },
   activated() {
-    debugger
     console.log('stop1 activated called...')
     const that = this
-    const { orderList, changeReason,signDate } = that.addForm.pick(that.addForm.submitParams, ['orderList', 'changeReason','signDate'])
-    // that.orderList = orderList
-    // that.changeReason = changeReason
+    const { orderList,__isChange, changeReason,signDate } = that.addForm.pick(that.addForm.submitParams, ['orderList','__isChange', 'changeReason','signDate'])
+
     that.form = {
       changeReason
     }
@@ -267,39 +272,46 @@ export default {
 
         o.deliveryDate = moment(o.requestTime)
           .add('days', o.deliveryCycle)
-          .format('YYYY-MM-DD')
+          .format('YYYY-MM-DD HH:mm:ss')
         o.shelfLifeTime = moment(o.requestTime)
           .add('days', o.shelfLife)
-          .format('YYYY-MM-DD')
+          .format('YYYY-MM-DD HH:mm:ss')
 
         return o
       })
     } else {
-
-      let _orderList = that.$_.cloneDeep(orderList || []).map(o => {
-        let obj = { ...o }
-        obj.key = that._uuid()
-        // o.purchaseNum = o.requestNum || 0
-        // o.amount = Number(o.newPrice || 0) * o.purchaseNum
-        obj._sourcePurchaseNum = obj._sourcePurchaseNum || obj.purchaseNum
-        obj.amountText = that.$root._f('moneyFormatNumber')(obj.amount)
-        obj.isChange = obj.isChange || 0
-
-        obj.deliveryDate = moment(obj.requestTime || signDate)
-          .add('days', obj.deliveryCycle)
-          .format('YYYY-MM-DD')
-        obj.shelfLifeTime = moment(obj.requestTime || signDate)
-          .add('days', obj.shelfLife)
-          .format('YYYY-MM-DD')
-        return obj
-      })
-
-      that.orderList = _orderList.filter(o => +o.isChange === 0)
-
-      if(that.addForm.isChange){
-        that.orderListForChange = _orderList.filter(o => +o.isChange === 1)
+      debugger
+      if(__isChange){
+        that.orderList = that.$_.cloneDeep(orderList.filter(o => o.isChange === 0))
+        that.orderListForChange = that.$_.cloneDeep(orderList.filter(o => o.isChange === 1))
       }else{
-        that.orderListForChange = []
+        let _baseOrderList = that.$_.cloneDeep(orderList || []).map(o => {
+          let obj = { ...o }
+          obj.key = that._uuid()
+          // o.purchaseNum = o.requestNum || 0
+          // o.amount = Number(o.newPrice || 0) * o.purchaseNum
+          obj._sourcePurchaseNum = obj._sourcePurchaseNum || obj.purchaseNum
+          obj.amountText = that.$root._f('moneyFormatNumber')(obj.amount)
+          obj.isChange = obj.isChange || 0
+  
+          obj.deliveryDate = moment(obj.requestTime || signDate)
+            .add('days', obj.deliveryCycle)
+            .format('YYYY-MM-DD HH:mm:ss')
+          obj.shelfLifeTime = moment(obj.requestTime || signDate)
+            .add('days', obj.shelfLife)
+            .format('YYYY-MM-DD HH:mm:ss')
+          return obj
+        })
+  
+        that.orderList = _baseOrderList.map(o => {
+          return {...o,isChange:0,key:that._uuid()}
+        })
+  
+        if(that.addForm.isChange){
+          that.orderListForChange = _baseOrderList.map(o => {
+            return {...o,isChange:1,key:that._uuid()}
+          })
+        }
       }
     }
     that.$nextTick(() => {
@@ -339,6 +351,7 @@ export default {
                 o._sourcePurchaseNum = o._sourcePurchaseNum || o.purchaseNum
                 o.amount = Number(o.newPrice || 0) * o.purchaseNum
                 o.amountText = that.$root._f('moneyFormatNumber')(o.amount)
+                o.isChange = 1
                 return o
               })
             ]
@@ -456,8 +469,8 @@ export default {
         that.$refs.ruleForm.validate(valid => {
           if (valid) {
             let params = {
-              orderList: [...that.orderList],
-              orderListForChange:[...that.orderListForChange],
+              orderList: [...that.orderList,...that.orderListForChange],
+              __isChange:that.addForm.isChange,
               changeReason: that.form.changeReason,
               __calInfo: that.calInfo,
               totalAmount: that.calInfo.total

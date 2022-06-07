@@ -7,7 +7,7 @@
             <a-input placeholder="合同编号模糊查询" v-model="queryParam.contractNum" allowClear style="width: 160px" />
           </a-form-item>
           <a-form-item>
-            <a-input placeholder="采购需求单号模糊查询" v-model="queryParam.orderNum" allowClear style="width: 160px" />
+            <a-input placeholder="采购需求单号模糊查询" v-model="queryParam.requestApplyNum" allowClear style="width: 160px" />
           </a-form-item>
           <a-form-item>
             <a-input placeholder="供应商名称模糊查询" v-model="queryParam.supplierName" allowClear style="width: 160px" />
@@ -20,7 +20,7 @@
             <a-input placeholder="物料名称模糊查询" v-model="queryParam.materialName" allowClear style="width: 160px" />
           </a-form-item>
 
-          <a-form-item>
+          <a-form-item v-if="+activeKey === 0">
             <a-select placeholder="状态" style="width: 120px" allowClear v-model="queryParam.urgencyDegree">
               <a-select-option :value="0">待提交</a-select-option>
               <a-select-option :value="1">待审核</a-select-option>
@@ -71,7 +71,7 @@
           </div>
 
           <div slot="contractAmount" slot-scope="text, record, index">
-            {{ record.contractAmount | moneyFormatNumber }}
+            {{ record.totalAmount | moneyFormatNumber }}
           </div>
 
           <div slot="status" slot-scope="text, record, index">
@@ -179,7 +179,7 @@ const columns = [
   },
   {
     title: '合同总金额',
-    dataIndex: 'contractAmount',
+    dataIndex: 'totalAmount',
     scopedSlots: { customRender: 'contractAmount' }
   },
   {

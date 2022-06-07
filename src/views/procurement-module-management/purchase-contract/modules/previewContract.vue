@@ -3,7 +3,14 @@
     <div>
       <div class="top-ation clearfix margin-b">
         <a-button class="fl-r" type="primary" @click="goBackConstractList" icon="backward">返回</a-button>
-        <a :href="detail.contractUrl" target="_blank" class="ant-btn ant-btn-primary fl-r">导出成PDF</a>
+
+        <a
+          :href="detail.contractUrl"
+          target="_blank"
+          class="ant-btn ant-btn-primary fl-r"
+          :disabled="!detail.contractUrl"
+          >{{ detail.contractUrl ? '导出成PDF' : '尚未生成PDF' }}</a
+        >
       </div>
 
       <div class="contract-wrap" id="pdfDom">
@@ -83,7 +90,6 @@
 
             <div class="content-p">二、付款方式</div>
             <div class="content-p p-text-index">
-              
               2.1.货款结算方式：{{ { 0: '现款现货', 1: '账期结算' }[detail.settlementMode] }}
             </div>
             <div class="content-p p-text-index">
@@ -113,7 +119,7 @@
             <div class="content-p p-text-index">
               <div v-for="(item, idx) in detail.orderList" :key="idx">
                 <div>{{ idx + 1 }}.{{ item.materialName }}({{ item.materialCode }})</div>
-                <div style="margin-left:10px;">检验标准：{{item.purchaseTestStandard || '无'}}</div>
+                <div style="margin-left:10px;">检验标准：{{ item.purchaseTestStandard || '无' }}</div>
               </div>
             </div>
 
@@ -476,7 +482,9 @@ export default {
             result_detail.orderList = result_detail.orderList.map(o => {
               let obj = { ...o }
               obj.key = that._uuid()
-              obj.amountText = that.$root._f('moneyFormatNumber')(obj.amount + (obj.amount * Number(result_detail.materialRate || 0) / 100))
+              obj.amountText = that.$root._f('moneyFormatNumber')(
+                obj.amount + (obj.amount * Number(result_detail.materialRate || 0)) / 100
+              )
               obj.preDeliveryCycle = moment(obj.requestTime)
                 .add('days', obj.deliveryCycle)
                 .format('YYYY-MM-DD')
@@ -510,10 +518,10 @@ export default {
         .finally(() => {
           that.spinning = false
         })
-      
+
       // 验收标准
       let orderList = [...that.detail.orderList]
-      for(let order of orderList){
+      for (let order of orderList) {
         let purchaseTestStandard = await that.getRecord(order)
         order.purchaseTestStandard = purchaseTestStandard
       }
@@ -533,9 +541,9 @@ export default {
         .then(res => {
           if (Array.isArray(res.data.records) && res.data.records.length > 0) {
             let purchaseTestStandard = null
-            try{
+            try {
               purchaseTestStandard = res.data.records[0].purchaseTestStandard
-            }catch(err){
+            } catch (err) {
               console.error(err)
               purchaseTestStandard = null
             }
