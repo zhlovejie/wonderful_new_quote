@@ -30,7 +30,7 @@ export function refuellingAdd(parameter) {
     data: parameter
   })
 }
-// 换料单-根据单据id数组【idList】删除记录
+// 换料单-根据单据id删除记录
 export function refuellingDelete(parameter) {
   return axios({
     baseURL,
@@ -123,7 +123,7 @@ export function craftAdd(parameter) {
     data: parameter
   })
 }
-//工序变更单-根据单据id数组【idList】删除记录
+//工序变更单-根据单据id删除记录
 export function craftDelete(parameter) {
   return axios({
     baseURL,
@@ -178,3 +178,69 @@ export function getCraftFile(parameter) {
   })
 }
 /* 委外管理-加工需求变更单-工序变更单-End */
+
+/* 委外管理-补料单-Start */
+//补料单-列表
+export function replenishPageList(parameter) {
+  return axios({
+    baseURL,
+    url: '/outsource/feed-change-appy/listFeedChangeApply',
+    method: 'get',
+    params: parameter
+  })
+}
+//补料单-详情
+export function replenishDetail(parameter) {
+  return axios({
+    baseURL,
+    url: '/outsource/feed-change-appy/getFeedChangeDetail',
+    method: 'get',
+    params: parameter
+  })
+}
+//补料单-新增
+export function replenishAdd(parameter) {
+  return axios({
+    baseURL,
+    url: '/outsource/feed-change-appy/saveFeedChange',
+    method: 'post',
+    data: parameter
+  })
+}
+//补料单-修改
+export function replenishEdit(parameter) {
+  return axios({
+    baseURL,
+    url: '/outsource/feed-change-appy/updateFeedChange',
+    method: 'post',
+    data: parameter
+  })
+}
+//补料单-根据单据id删除记录
+export function replenishDelete(parameter) {
+  return axios({
+    baseURL,
+    url: `/outsource/feed-change-appy/remove?${parameter}`,
+    method: 'post',
+    data: {}
+  })
+}
+//补料单-根据单据id撤回记录
+export function replenishWithdraw(parameter) {
+  return axios({
+    baseURL,
+    url: `/outsource/feed-change-appy/withdraw?id=${parameter.id}`,
+    method: 'post',
+    data: {}
+  })
+}
+//补料单-审批
+export function replenishApprove(parameter) {
+  return axios({
+    baseURL,
+    url: '/outsource/feed-change-appy/approve',
+    method: 'post',
+    data: parameter
+  })
+}
+/* 委外管理-补料单-End */

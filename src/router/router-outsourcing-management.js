@@ -41,6 +41,17 @@ export default { //委外管理
       },
     },
     {
+      path: '/router-outsourcing-management/replenish',
+      name: 'outsourcing-replenish',
+      component: () => import('@/views/router-outsourcing-management/replenish/List'),
+      meta: {
+        title: '补料单',
+        icon: 'setting',
+        keepAlive: false,
+        permission: ['permission']
+      },
+    },
+    {
       path: '/router-outsourcing-management/order-change',
       name: 'outsourcing-order-change',
       component: RouteView,

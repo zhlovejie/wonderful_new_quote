@@ -43,14 +43,14 @@
 
     <div class="__hd">原料等用品信息</div>
     <div class="__bd">
-      <a-table :columns="columns" :dataSource="detail.materialVoList" :scroll="{ x: 1230}" :pagination="false">
+      <a-table :columns="columns" :dataSource="detail.materialVoList" :scroll="{ x: 1230 }" :pagination="false">
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
         <div slot="materialName" slot-scope="text, record, index">
           <a-form-model-item
             v-if="bEdit && record.bAdd"
-            :prop="`record.materialCode`"
+            :prop="'materialVoList.' + index + '.materialCode'"
             :rules="{ required: true, message: '请选择原料信息', target: ['change'] }"
           >
             <!-- materialType：1是常规的物料基本数据 2是成品物料基本数据 0是两者均查 -->
@@ -58,7 +58,7 @@
               style="width:150px;"
               :materialType="1"
               :materialInfo="{ materialCode: record.materialCode }"
-              v-model="record.materialCode"
+              :value="record.materialCode"
               @change="item => proMaterialChange(item, index)"
             />
           </a-form-model-item>
@@ -87,10 +87,10 @@
           </span>
         </div>
         <!-- 是否需要付费(1:是,2:否) -->
-        <div slot="payType" slot-scope="text, record">
+        <div slot="payType" slot-scope="text, record, index">
           <a-form-model-item
             v-if="bEdit && (record.bAdd || +record.state === 2)"
-            :prop="`record.payType`"
+            :prop="'materialVoList.' + index + '.payType'"
             :rules="{ required: true, message: '请选择是否需要付费' }"
           >
             <!-- @change="onSelPayType($event, index)" -->
@@ -103,20 +103,16 @@
             {{ { 1: '是', 2: '否' }[record.payType] || '未知' }}
           </span>
         </div>
-        <div slot="needCount" slot-scope="text, record">
+        <div slot="needCount" slot-scope="text, record, index">
           <a-form-model-item
             v-if="bEdit && record.bAdd"
-            :prop="`record.needCount`"
+            :prop="'materialVoList.' + index + '.needCount'"
             :rules="{ required: true, message: '请输入需求数量' }"
           >
-            <a-input-number
-              :step="1"
-              v-model="record.needCount"
-              placeholder="需求数量"
-            />
+            <a-input-number :step="1" v-model="record.needCount" placeholder="需求数量" />
           </a-form-model-item>
           <span v-else>
-             {{record.needCount}}
+            {{ record.needCount }}
           </span>
         </div>
         <div slot="changeAmount" slot-scope="text, record, index">
@@ -125,9 +121,8 @@
               style="width:130px;"
               :step="1"
               :precision="2"
-              :value="record.changeAmount"
+              v-model="record.changeAmount"
               placeholder="请输入变更金额"
-              @change="val => handleNumChange(index, val)"
             />
             <a type="primary" class="del_a" v-if="record.bAdd" @click="doItemAction('del', record, index)">删除</a>
           </a-form-model-item>
@@ -141,7 +136,7 @@
 
     <div class="__hd">送取信息</div>
     <div class="__bd">
-      <a-table :columns="sendColumns" :dataSource="detail.sendTakeVoList" :pagination="false" :scroll="{ x: 1100}">
+      <a-table :columns="sendColumns" :dataSource="detail.sendTakeVoList" :pagination="false" :scroll="{ x: 1100 }">
         <div slot="order" slot-scope="text, record, index">
           <span>{{ index + 1 }}</span>
         </div>
@@ -162,9 +157,8 @@
               style="width:130px;"
               :step="1"
               :precision="2"
-              :value="record.changeAmount"
+              v-model="record.changeAmount"
               placeholder="请输入变更金额"
-              @change="val => sendNumChange(index, val)"
             />
             <span v-else>{{ record.changeAmount }}</span>
           </a-form-model-item>
@@ -295,7 +289,7 @@ export default {
   data() {
     return {
       columns,
-      sendColumns:columns.filter(item => item.title !== '所需数量'),
+      sendColumns: columns.filter(item => item.title !== '所需数量'),
       detail: {}
     }
   },
@@ -358,20 +352,6 @@ export default {
     async query(record) {
       this.detail = { ...record }
     },
-    //原料-变更金额
-    handleNumChange(index, val) {
-      const that = this
-      let materialVoList = [...that.detail.materialVoList]
-      let target = materialVoList[index]
-      target.changeAmount = val
-    },
-    //送取-变更金额
-    sendNumChange(index, val) {
-      const that = this
-      let sendTakeVoList = [...that.detail.sendTakeVoList]
-      let target = sendTakeVoList[index]
-      target.changeAmount = val
-    },
     //新增的模具信息
     proMaterialChange(item, index) {
       console.log('换料后成品物品信息-item:', item)
@@ -388,6 +368,8 @@ export default {
         dataItem.specification = modelType
         dataItem.subUnit = materialUnit
         dataItem.type = type
+        dataItem.needCount = 1
+        dataItem.changeAmount = 0
         list[index] = { ...dataItem, ...item, typeText: { 1: '原料', 2: '模具' }[type] || '未知' }
       }
     },
