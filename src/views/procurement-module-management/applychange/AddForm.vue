@@ -740,10 +740,10 @@ export default {
           requestType: requestType,
           requestTypeText: requestTypeItem.text,
           __isRelated: requestTypeItem && requestTypeItem.text.includes('销售订单'),
-          unsafetyInventory: 2, //是否大于安全库存：1是，2否
+          unsafetyInventory: 2, //是否大于最大采购量：1是，2否
           materialId: undefined,
           requestNum: 0, //需求数量
-          inventory: 0, //安全库存
+          inventory: 0, //最大采购量
           requestTime
         })
         that.dataSource = dataSource
@@ -918,9 +918,9 @@ export default {
       target.unsafetyInventory = +v > +target.__maxBuyNumber ? 1 : 2
 
       if (target.unsafetyInventory === 1) {
-        let msg = `物料【${target.materialName}】的安全库存为【${target.__maxBuyNumber}】，本次采购需求量已超安全库存，确认需求超量采购吗？`
+        let msg = `物料【${target.materialName}】的最大采购量为【${target.__maxBuyNumber}】，本次采购需求量已超最大采购量，确认需求超量采购吗？`
         that.$confirm({
-          title: '安全库存提示',
+          title: '最大采购量提示',
           content: h => {
             return h('div', { style: { color: 'red' } }, msg)
           },

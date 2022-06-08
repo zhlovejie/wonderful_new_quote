@@ -34,6 +34,9 @@ import ApproveSoftwareAndHardware from '@/views/salary-management/commission/sof
 
 import ApproveProcurementApply from '@/views/procurement-module-management/apply/AddForm.vue'
 import ApprovePurchaseContract from '@/views/procurement-module-management/purchase-contract/modules/MsgView.vue'
+
+import ApproveProcurementApplyChange from '@/views/procurement-module-management/applychange/AddForm.vue'
+
 export default {
   //考勤模块
   42: ApproveBusinessTrip, //出差申请
@@ -111,5 +114,6 @@ export default {
   // 103: ApproveSalaryAccounting, // 薪资核算
   103: 'ROUTE:Salary_accounting', // 薪资核算
   132:ApproveProcurementApply, // 采购管理-采购需求申请
+  160:ApproveProcurementApplyChange,// 变更采购需求单
   161:ApprovePurchaseContract, // 采购合同
 }

@@ -38,9 +38,9 @@
             <a-button type="primary" icon="search" @click="openSearch">筛选</a-button>
           </a-form-item>
 
-          <a-form-item style="float:right;">
+          <!-- <a-form-item style="float:right;">
             <a-button type="primary" icon="plus" @click="doAction('add', null)">新增</a-button>
-          </a-form-item>
+          </a-form-item> -->
         </a-form>
       </div>
 
