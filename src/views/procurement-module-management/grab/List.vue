@@ -55,17 +55,32 @@
           :defaultActiveKey="activeKey"
           @change="tabChange"
         >
+          <template v-if="$auth('quotation:qiangdan')">
           <a-tab-pane tab="待抢单" :key="1" />
+          </template>
+          <template v-if="$auth('quotation:paidan')">
           <a-tab-pane tab="已派单" :key="2" />
+          </template>
+          <template v-if="$auth('quotation:gongshi')">
           <a-tab-pane tab="公示中" :key="3" />
-          <!-- <a-tab-pane tab="我的" :key="9" /> -->
-          <!-- <template v-if="$auth('quotation:approval')"> -->
+          </template>
+          
+          <template v-if="$auth('quotation:aapproval')">
             <a-tab-pane tab="待审核" :key="4" />
+          </template>
+          <template v-if="$auth('quotation:pass')">
             <a-tab-pane tab="通过" :key="5" />
+          </template>
+          <template v-if="$auth('quotation:reject')">
             <a-tab-pane tab="不通过" :key="6" />
-          <!-- </template> -->
+          </template>
+
+          <template v-if="$auth('quotation:aexceptioncase')">
           <a-tab-pane tab="待处理报价异常单" :key="7" />
+          </template>
+          <template v-if="$auth('quotation:bexceptioncase')">
           <a-tab-pane tab="已处理报价异常单" :key="8" />
+          </template>
         </a-tabs>
 
         <template v-if="[1,2].includes(activeKey)">
