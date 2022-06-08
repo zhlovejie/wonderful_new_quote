@@ -25,9 +25,8 @@
           </a-form-item>
           <a-form-item>
             <a-select placeholder="紧急程度" style="width: 150px" allowClear v-model="queryParam.urgencyDegree">
-              <a-select-option :value="1">一般</a-select-option>
-              <a-select-option :value="2">加急</a-select-option>
-              <a-select-option :value="3">特急</a-select-option>
+              <a-select-option :value="0">一般</a-select-option>
+              <a-select-option :value="2">紧急</a-select-option>
             </a-select>
           </a-form-item>
 
