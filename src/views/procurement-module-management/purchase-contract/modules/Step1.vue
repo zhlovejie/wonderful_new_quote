@@ -125,18 +125,18 @@
       </template>
       <div class="calc-wrapper sub-title">
         <div>
-          <span>运费(人民币)：{{ calInfo.freightFullAmountWithTax | moneyFormatNumber }}</span>
-          <span>(</span>
+          <span>运费(人民币)：{{ calInfo.freightFullAmount | moneyFormatNumber }}</span>
+          <!-- <span>(</span>
           <span>运费：{{ calInfo.freightFullAmount | moneyFormatNumber }}</span>
           <span>税率：{{ calInfo.freightRate }}%</span>
-          <span>)</span>
+          <span>)</span> -->
         </div>
         <div>
-          <span>物料(人民币)：{{ calInfo.materialFullAmountWithTax | moneyFormatNumber }}</span>
-          <span>(</span>
+          <span>物料(人民币)：{{ calInfo.materialFullAmount | moneyFormatNumber }}</span>
+          <!-- <span>(</span>
           <span>物料：{{ calInfo.materialFullAmount | moneyFormatNumber }}</span>
           <span>税率：{{ calInfo.materialRate }}%</span>
-          <span>)</span>
+          <span>)</span> -->
         </div>
         <h3>
           <span>合计(人民币)：{{ calInfo.totalUpper }}</span>
@@ -145,7 +145,8 @@
         </h3>
       </div>
 
-      <div v-show="isPurchaseNumChange || addForm.isDisabled">
+      <!-- <div v-show="isPurchaseNumChange || addForm.isDisabled"> -->
+      <div>
         <a-form-model-item
           prop="changeReason"
           label="变更原因"
@@ -170,7 +171,7 @@ import { turnTheCapital } from '@/api/contractListManagement'
 import { purchaseContractOrderListRefresh } from '@/api/procurementModuleManagement'
 import SelectOrder from './SelectOrder'
 import moment from 'moment'
-const columns = [
+let base_columns = [
   {
     title: '序号',
     scopedSlots: { customRender: 'order' },
@@ -232,8 +233,9 @@ export default {
   },
   inject: ['addForm'],
   data() {
+    this.handlePurchaseNumChange = this.$_.debounce(this.handlePurchaseNumChange, 800)
     return {
-      columns,
+      // columns,
       form: {
         changeReason: ''
       },
@@ -250,6 +252,13 @@ export default {
       let case1 = !!this[keyName].find(o => o._sourcePurchaseNum !== o.purchaseNum)
       console.log(case1)
       return case1
+    },
+    columns(){
+      let _base_columns = [...base_columns]
+      if(this.addForm.isDisabled){
+        return _base_columns.slice(0,-1)
+      }
+      return _base_columns
     }
   },
   activated() {
@@ -280,7 +289,6 @@ export default {
         return o
       })
     } else {
-      debugger
       if(__isChange){
         that.orderList = that.$_.cloneDeep(orderList.filter(o => o.isChange === 0))
         that.orderListForChange = that.$_.cloneDeep(orderList.filter(o => o.isChange === 1))
@@ -393,6 +401,10 @@ export default {
     },
     handlePurchaseNumChange(val, record) {
       const that = this
+      if(+val < +record._sourcePurchaseNum){
+        that.$message.info(`采购数量必须大于需求数量`)
+        return
+      }
       let keyName = that.getKeyName(record.key)
       let orderList = [...that[keyName]]
       let target = orderList.find(o => o.key === record.key)

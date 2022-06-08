@@ -74,7 +74,7 @@
             {{ index + 1 }}
           </div>
           <div slot="urgencyDegree" slot-scope="text, record, index">
-            {{ { 1: '一般', 2: '加急', 3: '特急' }[text] }}
+            {{ { 0: '一般', 1: '紧急', 2: '紧急',3:'紧急' }[text] }}
           </div>
 
           <div slot="approveStatus" slot-scope="text, record, index">

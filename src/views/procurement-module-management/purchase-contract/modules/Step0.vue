@@ -54,7 +54,7 @@
             </td>
             <td>
               <a-form-model-item prop="materialRate">
-                {{ form.materialRate }}
+                <span>{{ form.materialRate }}%</span>
                 <!-- <a-input-number
                   style="width:100%;"
                   v-model="form.materialRate"
@@ -129,7 +129,8 @@
                   trigger: 'blur'
                 }"
               >
-                <a-input-number
+                <span>{{form.freightRate}}%</span>
+                <!-- <a-input-number
                   v-if="+form.freightType === 1"
                   :disabled="addForm.isDisabled"
                   style="width:100%;"
@@ -139,7 +140,7 @@
                   :step="1"
                   :precision="0"
                 />
-                <span v-else>无</span>
+                <span v-else>无</span> -->
               </a-form-model-item>
             </td>
 

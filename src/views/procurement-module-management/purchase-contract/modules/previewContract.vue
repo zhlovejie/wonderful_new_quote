@@ -83,18 +83,18 @@
 
               <template slot="footer" slot-scope="currentPageData">
                 <div>
-                  <span>运费(人民币)：{{ calInfo.freightFullAmountWithTax | moneyFormatNumber }}</span>
-                  <span>(</span>
+                  <span>运费(人民币)：{{ calInfo.freightFullAmount | moneyFormatNumber }}</span>
+                  <!-- <span>(</span>
                   <span>运费：{{ calInfo.freightFullAmount | moneyFormatNumber }}</span>
                   <span>&nbsp;&nbsp;税率：{{ calInfo.freightRate || 0 }}%</span>
-                  <span>)</span>
+                  <span>)</span> -->
                 </div>
                 <div>
-                  <span>物料(人民币)：{{ calInfo.materialFullAmountWithTax | moneyFormatNumber }}</span>
-                  <span>(</span>
+                  <span>物料(人民币)：{{ calInfo.materialFullAmount | moneyFormatNumber }}</span>
+                  <!-- <span>(</span>
                   <span>物料：{{ calInfo.materialFullAmount | moneyFormatNumber }}</span>
                   <span>&nbsp;&nbsp;税率：{{ calInfo.materialRate || 0 }}%</span>
-                  <span>)</span>
+                  <span>)</span> -->
                 </div>
                 <div style="font-weight:700;">
                   <span>合计(人民币)：{{ calInfo.totalUpper }}</span>
@@ -617,7 +617,7 @@ export default {
         materialRate: _materialRate,
         new_materialRate
       }
-      let total = calInfo.freightFullAmountWithTax + calInfo.materialFullAmountWithTax
+      let total = calInfo.freightFullAmount + calInfo.materialFullAmount
       let totalUpper = await turnTheCapital({ money: total }).then(res => res.data)
       calInfo = {
         ...calInfo,

@@ -148,13 +148,15 @@
               </div>
 
               <div slot="specification" slot-scope="text, record, index">
-                <a-popover :title="text" trigger="hover">
+                <a-popover title="物料信息" trigger="hover" style="max-width:600px;">
                   <template slot="content">
-                    <p>物料名称：{{ record.materialName }}</p>
-                    <p>物料代码：{{ record.materialCode }}</p>
-                    <p>规格型号：{{ record.materialModelType }}</p>
-                    <p>单位：{{ record.mainUnit }}</p>
-                    <p>路径：{{ record.materialRoute }}</p>
+                    <div style="max-width:600px;">
+                      <p>物料名称：{{ record.materialName }}</p>
+                      <p>物料代码：{{ record.materialCode }}</p>
+                      <p>规格型号：{{ record.materialModelType }}</p>
+                      <p>单位：{{ record.mainUnit }}</p>
+                      <p>路径：{{ record.materialRoute }}</p>
+                    </div>
                   </template>
                   <a href="javascript:void(0);">
                     查看

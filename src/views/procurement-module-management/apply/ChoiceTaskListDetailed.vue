@@ -49,8 +49,7 @@
           :pagination="pagination"
           :loading="loading"
           @change="handleTableChange"
-          size="small"
-          :scroll="{x:1600}"
+
         >
           <div slot="order" slot-scope="text, record, index">
             {{ index + 1 }}
@@ -80,7 +79,6 @@
             :dataSource="record.productInfoList"
             :pagination="false"
             size="small"
-            :scroll="{x:1600}"
           >
             <div slot="order" slot-scope="text, record, index">
               <span>{{ index + 1 }}</span>
@@ -205,13 +203,13 @@ export default {
         {
           title: '配件清单编号',
           dataIndex: 'accessoriesNum',
-          width: 130
+          width: 150
         },
         {
           title: '任务单编号',
           dataIndex: 'taskDocumentNum',
           scopedSlots: { customRender: 'taskDocumentNum' },
-          width: 130
+          width: 150
         },
         {
           title: '客户名称',
@@ -224,7 +222,7 @@ export default {
         {
           title: '销售负责人',
           dataIndex: 'saleUserName',
-          width: 100
+          width: 110
         },
         {
           title: '售后人员',
