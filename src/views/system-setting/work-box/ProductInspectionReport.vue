@@ -192,20 +192,21 @@ export default {
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
     },
-    viewFormat(record) {
-      let url = String(record.fileUrl)
-      let pdfUrl = String(record.filePdf)
+    viewFormat(record = {}) {
+      if (!(record && (record.fileUrl || record.filePdf))) {
+        return '#'
+      }
+      let url = String(record.fileUrl || record.filePdf)
+      let _suffix = url.slice(url.lastIndexOf('.')).toLocaleLowerCase()
+      let isWord = ['.doc', '.docx', '.xls', '.xlsx'].some(suffix => suffix === _suffix)
+      let isPdf = _suffix === '.pdf'
+      let isImage = ['.png', '.jpg', 'jpeg', '.gif', '.bmp'].some(suffix => suffix === _suffix)
 
-      let isWord = url => ['.doc', '.docx', '.xls', '.xlsx'].some(suffix => url.endsWith(suffix))
-      let isPdf = url => url.endsWith('.pdf')
-      let isImage = url => ['.png', '.jpg', 'jpeg', '.gif', '.bmp'].some(suffix => url.endsWith(suffix))
-      if (url) {
-        if (isPdf(url) || isImage(url)) {
-          return url
-        }
-        if (isWord(url)) {
-          return isPdf(pdfUrl) ? pdfUrl : `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(url)}`
-        }
+      if (isPdf || isImage) {
+        return url
+      }
+      if (isWord) {
+        return `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(url)}`
       }
       return '#'
     }

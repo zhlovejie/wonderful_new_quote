@@ -66,29 +66,29 @@ const columns = [
     title: '序号',
     key: 'order',
     width: '70px',
-    scopedSlots: { customRender: 'order' },
+    scopedSlots: { customRender: 'order' }
   },
   {
     align: 'center',
     title: '名称',
-    dataIndex: 'fileName',
+    dataIndex: 'fileName'
   },
   {
     align: 'center',
     title: '操作人',
-    dataIndex: 'modifierName',
+    dataIndex: 'modifierName'
   },
   {
     align: 'center',
     title: '操作时间',
-    dataIndex: 'modifierTime',
+    dataIndex: 'modifierTime'
   },
   {
     align: 'center',
     title: '操作',
     key: 'action',
-    scopedSlots: { customRender: 'action' },
-  },
+    scopedSlots: { customRender: 'action' }
+  }
 ]
 
 export default {
@@ -97,7 +97,7 @@ export default {
     STable,
     //Modal,
     //Preview,
-    ToolBoxCommonUploadForm,
+    ToolBoxCommonUploadForm
   },
   data() {
     return {
@@ -106,21 +106,21 @@ export default {
       // 查询参数
       queryParam: {
         type: 5,
-        toolType: 1,
+        toolType: 1
       },
       // 表头
       columns: columns,
       // 初始化加载 必须为 Promise 对象
-      loadData: (parameter) => {
+      loadData: parameter => {
         return getFileManagementList(Object.assign(parameter, this.queryParam))
-          .then((res) => {
+          .then(res => {
             return res
           })
-          .catch((error) => {
+          .catch(error => {
             this.loading = false
             console.error(error)
           })
-      },
+      }
     }
   },
   methods: {
@@ -131,13 +131,13 @@ export default {
           ? {
               id: record.id,
               fileName: record.fileName,
-              fileUrl: record.fileUrl,
+              fileUrl: record.fileUrl
             }
           : {}
         that.$refs.toolBoxCommonUploadForm.query(type, _record, 5, 1)
       } else if (type === 'del') {
         delFileManagement({ id: record.id })
-          .then((data) => {
+          .then(data => {
             if (data.code == 200) {
               that.$message.success('删除成功')
               that.$refs.table.refresh(true)
@@ -145,7 +145,7 @@ export default {
               that.$message.error(data.msg)
             }
           })
-          .catch((err) => {
+          .catch(err => {
             console.log(err)
           })
       }
@@ -162,25 +162,26 @@ export default {
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
     },
-    viewFormat(record) {
-      let url = String(record.fileUrl)
-      let pdfUrl = String(record.filePdf)
-      let isWord = (url) => ['.doc', '.docx', '.xls', '.xlsx'].some((suffix) => url.endsWith(suffix))
-      let isPdf = (url) => url.endsWith('.pdf')
-      let isImage = (url) => ['.png', '.jpg', 'jpeg', '.gif', '.bmp'].some((suffix) => url.endsWith(suffix))
-      if (url) {
-        if (isPdf(url) || isImage(url)) {
-          return url
-        }
-        if (isWord(url)) {
-          return isPdf(pdfUrl) ? pdfUrl : `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(url)}`
-        }
+    viewFormat(record = {}) {
+      if (!(record && (record.fileUrl || record.filePdf))) {
+        return '#'
+      }
+      let url = String(record.fileUrl || record.filePdf)
+      let _suffix = url.slice(url.lastIndexOf('.')).toLocaleLowerCase()
+      let isWord = ['.doc', '.docx', '.xls', '.xlsx'].some(suffix => suffix === _suffix)
+      let isPdf = _suffix === '.pdf'
+      let isImage = ['.png', '.jpg', 'jpeg', '.gif', '.bmp'].some(suffix => suffix === _suffix)
+
+      if (isPdf || isImage) {
+        return url
+      }
+      if (isWord) {
+        return `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(url)}`
       }
       return '#'
-    },
-  },
+    }
+  }
 }
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>
