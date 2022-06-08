@@ -107,7 +107,8 @@ export function findApprovedNodeListByMaterial(parameter) {
 export function findApprovedNodeListdep(parameter) {
   return axios({
     baseURL: system.materialBaseUrl,
-    url: '/common/findApprovedNodeDeptList',
+    // url: '/common/findApprovedNodeDeptList',
+    url: '/common/findApprovedNodeList',
     method: 'get',
     params: parameter
   })
