@@ -3,7 +3,15 @@
     <a-form-model ref="ruleForm" :model="form" :rules="rules" layout="inline">
       <template v-if="settlementMode === 0">
         <h3>现款现货</h3>
-        <a-form-model-item label="全款付款金额(元)" prop="fullTotalMoney">
+
+        <a-form-model-item v-if="!addForm.isDisabled">
+          <a-radio-group v-model="form.settlementModeType" >
+            <a-radio :value="0">全款</a-radio>
+            <a-radio :value="1">付款</a-radio>
+          </a-radio-group>
+        </a-form-model-item>
+
+        <a-form-model-item v-if="form.settlementModeType === 0" label="全款付款金额(元)" prop="fullTotalMoney">
           <a-input-number
             :disabled="addForm.isDisabled"
             style="width:200px;"
@@ -14,24 +22,8 @@
             @change="handleFullTotalMoney"
           />
         </a-form-model-item>
-      </template>
 
-      <template v-else>
-        <h3>账期结算</h3>
-        <div style="display:flex;">
-          <a-form-model-item label="票到付款周期" prop="paymentCycle">
-            <a-input-number
-              :disabled="addForm.isDisabled"
-              style="width:200px;"
-              v-model="form.paymentCycle"
-              :min="1"
-              :step="1"
-              :precision="0"
-            />
-          </a-form-model-item>
-          <span style="line-height:36px;">天</span>
-        </div>
-        <a-table :columns="columns" :dataSource="form.settlementList" :pagination="false" size="small">
+        <a-table v-if="form.settlementModeType === 1" :columns="columns" :dataSource="form.settlementList" :pagination="false" size="small">
           <!-- :rowSelection="{ onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }" -->
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
@@ -70,6 +62,25 @@
             </a-form-model-item>
           </div>
         </a-table>
+
+      </template>
+
+      <template v-else>
+        <h3>账期结算</h3>
+        <div style="display:flex;">
+          <a-form-model-item label="票到付款周期" prop="paymentCycle">
+            <a-input-number
+              :disabled="addForm.isDisabled"
+              style="width:200px;"
+              v-model="form.paymentCycle"
+              :min="1"
+              :step="1"
+              :precision="0"
+            />
+          </a-form-model-item>
+          <span style="line-height:36px;">天</span>
+        </div>
+        
       </template>
 
     </a-form-model>

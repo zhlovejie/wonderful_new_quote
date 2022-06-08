@@ -782,11 +782,11 @@ export default {
           break
       }
     },
-    relatedNumCallback({orderNum,contractNum,customerName}) {
+    relatedNumCallback({contractId,contractNum,customerName}) {
       const that = this
       that.form = {
         ...that.form,
-        relatedId:orderNum,
+        relatedId:contractId,
         relatedNum: contractNum,
         relatedNumText:customerName
       }
