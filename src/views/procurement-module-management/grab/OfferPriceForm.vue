@@ -418,7 +418,6 @@ export default {
   methods: {
     async query(type, record) {
       const that = this
-      debugger
       that.type = type
       that.record = { ...record }
       that.visible = true
@@ -746,6 +745,7 @@ export default {
             that.handleCancel()
             return
           }
+          console.log(JSON.stringify(params,null,2))
           that.spinning = true
           quotationAdd(params)
             .then(res => {

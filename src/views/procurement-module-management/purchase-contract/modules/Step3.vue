@@ -18,10 +18,12 @@
         <div slot="materialName" slot-scope="text, record, index">
           <a-popover :title="text" trigger="hover">
             <template slot="content">
-              <p>物料名称：{{ record.materialName }}</p>
-              <p>物料代码：{{ record.materialCode }}</p>
-              <p>规格型号：{{ record.specification }}</p>
-              <p>单位：{{ record.subUnit }}</p>
+              <div style="max-width:450px;">
+                <p>物料名称：{{ record.materialName }}</p>
+                <p>物料代码：{{ record.materialCode }}</p>
+                <p>规格型号：{{ record.specification }}</p>
+                <p>单位：{{ record.subUnit }}</p>
+              </div>
             </template>
             <a href="javascript:void(0);">
               {{ text }}
@@ -30,12 +32,12 @@
         </div>
 
         <div slot="deliveryDate" slot-scope="text, record, index">
-          {{String(text).slice(0,10)}}
+          {{ String(text).slice(0, 10) }}
         </div>
         <div slot="shelfLifeTime" slot-scope="text, record, index">
-          {{String(text).slice(0,10)}}
+          {{ String(text).slice(0, 10) }}
         </div>
-        
+
         <div slot="action" slot-scope="text, record, index">
           <a @click="doAction('view', record)">查看</a>
         </div>

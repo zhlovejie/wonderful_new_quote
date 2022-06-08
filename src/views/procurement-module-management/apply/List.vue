@@ -74,7 +74,7 @@
             {{ index + 1 }}
           </div>
           <div slot="urgencyDegree" slot-scope="text, record, index">
-            {{ { 0: '一般', 1: '紧急', 2: '紧急',3:'紧急' }[text] }}
+            {{ { 0: '一般', 1: '紧急', 2: '紧急', 3: '紧急' }[text] }}
           </div>
 
           <div slot="approveStatus" slot-scope="text, record, index">
@@ -90,7 +90,9 @@
               <!-- <template v-if="+record.approveStatus === 1 && +record.createdId === +userInfo.id"> -->
               <template
                 v-if="
-                  (+record.approveStatus === 1 || +record.approveStatus === 2) && +record.createdId === +userInfo.id
+                  (+record.approveStatus === 1 || +record.approveStatus === 2) 
+                  && +record.createdId === +userInfo.id
+                  && [1,2,3].includes(+record.purchaseProgress)
                 "
               >
                 <a-divider type="vertical" />
@@ -102,7 +104,7 @@
                 <!-- <a-divider type="vertical" />
                 <a @click="doAction('reject',record)">驳回</a> -->
 
-                <template v-if="[3, 4, 5, 6, 7, 8].includes(+record.purchaseProgress)">
+                <template v-if="[4, 5, 6, 7, 8, 9].includes(+record.purchaseProgress)">
                   <a-divider type="vertical" />
 
                   <a-popover title="选择变更类型">
@@ -142,7 +144,7 @@
             <template v-if="+activeKey === 4">
               <a @click="doAction('view', record)">查看</a>
 
-              <template v-if="+record.createdId === +userInfo.id">
+              <template v-if="+record.createdId === +userInfo.id && [1, 2, 3].includes(+record.purchaseProgress)">
                 <a-divider type="vertical" />
                 <a @click="doAction('cancel', record)">取消申请</a>
               </template>
@@ -564,7 +566,7 @@ export default {
       }
     },
     approvalPreview(record) {
-      this.$refs.approveInfoCard.init(record.instanceId,'material')
+      this.$refs.approveInfoCard.init(record.instanceId, 'material')
     },
     async betachAction({ promiseList, type }) {
       const that = this

@@ -255,6 +255,7 @@ export default {
           materialRate: that.supplierInfo.materialRate,
           settlementMode: that.supplierInfo.settlementMode,
           freightRate : that.supplierInfo.freightRate,
+          paymentCycle:that.supplierInfo.paymentCycle,
 
           secondPartyInfo : {
             cfullName:supplierInfo.cfullName || '',
@@ -340,7 +341,7 @@ export default {
         console.log(JSON.stringify(that.submitParams, null, 2))
         that.currentTab++
       } else if (type === 'submit' || type === 'approval' || type === 'preview') {
-        if (that.isView && type === 'preview') {
+        if ((that.isView || that.isApproval) && type === 'preview') {
           that.$router.push({
             name: 'procurement-module-management-purchase-contract-preview',
             params: {

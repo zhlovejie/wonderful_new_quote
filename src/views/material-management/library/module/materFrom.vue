@@ -195,7 +195,7 @@
             </td>
           </tr>
           <tr>
-            <td>安全库存</td>
+            <td>最小采购量</td>
             <td>
               <a-form-item style="width: 40%; float: left">
                 <a-input-number
@@ -203,7 +203,7 @@
                   :min="0"
                   step="1"
                   style="width: 100%"
-                  v-decorator="['maxPurchase', { rules: [{ required: true, message: '请输入安全库存' }] }]"
+                  v-decorator="['maxPurchase', { rules: [{ required: true, message: '请输入最小采购量' }] }]"
                 />
               </a-form-item>
               <a-form-item style="width: 17%; float: right">

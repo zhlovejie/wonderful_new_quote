@@ -262,7 +262,7 @@ export default {
       const that = this
       let exceptionPoints = that.addForm.getExceptionPoints()
       that.hasExceptionPoints = !!exceptionPoints.find(e => e.abnormalType === '违约责任修改')
-      that.addForm.hasExceptionPoints = that.hasExceptionPoints
+      that.addForm.hasExceptionPoints = exceptionPoints.length > 0
     },
     validate() {
       const that = this

@@ -38,9 +38,14 @@
               <span>发票类型</span>
             </td>
             <td>
-              <a-form-model-item prop="invoiceType" >
+              <a-form-model-item prop="invoiceType">
                 <!-- {{ { 1: '不限', 2: '增值税专用发票', 3: '普通发票' }[form.invoiceType] }} -->
-                <a-select placeholder="发票类型" v-model="form.invoiceType" :allowClear="true" :disabled="addForm.isDisabled">
+                <a-select
+                  placeholder="发票类型"
+                  v-model="form.invoiceType"
+                  :allowClear="true"
+                  :disabled="true"
+                >
                   <a-select-option :value="0">不限</a-select-option>
                   <a-select-option :value="1">增值税专用发票</a-select-option>
                   <a-select-option :value="2">普通发票</a-select-option>
@@ -82,15 +87,19 @@
             <td style="width:150px;">
               <span>是否含运费</span>
             </td>
-            <td>
-              <a-form-model-item prop="freightType" >
-                <a-radio-group v-model="form.freightType" :disabled="addForm.isDisabled">
-                  <a-radio :value="0">否</a-radio>
-                  <a-radio :value="1">是</a-radio>
-                </a-radio-group>
-              </a-form-model-item>
+            <td colspan="3">
+              <div style="text-align:left;">
+                <a-form-model-item prop="freightType">
+                  <a-radio-group v-model="form.freightType" :disabled="addForm.isDisabled">
+                    <a-radio :value="0">否</a-radio>
+                    <a-radio :value="1">是</a-radio>
+                  </a-radio-group>
+                </a-form-model-item>
+              </div>
             </td>
+          </tr>
 
+          <tr v-if="+form.freightType === 1">
             <td style="width:150px;">
               <span>运费金额(元)</span>
             </td>
@@ -115,8 +124,6 @@
                 <span v-else>无</span>
               </a-form-model-item>
             </td>
-          </tr>
-          <tr>
             <td style="width:150px;">
               <span>运费税率(%)</span>
             </td>
@@ -129,25 +136,16 @@
                   trigger: 'blur'
                 }"
               >
-                <span>{{form.freightRate}}%</span>
-                <!-- <a-input-number
-                  v-if="+form.freightType === 1"
-                  :disabled="addForm.isDisabled"
-                  style="width:100%;"
-                  v-model="form.freightRate"
-                  :min="0"
-                  :max="100"
-                  :step="1"
-                  :precision="0"
-                />
-                <span v-else>无</span> -->
+                <span>{{ form.freightRate }}%</span>
               </a-form-model-item>
             </td>
+          </tr>
 
+          <tr>
             <td style="width:150px;">
               <span>货运方式</span>
             </td>
-            <td>
+            <td colspan="3">
               <a-form-model-item prop="logisticsTypeId">
                 <CommonDictionarySelect
                   placeholder="货运方式"

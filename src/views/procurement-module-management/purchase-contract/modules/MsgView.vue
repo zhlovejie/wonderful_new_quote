@@ -10,7 +10,7 @@
   >
     <PurchaseContractView
       ref="purchaseContractView"
-      action="view"
+      :action="type"
       :record="{ id: record.id }"
       :showExitButton="false"
       :from="from"

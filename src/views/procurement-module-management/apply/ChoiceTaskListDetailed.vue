@@ -49,7 +49,6 @@
           :pagination="pagination"
           :loading="loading"
           @change="handleTableChange"
-
         >
           <div slot="order" slot-scope="text, record, index">
             {{ index + 1 }}
@@ -125,57 +124,57 @@
 
 <script>
 import { STable } from '@/components'
-import { accessoriesManagementPage } from '@/api/after-sales-management'
+import { purchaseManagementPage, listGroupRelatedIdByRequestType } from '@/api/after-sales-management'
 
 const innerColumns = [
   {
     align: 'center',
     title: '序号',
     width: '80px',
-    scopedSlots: { customRender: 'order' },
+    scopedSlots: { customRender: 'order' }
   },
   {
     title: '物料代码',
     dataIndex: 'materialCode',
-    width: 150,
+    width: 150
   },
   {
     title: '物料名称',
     dataIndex: 'materialName',
     scopedSlots: { customRender: 'materialName' },
-    width: 300,
+    width: 300
   },
   {
     title: '规格型号',
     dataIndex: 'specification',
     scopedSlots: { customRender: 'specification' },
-    width: 300,
+    width: 300
   },
   {
     title: '单位',
-    dataIndex: 'company',
+    dataIndex: 'company'
   },
   {
     title: '数量',
-    dataIndex: 'quantity',
+    dataIndex: 'quantity'
   },
   {
     title: '单价（元）',
-    dataIndex: 'unitPrice',
+    dataIndex: 'unitPrice'
   },
   {
     title: '金额（元）',
     dataIndex: 'money',
-    scopedSlots: { customRender: 'money' },
+    scopedSlots: { customRender: 'money' }
   },
   {
     title: '是否过保',
-    scopedSlots: { customRender: 'isWarranty' },
+    scopedSlots: { customRender: 'isWarranty' }
   },
   {
     title: '带货方式',
-    scopedSlots: { customRender: 'deliveryMode' },
-  },
+    scopedSlots: { customRender: 'deliveryMode' }
+  }
 ]
 
 export default {
@@ -188,10 +187,7 @@ export default {
       modalTitle: '选择售后任务单',
       visible: false,
       // 查询参数
-      queryParam: {
-        searchStatus: '0',
-        isPayment:1
-      },
+      queryParam: {},
       innerColumns,
       // 表头
       columns: [
@@ -254,7 +250,7 @@ export default {
       this.$emit('change', { ...record })
       this.handleCancel()
     },
-    searchAction(opt) {
+    async searchAction(opt) {
       let that = this
       const paginationParam = {
         current: that.pagination.current || 1,
@@ -263,7 +259,10 @@ export default {
       let _searchParam = Object.assign({}, { ...that.queryParam }, paginationParam, opt || {})
       console.log('执行搜索...', _searchParam)
       that.loading = true
-      accessoriesManagementPage(_searchParam)
+
+      let ids = await listGroupRelatedIdByRequestType().then(res => res.data || '')
+
+      await purchaseManagementPage({ ..._searchParam, ids })
         .then(res => {
           that.loading = false
           that.dataSource = res.data.records.map((item, index) => {

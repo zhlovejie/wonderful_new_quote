@@ -6,24 +6,26 @@
 
         <a-form-model-item v-if="!addForm.isDisabled">
           <a-radio-group v-model="form.settlementModeType" >
-            <a-radio :value="0">全款</a-radio>
-            <a-radio :value="1">付款</a-radio>
+            <a-radio :value="1">全款</a-radio>
+            <a-radio :value="0">付款</a-radio>
           </a-radio-group>
         </a-form-model-item>
 
-        <a-form-model-item v-if="form.settlementModeType === 0" label="全款付款金额(元)" prop="fullTotalMoney">
-          <a-input-number
-            :disabled="addForm.isDisabled"
-            style="width:200px;"
-            v-model="form.fullTotalMoney"
-            :min="0"
-            :step="1"
-            :precision="2"
-            @change="handleFullTotalMoney"
-          />
-        </a-form-model-item>
+        <div>
+          <a-form-model-item v-if="form.settlementModeType === 1" label="全款付款金额(元)" prop="fullTotalMoney">
+            <a-input-number
+              :disabled="addForm.isDisabled"
+              style="width:200px;"
+              v-model="form.fullTotalMoney"
+              :min="0"
+              :step="1"
+              :precision="2"
+              @change="handleFullTotalMoney"
+            />
+          </a-form-model-item>
+        </div>
 
-        <a-table v-if="form.settlementModeType === 1" :columns="columns" :dataSource="form.settlementList" :pagination="false" size="small">
+        <a-table v-if="form.settlementModeType === 0" :columns="columns" :dataSource="form.settlementList" :pagination="false" size="small">
           <!-- :rowSelection="{ onChange: rowSelectionChangeHnadler, selectedRowKeys: selectedRowKeys }" -->
           <div slot="order" slot-scope="text, record, index">
             <span>{{ index + 1 }}</span>
@@ -70,7 +72,7 @@
         <div style="display:flex;">
           <a-form-model-item label="票到付款周期" prop="paymentCycle">
             <a-input-number
-              :disabled="addForm.isDisabled"
+              :disabled="true"
               style="width:200px;"
               v-model="form.paymentCycle"
               :min="1"
@@ -143,7 +145,8 @@ export default {
       form: {
         settlementList: [],
         paymentCycle: undefined,
-        fullTotalMoney: undefined
+        fullTotalMoney: undefined,
+        settlementModeType:undefined
       },
       rules: {
         fullTotalMoney: [{ required: true, message: '请输入全款付款金额', trigger: 'blur' }],

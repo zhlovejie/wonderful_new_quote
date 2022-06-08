@@ -266,7 +266,7 @@ export function orderPageList(parameter) {
 /**报价异常信息接口 */
 export function quotationExceptionAdd(parameter) {
   return axios({
-    baseURL: system.baseURL,
+    baseURL: system.materialBaseUrl,
     url: '/quotationException',
     method: 'POST',
     data: parameter
@@ -277,7 +277,7 @@ export function quotationExceptionAdd(parameter) {
 /** 采购管理-采购需求驳回接口 */
 export function quotationReject(parameter) {
   return axios({
-    baseURL: system.baseURL,
+    baseURL: system.materialBaseUrl,
     url: '/reject',
     method: 'POST',
     data: parameter
@@ -289,7 +289,7 @@ export function quotationReject(parameter) {
 //申请收料
 export function receiveAdd(parameter) {
   return axios({
-    baseURL: system.baseURL,
+    baseURL: system.materialBaseUrl,
     url: '/receive',
     method: 'POST',
     data: parameter
@@ -613,6 +613,16 @@ export function applyChangeAddOrUpdate(parameter) {
     url: '/requestApplyChange/saveAndUpdate',
     method: 'POST',
     data: parameter
+  })
+}
+
+/**删除 */
+export function applyChangeDelete(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/requestApplyChange/delete',
+    method: 'GET',
+    params: parameter
   })
 }
 /**采购需求变更单END */

@@ -172,7 +172,8 @@ import {
   applyChangeDetail,
   applyChangePageList,
   applyChangeRevocation,
-  applyChangeAddOrUpdate
+  applyChangeAddOrUpdate,
+  applyChangeDelete
 } from '@/api/procurementModuleManagement'
 
 const columns = [
@@ -475,12 +476,10 @@ export default {
         })
         return
       } else if (type === 'del') {
-        that.$message.info(`功能尚未开发...`)
-        return
         that.confirmModel({
-          content: '删除后无法恢复，请谨慎操作，确认删除该条数据吗?',
+          content: '确认删除该条数据吗?',
           success: () => {
-            requestApplyDelete({ id: record.id })
+            applyChangeDelete({ id: record.id })
               .then(res => {
                 that.$message.info(res.msg)
                 if (+res.code === 200) {

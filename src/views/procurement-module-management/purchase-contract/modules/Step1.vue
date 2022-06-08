@@ -18,7 +18,7 @@
 
         <div slot="purchaseNum" slot-scope="text, record, index">
           <template v-if="addForm.isChange">
-            <span>{{text}}</span>
+            <span>{{ text }}</span>
           </template>
           <template v-else>
             <a-input-number
@@ -103,10 +103,12 @@
           <div slot="materialName" slot-scope="text, record, index">
             <a-popover :title="text" trigger="hover">
               <template slot="content">
-                <p>物料名称：{{ record.materialName }}</p>
-                <p>物料代码：{{ record.materialCode }}</p>
-                <p>规格型号：{{ record.specification }}</p>
-                <p>单位：{{ record.subUnit }}</p>
+                <div style="max-width:450px;">
+                  <p>物料名称：{{ record.materialName }}</p>
+                  <p>物料代码：{{ record.materialCode }}</p>
+                  <p>规格型号：{{ record.specification }}</p>
+                  <p>单位：{{ record.subUnit }}</p>
+                </div>
               </template>
               <a href="javascript:void(0);" @click="doAction('materialView', record)">
                 {{ text }}
@@ -145,8 +147,8 @@
         </h3>
       </div>
 
-      <!-- <div v-show="isPurchaseNumChange || addForm.isDisabled"> -->
-      <div>
+      <div v-show="isPurchaseNumChange || addForm.isDisabled">
+      <!-- <div> -->
         <a-form-model-item
           prop="changeReason"
           label="变更原因"
@@ -156,7 +158,7 @@
             trigger: 'blur'
           }"
         >
-          <a-textarea placeholder="变更原因" :rows="3" v-model="form.changeReason" :disabled="addForm.isDisabled"/>
+          <a-textarea placeholder="变更原因" :rows="3" v-model="form.changeReason" :disabled="addForm.isDisabled" />
         </a-form-model-item>
       </div>
     </a-form-model>
@@ -248,15 +250,17 @@ export default {
   },
   computed: {
     isPurchaseNumChange() {
-      let keyName = this.addForm.isChange ? 'orderListForChange' : 'orderList'
-      let case1 = !!this[keyName].find(o => o._sourcePurchaseNum !== o.purchaseNum)
-      console.log(case1)
-      return case1
+      // if(this.addForm.isDisabled){
+      //   return false
+      // }
+      let case1 = (this['orderList'] || []).find(o => o._sourcePurchaseNum !== o.purchaseNum)
+      let case2 = (this['orderListForChange'] || []).find(o => o._sourcePurchaseNum !== o.purchaseNum)
+      return case1 || case2
     },
-    columns(){
+    columns() {
       let _base_columns = [...base_columns]
-      if(this.addForm.isDisabled){
-        return _base_columns.slice(0,-1)
+      if (this.addForm.isDisabled) {
+        return _base_columns.slice(0, -1)
       }
       return _base_columns
     }
@@ -264,17 +268,22 @@ export default {
   activated() {
     console.log('stop1 activated called...')
     const that = this
-    const { orderList,__isChange, changeReason,signDate } = that.addForm.pick(that.addForm.submitParams, ['orderList','__isChange', 'changeReason','signDate'])
+    const { orderList, __isChange, changeReason, signDate } = that.addForm.pick(that.addForm.submitParams, [
+      'orderList',
+      '__isChange',
+      'changeReason',
+      'signDate'
+    ])
 
     that.form = {
       changeReason
     }
     // console.log(JSON.stringify(that.form, null, 2))
     if (that.addForm.isAdd) {
-      let _orderList = that.$_.cloneDeep(that.addForm.selectedRows || [])
+      let _orderList = that.$_.cloneDeep(orderList || that.addForm.selectedRows || [])
       that.orderList = _orderList.map(o => {
         o.key = that._uuid()
-        o.purchaseNum = o.requestNum || 0
+        o.purchaseNum = o.purchaseNum || o.requestNum || 0
         o._sourcePurchaseNum = o._sourcePurchaseNum || o.purchaseNum
         o.amount = Number(o.newPrice || 0) * o.purchaseNum
         o.amountText = that.$root._f('moneyFormatNumber')(o.amount)
@@ -289,10 +298,10 @@ export default {
         return o
       })
     } else {
-      if(__isChange){
+      if (__isChange) {
         that.orderList = that.$_.cloneDeep(orderList.filter(o => o.isChange === 0))
         that.orderListForChange = that.$_.cloneDeep(orderList.filter(o => o.isChange === 1))
-      }else{
+      } else {
         let _baseOrderList = that.$_.cloneDeep(orderList || []).map(o => {
           let obj = { ...o }
           obj.key = that._uuid()
@@ -301,7 +310,7 @@ export default {
           obj._sourcePurchaseNum = obj._sourcePurchaseNum || obj.purchaseNum
           obj.amountText = that.$root._f('moneyFormatNumber')(obj.amount)
           obj.isChange = obj.isChange || 0
-  
+
           obj.deliveryDate = moment(obj.requestTime || signDate)
             .add('days', obj.deliveryCycle)
             .format('YYYY-MM-DD HH:mm:ss')
@@ -310,14 +319,14 @@ export default {
             .format('YYYY-MM-DD HH:mm:ss')
           return obj
         })
-  
+
         that.orderList = _baseOrderList.map(o => {
-          return {...o,isChange:0,key:that._uuid()}
+          return { ...o, isChange: 0, key: that._uuid() }
         })
-  
-        if(that.addForm.isChange){
+
+        if (that.addForm.isChange) {
           that.orderListForChange = _baseOrderList.map(o => {
-            return {...o,isChange:1,key:that._uuid()}
+            return { ...o, isChange: 1, key: that._uuid() }
           })
         }
       }
@@ -401,7 +410,7 @@ export default {
     },
     handlePurchaseNumChange(val, record) {
       const that = this
-      if(+val < +record._sourcePurchaseNum){
+      if (+val < +record._sourcePurchaseNum) {
         that.$message.info(`采购数量必须大于需求数量`)
         return
       }
@@ -481,8 +490,8 @@ export default {
         that.$refs.ruleForm.validate(valid => {
           if (valid) {
             let params = {
-              orderList: [...that.orderList,...that.orderListForChange],
-              __isChange:that.addForm.isChange,
+              orderList: [...that.orderList, ...that.orderListForChange],
+              __isChange: that.addForm.isChange,
               changeReason: that.form.changeReason,
               __calInfo: that.calInfo,
               totalAmount: that.calInfo.total

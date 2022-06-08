@@ -74,6 +74,15 @@
                 </td>
               </tr>
 
+              <tr v-if="detail.relatedNum">
+                <td style="width:150px;">关联单号</td>
+                <td>
+                  <a-form-model-item>
+                    <span>{{ detail.relatedNum }}</span>
+                  </a-form-model-item>
+                </td>
+              </tr>
+
               <tr>
                 <td style="width:150px;">紧急程度</td>
                 <td>
@@ -156,7 +165,7 @@
                 <span v-else>{{ record.materialCode }}</span>
               </div>
 
-              <div slot="requestNum" slot-scope="text, record, index">
+              <div slot="presentRequestNum" slot-scope="text, record, index">
                 <a-form-model-item v-if="!isDisabled && (isChangeNumber || isChangeNumberAndMaterial)">
                   <a-input-number
                     v-model="record.presentRequestNum"
@@ -195,20 +204,6 @@
 
               <div slot="inventory" slot-scope="text, record, index">
                 <span :style="{ color: +record.unsafetyInventory === 1 ? 'red' : '' }">{{ text }}</span>
-              </div>
-
-              <div slot="relatedNumText" slot-scope="text, record, index">
-                <a-form-model-item prop="presentRequestNum" v-if="!isDisabled && record.__isRelated">
-                  <a-input
-                    v-model="record.presentRequestNum"
-                    read-only="read-only"
-                    style="width:260px;"
-                    @click="
-                      openModel('choiceOrderFactory', { callback: args => tableRelatedNumCallback(record, ...args) })
-                    "
-                  />
-                </a-form-model-item>
-                <span v-else>{{ text }}</span>
               </div>
             </a-table>
             <a-button
@@ -326,8 +321,7 @@ const columns = [
   },
   {
     title: '关联单号',
-    dataIndex: 'relatedNumText',
-    scopedSlots: { customRender: 'relatedNumText' }
+    dataIndex: 'relatedNum'
   },
   {
     title: '物料代码',
@@ -350,14 +344,14 @@ const columns = [
   },
   {
     title: '需求数量',
-    dataIndex: 'requestNum',
-    scopedSlots: { customRender: 'requestNum' }
+    dataIndex: 'presentRequestNum',
+    scopedSlots: { customRender: 'presentRequestNum' }
   },
   {
     title: '需求日期',
     dataIndex: 'requestTime',
     scopedSlots: { customRender: 'requestTime' }
-  },
+  }
   // {
   //   title: '操作',
   //   scopedSlots: { customRender: 'action' }
@@ -365,6 +359,7 @@ const columns = [
 ]
 
 export default {
+  name: 'procurement-module-management-applychange',
   components: {
     DepartmentUserCascade,
     CommonDictionarySelect,
@@ -414,8 +409,14 @@ export default {
   computed: {
     modalTitle() {
       let type = this.type
-      
-      return (type === 'add' && this.detail.changeStatus) ? '变更需求' : type === 'edit' ? '修改' : type === 'view' ? '查看' : '审批'
+
+      return type === 'add' && this.detail.changeStatus
+        ? '变更需求'
+        : type === 'edit'
+        ? '修改'
+        : type === 'view'
+        ? '查看'
+        : '审批'
     },
     isAdd() {
       return this.type === 'add'
@@ -575,8 +576,8 @@ export default {
           userName: result.proposerName
         },
         requestTime: moment(result.requestTime),
-        reason:'',
-        remark:''
+        reason: that.isAdd ? '' : result.reason,
+        remark: that.isAdd ? '' : result.remark
       }
       that.dataSource = [
         {
@@ -589,7 +590,7 @@ export default {
           __maxBuyNumber: materialRequirement.pageNum || 0,
           relatedNumText: result.relatedNum,
           __isRelated: that.detail.requestTypeText.includes('销售订单'),
-          presentRequestNum: that.detail.requestNum
+          presentRequestNum: that.detail.presentRequestNum || that.detail.requestNum
         }
       ]
 
@@ -632,6 +633,8 @@ export default {
       const that = this
       that.$refs.ruleForm.validate(async valid => {
         if (valid) {
+          const { reason, remark } = that.form
+
           let params = {
             ...that.form
           }
@@ -654,8 +657,11 @@ export default {
 
           params = {
             ...params,
-            ...arr[0]
+            ...arr[0],
+            reason,
+            remark
           }
+
           that.spinning = true
 
           applyChangeAddOrUpdate(params).then(res => {

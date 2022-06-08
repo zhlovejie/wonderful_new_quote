@@ -74,9 +74,6 @@
               <div slot="order" slot-scope="text, record, index">
                 {{ index + 1 }}
               </div>
-              <div slot="materialName" slot-scope="text, record, index">
-                <span>{{ `${record.materialName}(${record.materialCode})` }}</span>
-              </div>
               <div slot="materialRate" slot-scope="text, record, index">
                 <span>{{ detail.materialRate }}%</span>
               </div>
@@ -102,7 +99,6 @@
                   <span>此价格含税、含运费</span>
                 </div>
 
-
                 <!-- <span>合计：（人民币）{{ calInfo.totalUpper }} </span>
                 <span style="margin:0 10px;">({{ calInfo.total | moneyFormatNumber }})</span>
                 <span>此价格含税、含运费。</span> -->
@@ -114,25 +110,31 @@
               2.1.货款结算方式：{{ { 0: '现款现货', 1: '账期结算' }[detail.settlementMode] }}
             </div>
             <div class="content-p p-text-index">
-              <div>2.2支付期限：一次性支付/分期支付</div>
+              <div>2.2支付期限：{{ { 0: '一次性支付', 1: '分期支付' }[detail.settlementMode] }}</div>
               <div style="margin-left:20px;">
-                <div v-if="+detail.settlementMode === 0">
-                  全款应付金额：
-                  <span class="span-underline">{{ calInfo.total | moneyFormatNumber }}</span>
-                </div>
-
                 <div v-if="+detail.settlementMode === 1">
                   付款周期：<span class="span-underline">{{ detail.paymentCycle }}天</span>
                 </div>
-                <div v-for="item in detail.settlementList">
-                  {{ { 1: '预付款', 2: '提货款', 3: '验收款', 4: '质保金' }[item.moneyType] }}应付金额：
-                  <span class="span-underline">{{ item.percentageMoeny | moneyFormatNumber }}</span>
-                  &nbsp;&nbsp;付款周期：<span class="span-underline">{{ item.paymentDate }}</span>
+
+                <div v-if="+detail.settlementMode === 0">
+                  <div v-if="+detail.settlementModeType === 1">
+                    全款应付金额：
+                    <span class="span-underline">{{ calInfo.total | moneyFormatNumber }}</span>
+                  </div>
+
+                  <div v-if="+detail.settlementModeType === 0">
+                    <div v-for="item in detail.settlementList">
+                      {{ { 1: '预付款', 2: '提货款', 3: '验收款', 4: '质保金' }[item.moneyType] }}应付金额：
+                      <span class="span-underline">{{ item.percentageMoeny | moneyFormatNumber }}</span>
+                      &nbsp;&nbsp;付款周期：<span class="span-underline">{{ item.paymentDate }}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div>
-                <span v-if="+detail.settlementMode === 1">经双方约定，</span>
-                <span>货款结算方式为固定账期结算，详见双方签订的战略合作协议条款。</span>
+                <span v-if="+detail.settlementMode === 1"
+                  >经双方约定，货款结算方式为固定账期结算，详见双方签订的战略合作协议条款。</span
+                >
               </div>
             </div>
 
@@ -248,17 +250,26 @@
             </div>
 
             <div class="content-p">十一、签订方式</div>
-            <div class="content-p p-text-index">
-              11.1此协议通过 微信/邮箱
+            <div class="content-p p-text-index" v-if="detail.otherAppoint && +detail.otherAppoint.signType === 1">
+              11.1此协议通过 邮件
               <span class="span-underline">
-                （甲方邮箱账号({{ detail.otherAppoint.nailEmail }})/微信号({{ detail.otherAppoint.nailWeChat }})
-                、乙方邮箱账号({{ detail.otherAppoint.secondEmail }})/微信号({{ detail.otherAppoint.secondWeChat }})
-                ）</span
-              >
+                （甲方邮箱账号({{ detail.otherAppoint.nailEmail }})
+                、乙方邮箱账号({{ detail.otherAppoint.secondEmail }})
+                ）</span>
               传输的方式签订，乙方签字盖章后将合同通过快递的方式邮寄给甲方合同自双方签字盖章确认后生效，合同的附件享有同等法律效力。
             </div>
-            <div class="content-p p-text-index">
-              11.2此协议通过 书面签订 形式签订，合同自双方签字盖章后生效，合同的附件享有同等法律效力。本合同一式 贰
+
+            <div class="content-p p-text-index" v-if="detail.otherAppoint && +detail.otherAppoint.signType === 3">
+              11.1此协议通过 微信
+              <span class="span-underline">
+                （甲方微信号({{ detail.otherAppoint.nailWeChat }})
+                、乙方微信号({{ detail.otherAppoint.secondWeChat }})
+                ）</span>
+              传输的方式签订，乙方签字盖章后将合同通过快递的方式邮寄给甲方合同自双方签字盖章确认后生效，合同的附件享有同等法律效力。
+            </div>
+
+            <div class="content-p p-text-index" v-if="detail.otherAppoint && +detail.otherAppoint.signType === 2">
+              11.1此协议通过 书面签订 形式签订，合同自双方签字盖章后生效，合同的附件享有同等法律效力。本合同一式 贰
               份，甲乙方双方各 壹 份，由于保管不当而引起的纠纷由当事人负全部责任。
             </div>
 
@@ -278,7 +289,7 @@
                 <p style="position: relative;">
                   供方单位（盖章）：
                   <img
-                    v-if="+detail.freshChapterType === 0"
+                    v-if="detail.otherAppoint && +detail.otherAppoint.freshChapterType === 0"
                     style="position: absolute;width: 140px;left: 35%;top: -50%;"
                     :src="detail.commonSeal"
                     alt="公章"
@@ -354,7 +365,7 @@
 import { turnTheCapital } from '@/api/contractListManagement'
 import { purchaseContractDetail } from '@/api/procurementModuleManagement'
 import util from '@/components/_util/util'
-
+import { checkInspectionStandardSetPage } from '@/api/qualityManagement'
 import moment from 'moment'
 
 /**
@@ -413,12 +424,11 @@ const pointColumns = [
   },
   {
     title: '货物编号',
-    dataIndex: 'requestApplyNum'
+    dataIndex: 'materialCode'
   },
   {
     title: '名称',
-    dataIndex: 'materialName',
-    scopedSlots: { customRender: 'materialName' }
+    dataIndex: 'materialName'
   },
   {
     title: '质保期限(天)',
@@ -503,7 +513,7 @@ export default {
             result_detail.orderList = result_detail.orderList.map(o => {
               let obj = { ...o }
               obj.key = that._uuid()
-              obj.amountText = that.$root._f('moneyFormatNumber')( obj.amount )
+              obj.amountText = that.$root._f('moneyFormatNumber')(obj.amount)
               obj.preDeliveryCycle = moment(obj.requestTime)
                 .add('days', obj.deliveryCycle)
                 .format('YYYY-MM-DD')

@@ -317,7 +317,7 @@ import moment from 'moment'
 import { getDictionary } from '@/api/common'
 //物料代码模糊搜索
 import { routineMaterialInfoPageList, productMaterialInfoPageList } from '@/api/routineMaterial'
-import { getBuyRequirement } from '@/api/routineMaterial'
+import { getBuyRequirement ,getDetailByMaterialId} from '@/api/routineMaterial'
 import { findApprovedNodeList } from '@/api/common'
 import Approval from './Approval'
 import {
@@ -887,6 +887,13 @@ export default {
           return {}
         })
 
+
+      let inventoryQuantity = await getDetailByMaterialId({ materialId: material.id }).then(res => {
+        return res && res.data ? (res.data.inventoryQuantity || 0) : 0
+      }).catch(err => {
+        return 0
+      })
+
       if (!materialRequirement) {
         materialRequirement = {}
       }
@@ -905,7 +912,7 @@ export default {
       target.materialRoute = materialRoute
       target.materialCode = material.materialCodeFormat
       // target.inventory = Math.floor(1+Math.random() * 1000) //测试数据，等仓库开发完再修改
-      target.inventory = materialRequirement.pageNum || 0
+      target.inventory = inventoryQuantity || 0
       target.__maxBuyNumber = materialRequirement.pageNum || 0
       that.dataSource = dataSource
 
@@ -928,10 +935,10 @@ export default {
       let dataSource = [...that.dataSource]
       let target = dataSource.find(item => item.key === record.key)
       target.requestNum = v
-      target.unsafetyInventory = +v > +target.__maxBuyNumber ? 1 : 2
+      target.unsafetyInventory = +v > +target.inventory ? 1 : 2
 
       if (target.unsafetyInventory === 1) {
-        let msg = `物料【${target.materialName}】的安全库存为【${target.__maxBuyNumber}】，本次采购需求量已超安全库存，确认需求超量采购吗？`
+        let msg = `物料【${target.materialName}】的安全库存为【${target.inventory}】，本次采购需求量已超安全库存，确认需求超量采购吗？`
         that.$confirm({
           title: '安全库存提示',
           content: h => {

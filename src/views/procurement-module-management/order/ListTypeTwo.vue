@@ -30,10 +30,12 @@
       <div slot="materialName" slot-scope="text, record, index">
         <a-popover :title="text" trigger="hover">
           <template slot="content">
-            <p>物料名称：{{ record.materialName }}</p>
-            <p>物料代码：{{ record.materialCode }}</p>
-            <p>规格型号：{{ record.specification }}</p>
-            <p>单位：{{ record.subUnit }}</p>
+            <div style="max-width:450px;">
+              <p>物料名称：{{ record.materialName }}</p>
+              <p>物料代码：{{ record.materialCode }}</p>
+              <p>规格型号：{{ record.specification }}</p>
+              <p>单位：{{ record.subUnit }}</p>
+            </div>
           </template>
           <a href="javascript:void(0);" @click="doAction('materialView', record)">
             {{ text }}
@@ -42,7 +44,7 @@
       </div>
 
       <div slot="urgencyDegree" slot-scope="text, record, index">
-        {{ { 1: '一般', 2: '加急', 3: '特急' }[text] }}
+        {{ { 0: '一般', 1: '紧急', 2: '紧急',3:'紧急' }[text] }}
       </div>
 
       <div slot="nakedPrice" slot-scope="text, record, index">
