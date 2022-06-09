@@ -475,7 +475,7 @@ export default {
         materialRate: _materialRate,
         new_materialRate
       }
-      let total = calInfo.freightFullAmountWithTax + calInfo.materialFullAmountWithTax
+      let total = calInfo.freightFullAmount + calInfo.materialFullAmount
       let totalUpper = await turnTheCapital({ money: total }).then(res => res.data)
       calInfo = {
         ...calInfo,

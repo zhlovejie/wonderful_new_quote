@@ -86,7 +86,7 @@ export function getOneArea(param) {
 //获取审批实例列表
 export function findApprovedNodeList(parameter) {
   return axios({
-    baseURL: system.materialBaseUrl,
+    baseURL: system.baseURL,
     url: '/common/findApprovedNodeList',
     method: 'get',
     params: parameter

@@ -53,13 +53,102 @@
                   @click="selectCustomer"
                   v-model="form.customerName"
                 />
-                <span>{{ record.customerName }}</span>
+                <span v-else>{{ record.customerName }}</span>
               </a-form-model-item>
             </td>
 
             <td>售后人员</td>
             <td>{{ record.createdName }}</td>
           </tr>
+
+          <tr>
+            <td>是否含税</td>
+            <td :colspan="+form.isTax === 1 ? 1 : 3">
+              <a-form-model-item
+                prop="isTax"
+                :rules="{
+                  required: true,
+                  message: '请选择是否含税'
+                }"
+              >
+                <a-radio-group v-if="!isDisabled" v-model="form.isTax">
+                  <a-radio :value="1">是</a-radio>
+                  <a-radio :value="0">否</a-radio>
+                </a-radio-group>
+                <span v-else>
+                  {{ {1:'是',0:'否'}[form.isTax] }}
+                </span>
+              </a-form-model-item>
+            </td>
+
+            <template v-if="+form.isTax === 1">
+              <td>是否开票</td>
+              <td>
+                <a-form-model-item
+                  prop="needInvoice"
+                  :rules="{
+                    required: true,
+                    message: '请选择开票类型'
+                  }"
+                >
+                  <a-radio-group v-if="!isDisabled" v-model="form.needInvoice">
+                    <a-radio :value="0">否</a-radio>
+                    <a-radio :value="1">是</a-radio>
+                  </a-radio-group>
+                  <span v-else>
+                    {{ {1:'是',0:'否'}[form.needInvoice] }}
+                  </span>
+                </a-form-model-item>
+              </td>
+            </template>
+          </tr>
+
+          <tr>
+            <td>是否含运费</td>
+            <td :colspan="+form.freightType === 1 ? 1 : 3">
+              <a-form-model-item
+                prop="freightType"
+                :rules="{
+                  required: true,
+                  message: '请选择是否含运费'
+                }"
+              >
+                <a-radio-group v-if="!isDisabled" v-model="form.freightType">
+                  <a-radio :value="1">是</a-radio>
+                  <a-radio :value="0">否</a-radio>
+                </a-radio-group>
+                <span v-else>
+                  {{ {1:'是',0:'否'}[form.freightType] }}
+                </span>
+              </a-form-model-item>
+            </td>
+            <template v-if="+form.freightType === 1">
+              <td>运费金额</td>
+              <td>
+                <a-form-model-item
+                  prop="freightAmount"
+                  :rules="{
+                    required: true,
+                    message: '请输入运费金额'
+                  }"
+                >
+                  <a-input-number
+                    style="width:100%;"
+                    placeholder="运费金额"
+                    v-model="form.freightAmount"
+                    :step="1"
+                    :precision="2"
+                    v-if="!isDisabled"
+                    @change="handleFreightAmountChange"
+                  />
+                  <span v-else>
+                    {{ form.freightAmount | moneyFormatNumber }}
+                  </span>
+                </a-form-model-item>
+              </td>
+            </template>
+          </tr>
+
           <tr>
             <td>开票类型</td>
             <td>
@@ -114,7 +203,9 @@
               <div style="text-align: right; font-size: 16px; color: red">
                 <span>数量合计：{{ totalPrice }}</span>
                 <span style="margin: 0 10px">单价合计：{{ totalPhase | moneyFormatNumber }}</span>
-                <span>金额合计：{{ details.totalAmount | moneyFormatNumber }}</span>
+                <span>金额合计：{{ form.totalAmount | moneyFormatNumber }}</span>
+                <span style="margin:0 10px;">({{ +form.isTax === 1 ? '含税' : '不含税' }}
+                  &nbsp;&nbsp;{{ +form.freightType === 1 ? '含运费' : '不含运费' }})</span>
               </div>
             </div>
           </a-table>
@@ -211,6 +302,8 @@ export default {
       form: {
         productInfoList: [],
         signDate: moment(),
+        freightType:1,
+        isTax:1
       },
       isWarranty: undefined,
       record: {},
@@ -370,6 +463,8 @@ export default {
       this.form = {
         productInfoList: [],
         signDate: moment(),
+        freightType:1,
+        isTax:1
       }
       this.type = type
       this.record = record
@@ -381,6 +476,7 @@ export default {
         }
 
         this.form = { ...this.form, ...res.data }
+        this.handleFreightAmountChange()
       })
     },
     handleOk() {
@@ -408,6 +504,12 @@ export default {
           ret.telephone = params.telephone
           ret.bankName = params.bankName
           ret.accountNum = params.accountNum
+          ret.freightType = params.freightType
+          ret.isTax = params.isTax
+          ret.needInvoice = params.needInvoice
+          ret.freightAmount = params.freightAmount || 0
+          ret.totalAmount = params.totalAmount || 0
+
           accessoriesAddOrUpdate(ret)
             .then((res) => {
               if (res.code === 200) {
@@ -427,6 +529,22 @@ export default {
     filterOption(input, option) {
       return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
     },
+    handleFreightAmountChange(val){
+      this.$nextTick(() => {
+        let {productInfoList,freightType,freightAmount} = this.form
+        let totalAmount = 0
+        productInfoList.map(p => {
+          totalAmount += ((Number(p.unitPrice) || 0) * (Number(p.quantity) || 0))
+        })
+        if(+freightType === 1){
+          totalAmount += (Number(freightAmount) || 0)
+        }
+        this.form = {
+          ...this.form,
+          totalAmount
+        }
+      })
+    }
   },
 }
 </script>

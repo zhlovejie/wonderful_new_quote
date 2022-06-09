@@ -166,7 +166,15 @@
 
               <div slot="materialCode" slot-scope="text, record, index">
                 <a-form-model-item v-if="!isDisabled">
-                  <a-select
+                  <a-input
+                    read-only="read-only"
+                    :disabled="isDisabled"
+                    @click="openModel(record)"
+                    placeholder="请选择物料代码"
+                    :value="record.materialCode"
+                  />
+
+                  <!-- <a-select
                     show-search
                     :value="record.materialCode"
                     placeholder="模糊搜索"
@@ -186,7 +194,7 @@
                     >
                       {{ item.__label }}
                     </a-select-option>
-                  </a-select>
+                  </a-select> -->
                 </a-form-model-item>
                 <span v-else>{{ record.materialCode }}</span>
               </div>
@@ -310,6 +318,7 @@
     <ChoiceOrderFactory ref="choiceOrderFactory" @change="contractChange" />
     <ChoiceTaskListDetailed ref="choiceTaskListDetailed" @change="taskListChange" />
     <Approval ref="approval" @opinionChange="opinionChange" />
+    <MaterialSelect ref="materialSelect" @custom-change="handlerMaterialChange"/>
   </a-modal>
 </template>
 <script>
@@ -332,6 +341,7 @@ import DepartmentUserCascade from '@/components/CustomerList/DepartmentUserCasca
 import CommonDictionarySelect from '@/components/CustomerList/CommonDictionarySelect'
 import ChoiceOrderFactory from './ChoiceOrderFactory'
 import ChoiceTaskListDetailed from './ChoiceTaskListDetailed'
+import MaterialSelect from "./MaterialSelect"
 const columns = [
   {
     title: '序号',
@@ -399,7 +409,8 @@ export default {
     CommonDictionarySelect,
     ChoiceOrderFactory,
     ChoiceTaskListDetailed,
-    Approval
+    Approval,
+    MaterialSelect
   },
   data() {
     this.materialFuzzyAction = this.$_.debounce(this.materialFuzzyAction, 800)
@@ -992,8 +1003,60 @@ export default {
         isAdopt: 1,
         opinion: opinion
       })
-    }
+    },
     //审批部分
+    openModel(record) {
+      if(this.isDisabled){
+        return
+      }
+      this.$refs.materialSelect.query(record)
+    },
+
+    async handlerMaterialChange({selectItem, recordParam}) {
+      const that = this
+      const material = selectItem
+
+      let materialRoute = await listRecursiveSuperiorMaterialId({ruleId:material.ruleId,type:0}).then(res => {
+        return res.data
+      })
+
+      let materialRequirement = await getBuyRequirement({ materialId: material.id })
+        .then(res => res.data)
+        .catch(err => {
+          console.log(err)
+          return {}
+        })
+
+
+      let inventoryQuantity = await getDetailByMaterialId({ materialId: material.id }).then(res => {
+        return res && res.data ? (res.data.inventoryQuantity || 0) : 0
+      }).catch(err => {
+        return 0
+      })
+
+      if (!materialRequirement) {
+        materialRequirement = {}
+      }
+
+      if (!materialRequirement.maxPurchase) {
+        that.$message.info(`物料【${material.materialName}】未设置最大采购量`)
+      }
+
+      let dataSource = [...that.dataSource]
+      let target = dataSource.find(item => item.key === recordParam.key)
+      target.materialId = material.id
+      target.materialName = material.materialName
+      target.mainUnit = material.mainUnit
+      target.specification = 'specification' in material ? material.specification || material.specifications : '无'
+      target.materialModelType = target.specification
+      target.materialRoute = materialRoute
+      target.materialCode = material.materialCode
+      // target.inventory = Math.floor(1+Math.random() * 1000) //测试数据，等仓库开发完再修改
+      target.inventory = inventoryQuantity || 0
+      target.__maxBuyNumber = materialRequirement.pageNum || 0
+      that.dataSource = dataSource
+
+    },
   }
 }
 </script>

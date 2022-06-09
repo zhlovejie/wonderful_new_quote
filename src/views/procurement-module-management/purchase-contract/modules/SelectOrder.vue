@@ -289,6 +289,10 @@ export default {
       this.pagination = { ...this.pagination, current, pageSize }
     },
     rowSelectionChangeHnadler(selectedRowKeys, selectedRows) {
+      if(selectedRows.some(r => !(+r.status === 2 && +r.type === 1))){
+        this.$message.info('供应商状态异常(审批未通过或处在未启用状态)')
+        return
+      }
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
     }
