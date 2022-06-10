@@ -150,8 +150,8 @@
             </td>
           </tr>
           <tr>
-            <td v-if="form.needInvoice === 1">开票类型</td>
-            <td v-if="form.needInvoice === 1">
+            <td v-if="+form.isTax === 1 && +form.needInvoice === 1">开票类型</td>
+            <td v-if="+form.isTax === 1 && +form.needInvoice === 1">
               <a-form-model-item
                 prop="invoiceType"
                 :rules="{
@@ -204,8 +204,11 @@
                 <span>数量合计：{{ totalPrice }}</span>
                 <span style="margin: 0 10px">单价合计：{{ totalPhase | moneyFormatNumber }}</span>
                 <span>金额合计：{{ form.totalAmount | moneyFormatNumber }}</span>
-                <span style="margin:0 10px;">({{ +form.isTax === 1 ? '含税' : '不含税' }}
-                  &nbsp;&nbsp;{{ +form.freightType === 1 ? '含运费' : '不含运费' }})</span>
+                <span style="margin:0 10px;"
+                  >({{ +form.isTax === 1 ? '含税' : '不含税' }} &nbsp;&nbsp;{{
+                    +form.freightType === 1 ? '含运费' : '不含运费'
+                  }})</span
+                >
               </div>
             </div>
           </a-table>
@@ -229,10 +232,13 @@
             <td>
               <a-form-model-item
                 prop="telephone"
-                :rules="{
-                  required: false,
-                  message: '请输入电话'
-                }"
+                :rules="[
+                  {
+                    required: false,
+                    message: '请输入电话'
+                  },
+                  { min: 0, max: 400, message: '电话长度0-400位', trigger: 'blur' }
+                ]"
               >
                 <a-input v-if="!isDisabled" v-model="form.telephone" />
               </a-form-model-item>
@@ -293,8 +299,8 @@ export default {
         invoiceType: 2,
         needInvoice: 1,
         needSignet: 0,
-        freightType:1,
-        isTax:1
+        freightType: 1,
+        isTax: 1
       },
       isWarranty: undefined,
       record: {},
@@ -408,8 +414,8 @@ export default {
         invoiceType: 2,
         needInvoice: 1,
         needSignet: 0,
-        freightType:1,
-        isTax:1
+        freightType: 1,
+        isTax: 1
       }
       this.type = type
       this.record = record
@@ -421,11 +427,11 @@ export default {
           res.data.productInfoList = res.data.productInfoList.filter(i => i.isWarranty === 1)
           // this.form.customerName = record.customerName
           // this.form.customerId = record.customerId
-          this.form = { ...this.form, ...res.data }
+          this.form = { ...this.form, ...res.data, isTax: 1 }
           this.form = { ...this.form, ...{ customerName: record.customerName, customerId: record.customerId } }
         })
         await accessoriesgetCustomerById({ id: record.customerId }).then(res => {
-          this.form = { ...this.form, ...res.data }
+          this.form = { ...this.form, ...res.data, isTax: 1 }
         })
 
         this.handleFreightAmountChange()
@@ -449,7 +455,7 @@ export default {
           ret.invoiceType = params.invoiceType
           ret.needInvoice = params.needInvoice
           ret.needSignet = params.needSignet
-          ret.signDate = params.signDate.format('YYYY-MM-DD')
+          ret.signDate = moment(params.signDate).format('YYYY-MM-DD')
           ret.address = params.address
           ret.telephone = params.telephone
           ret.bankName = params.bankName
@@ -470,7 +476,10 @@ export default {
                 this.$router.push({ name: 'after-sales-management_Accessories' })
               }
             })
-            .catch(err => (that.spinning = false))
+            .catch(err => {
+              that.spinning = false
+              that.$message.error(err.message)
+            })
         }
       })
     },
@@ -480,15 +489,15 @@ export default {
     filterOption(input, option) {
       return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
     },
-    handleFreightAmountChange(val){
+    handleFreightAmountChange(val) {
       this.$nextTick(() => {
-        let {productInfoList,freightType,freightAmount} = this.form
+        let { productInfoList, freightType, freightAmount } = this.form
         let totalAmount = 0
         productInfoList.map(p => {
-          totalAmount += ((Number(p.unitPrice) || 0) * (Number(p.quantity) || 0))
+          totalAmount += (Number(p.unitPrice) || 0) * (Number(p.quantity) || 0)
         })
-        if(+freightType === 1){
-          totalAmount += (Number(freightAmount) || 0)
+        if (+freightType === 1) {
+          totalAmount += Number(freightAmount) || 0
         }
         this.form = {
           ...this.form,

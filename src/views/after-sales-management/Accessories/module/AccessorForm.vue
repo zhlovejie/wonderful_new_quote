@@ -42,7 +42,7 @@
                 prop="address"
                 :rules="{
                   required: false,
-                  message: '客户名称',
+                  message: '客户名称'
                 }"
               >
                 <a-input
@@ -76,7 +76,7 @@
                   <a-radio :value="0">否</a-radio>
                 </a-radio-group>
                 <span v-else>
-                  {{ {1:'是',0:'否'}[form.isTax] }}
+                  {{ { 1: '是', 0: '否' }[form.isTax] }}
                 </span>
               </a-form-model-item>
             </td>
@@ -96,7 +96,7 @@
                     <a-radio :value="1">是</a-radio>
                   </a-radio-group>
                   <span v-else>
-                    {{ {1:'是',0:'否'}[form.needInvoice] }}
+                    {{ { 1: '是', 0: '否' }[form.needInvoice] }}
                   </span>
                 </a-form-model-item>
               </td>
@@ -118,7 +118,7 @@
                   <a-radio :value="0">否</a-radio>
                 </a-radio-group>
                 <span v-else>
-                  {{ {1:'是',0:'否'}[form.freightType] }}
+                  {{ { 1: '是', 0: '否' }[form.freightType] }}
                 </span>
               </a-form-model-item>
             </td>
@@ -150,13 +150,13 @@
           </tr>
 
           <tr>
-            <td>开票类型</td>
-            <td>
+            <td v-if="+form.isTax === 1 && +form.needInvoice === 1">开票类型</td>
+            <td v-if="+form.isTax === 1 && +form.needInvoice === 1">
               <a-form-model-item
                 prop="invoiceType"
                 :rules="{
                   required: true,
-                  message: '请选择开票类型',
+                  message: '请选择开票类型'
                 }"
               >
                 <a-radio-group v-if="!isDisabled" v-model="form.invoiceType">
@@ -167,12 +167,12 @@
               </a-form-model-item>
             </td>
             <td>签订日期</td>
-            <td>
+            <td :colspan="form.needSignet === 0 ? 3 : 0">
               <a-form-model-item
                 prop="signDate"
                 :rules="{
                   required: true,
-                  message: '请选择签订日期',
+                  message: '请选择签订日期'
                 }"
               >
                 <a-date-picker v-if="!isDisabled" v-model="form.signDate" />
@@ -183,6 +183,7 @@
             </td>
           </tr>
         </table>
+
         <div style="margin-top: 20px">
           <h3>合同信息</h3>
           <a-table
@@ -204,8 +205,11 @@
                 <span>数量合计：{{ totalPrice }}</span>
                 <span style="margin: 0 10px">单价合计：{{ totalPhase | moneyFormatNumber }}</span>
                 <span>金额合计：{{ form.totalAmount | moneyFormatNumber }}</span>
-                <span style="margin:0 10px;">({{ +form.isTax === 1 ? '含税' : '不含税' }}
-                  &nbsp;&nbsp;{{ +form.freightType === 1 ? '含运费' : '不含运费' }})</span>
+                <span style="margin:0 10px;"
+                  >({{ +form.isTax === 1 ? '含税' : '不含税' }} &nbsp;&nbsp;{{
+                    +form.freightType === 1 ? '含运费' : '不含运费'
+                  }})</span
+                >
               </div>
             </div>
           </a-table>
@@ -219,7 +223,7 @@
                 prop="address"
                 :rules="{
                   required: false,
-                  message: '请输入地址',
+                  message: '请输入地址'
                 }"
               >
                 <a-input v-if="!isDisabled" v-model="form.address" />
@@ -230,10 +234,13 @@
             <td>
               <a-form-model-item
                 prop="telephone"
-                :rules="{
-                  required: false,
-                  message: '请输入电话',
-                }"
+                :rules="[
+                  {
+                    required: false,
+                    message: '请输入电话'
+                  },
+                  { min: 0, max: 400, message: '电话长度0-400位', trigger: 'blur' }
+                ]"
               >
                 <a-input v-if="!isDisabled" v-model="form.telephone" />
                 <span v-else>{{ form.telephone }}</span>
@@ -247,7 +254,7 @@
                 prop="bankName"
                 :rules="{
                   required: false,
-                  message: '请输入开户行名称',
+                  message: '请输入开户行名称'
                 }"
               >
                 <a-input v-if="!isDisabled" v-model="form.bankName" />
@@ -260,7 +267,7 @@
                 prop="accountNum"
                 :rules="{
                   required: false,
-                  message: '请输入账号',
+                  message: '请输入账号'
                 }"
               >
                 <a-input v-if="!isDisabled" v-model="form.accountNum" />
@@ -269,6 +276,7 @@
             </td>
           </tr>
         </table>
+
         <Approval ref="approval" @opinionChange="opinionChange" />
         <CustomerList ref="customerList" @selected="customerSelected" />
         <XdocView ref="xdocView" />
@@ -281,7 +289,7 @@ import {
   accessoriesManagementDetail,
   accessoriesAddOrUpdate,
   accessoriesGetDetailById,
-  accessoriesApproval,
+  accessoriesApproval
 } from '@/api/after-sales-management' //机构名称
 //客户列表选择
 import CustomerList from '@/components/CustomerList/CustomerList'
@@ -294,7 +302,7 @@ export default {
   components: {
     Approval,
     CustomerList,
-    XdocView,
+    XdocView
   },
   data() {
     return {
@@ -302,8 +310,8 @@ export default {
       form: {
         productInfoList: [],
         signDate: moment(),
-        freightType:1,
-        isTax:1
+        freightType: 1,
+        isTax: 1
       },
       isWarranty: undefined,
       record: {},
@@ -311,7 +319,7 @@ export default {
       visible: false,
       spinning: false,
       type: 'add',
-      userInfo: this.$store.getters.userInfo,
+      userInfo: this.$store.getters.userInfo
     }
   },
   computed: {
@@ -353,50 +361,50 @@ export default {
           title: '序号',
           scopedSlots: { customRender: 'order' },
           width: 60,
-          align: 'center',
+          align: 'center'
         },
         {
           title: '物料代码',
           dataIndex: 'materialCode',
           width: 150,
-          align: 'center',
+          align: 'center'
         },
         {
           title: '物料名称',
           dataIndex: 'materialName',
           width: 130,
-          align: 'center',
+          align: 'center'
         },
         {
           title: '规格型号',
           dataIndex: 'specification',
           width: 340,
-          align: 'center',
+          align: 'center'
         },
         {
           title: '单位',
           dataIndex: 'company',
-          align: 'center',
+          align: 'center'
         },
         {
           title: '数量',
           dataIndex: 'quantity',
-          align: 'center',
+          align: 'center'
         },
         {
           title: '单价（元）',
           dataIndex: 'unitPrice',
-          align: 'center',
+          align: 'center'
         },
         {
           title: '金额（元）',
           dataIndex: 'money',
           scopedSlots: { customRender: 'money' },
-          align: 'center',
-        },
+          align: 'center'
+        }
       ]
       return baseColumns
-    },
+    }
   },
 
   created() {},
@@ -429,21 +437,21 @@ export default {
       let values = {
         approveId: this.record.id,
         isAdopt: opt.isAdopt,
-        opinion: opt.opinion,
+        opinion: opt.opinion
       }
       that.spinning = true
       accessoriesApproval(values)
-        .then((res) => {
+        .then(res => {
           that.spinning = false
           that.handleCancel()
           that.$message.info(res.msg)
           that.$emit('filet')
         })
-        .catch((err) => (that.spinning = false))
+        .catch(err => (that.spinning = false))
     },
     passAction() {
       this.submitAction({
-        isAdopt: 0,
+        isAdopt: 0
         // opinion: '通过',
       })
     },
@@ -455,7 +463,7 @@ export default {
       //审批意见
       this.submitAction({
         isAdopt: 1,
-        opinion: opinion,
+        opinion: opinion
       })
     },
     query(type, record) {
@@ -463,12 +471,12 @@ export default {
       this.form = {
         productInfoList: [],
         signDate: moment(),
-        freightType:1,
-        isTax:1
+        freightType: 1,
+        isTax: 1
       }
       this.type = type
       this.record = record
-      accessoriesGetDetailById({ id: record.id }).then((res) => {
+      accessoriesGetDetailById({ id: record.id }).then(res => {
         this.spinning = false
         this.details = res.data
         if (this.isEditSalary) {
@@ -485,7 +493,7 @@ export default {
       if (this.isVeiw) {
         return (this.visible = false)
       }
-      that.$refs['ruleForm'].validate((valid) => {
+      that.$refs['ruleForm'].validate(valid => {
         if (valid) {
           let ret = {}
           const params = that.$_.cloneDeep(that.form || {})
@@ -499,7 +507,7 @@ export default {
           ret.customerName = params.customerName
           ret.productInfoList = params.productInfoList
           ret.invoiceType = params.invoiceType
-          ret.signDate = params.signDate.format('YYYY-MM-DD')
+          ret.signDate = moment(params.signDate).format('YYYY-MM-DD')
           ret.address = params.address
           ret.telephone = params.telephone
           ret.bankName = params.bankName
@@ -511,7 +519,7 @@ export default {
           ret.totalAmount = params.totalAmount || 0
 
           accessoriesAddOrUpdate(ret)
-            .then((res) => {
+            .then(res => {
               if (res.code === 200) {
                 that.spinning = false
                 that.visible = false
@@ -519,7 +527,7 @@ export default {
                 that.$emit('filet')
               }
             })
-            .catch((err) => (that.spinning = false))
+            .catch(err => (that.spinning = false))
         }
       })
     },
@@ -529,15 +537,15 @@ export default {
     filterOption(input, option) {
       return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
     },
-    handleFreightAmountChange(val){
+    handleFreightAmountChange(val) {
       this.$nextTick(() => {
-        let {productInfoList,freightType,freightAmount} = this.form
+        let { productInfoList, freightType, freightAmount } = this.form
         let totalAmount = 0
         productInfoList.map(p => {
-          totalAmount += ((Number(p.unitPrice) || 0) * (Number(p.quantity) || 0))
+          totalAmount += (Number(p.unitPrice) || 0) * (Number(p.quantity) || 0)
         })
-        if(+freightType === 1){
-          totalAmount += (Number(freightAmount) || 0)
+        if (+freightType === 1) {
+          totalAmount += Number(freightAmount) || 0
         }
         this.form = {
           ...this.form,
@@ -545,7 +553,7 @@ export default {
         }
       })
     }
-  },
+  }
 }
 </script>
 <style scoped>
