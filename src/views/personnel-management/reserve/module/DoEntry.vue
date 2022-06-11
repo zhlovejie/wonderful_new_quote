@@ -10,6 +10,11 @@
   >
     <a-spin :spinning="spinning">
       <a-form :form="form" class="do_entry_form-wrapper">
+        <div>
+          <div>
+            姓名：{{trueNameText}} &nbsp;&nbsp; {{departmentNameText}}/{{stationNameText}} 
+          </div>
+        </div>
         <a-tabs :activeKey="String(activeKey)" default-active-key="1" @change="callback">
           <a-tab-pane key="1">
             <span slot="tab" class="requiredMark">基本信息</span>
@@ -843,10 +848,12 @@
             <table class="custom-table custom-table-border">
               <tr>
                 <th>合同名称</th>
+                <th>创建时间</th>
                 <th>操作</th>
               </tr>
               <tr v-for="(item, index) in todauuplate" :key="index">
                 <td>{{ item.templateName }}</td>
+                <td>{{ item.createdTime }}</td>
                 <td>
                   <a type="primary" @click="doAction(item.fileUrl)" target="_blank">查看</a>
                   <template v-if="isEdit || isRuzhi">
@@ -978,6 +985,10 @@ export default {
         qqNum: false,
         wxNum: false,
       }, //判断该岗位是否配置公司 控制显示 手机号，微信，qq，邮箱 默认不显示
+      trueNameText:'---',
+      stationNameText:'---',
+      departmentNameText:'---',
+      userInfo: this.$store.getters.userInfo, // 当前登录人
     }
   },
   computed: {
@@ -1321,9 +1332,24 @@ export default {
       } catch (err) {
         console.log(err)
       }
+      //填充岗位
+      if (values.departmentId) {
+        await that.departmentChange(values.departmentId).then(() => {
+          that.form.setFieldsValue({ stationId: stationId })
+        })
+      }
       //填充其他
       that.$nextTick(() => {
         that.form.setFieldsValue(Object.assign({}, values))
+
+        try{
+          const {trueName,stationId,departmentId} = values
+          that.trueNameText = trueName
+          that.departmentNameText = that.departmentDataSource.find(item => +item.id === +departmentId).departmentName
+          that.stationNameText = that.stationDataSource.find(item => +item.id === +stationId).stationName          
+        }catch(err){
+          console.error(err)
+        }
         // try{
         //   let s = this.getBirthDay(values.identityCard)
         //   if(s){
@@ -1333,12 +1359,7 @@ export default {
         //   console.log(err)
         // }
       })
-      //填充岗位
-      if (values.departmentId) {
-        that.departmentChange(values.departmentId).then(() => {
-          that.form.setFieldsValue({ stationId: stationId })
-        })
-      }
+      
 
       //that.$nextTick(() => that.bankInfo = values.bankCardList || [] )
       //填充籍贯
@@ -1679,7 +1700,7 @@ export default {
       //打开高拍仪
       this.fileTypes = 2
       this.$refs.gaoPaiYiDevices.show()
-    },
+    }
   },
 }
 </script>

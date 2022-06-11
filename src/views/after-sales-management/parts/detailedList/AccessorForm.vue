@@ -99,10 +99,13 @@
                   message: '请选择是否含运费'
                 }"
               >
-                <a-radio-group v-if="!isDisabled" v-model="form.freightType">
+                <a-radio-group v-if="!isDisabled" v-model="form.freightType" @change="handleFreightAmountChange">
                   <a-radio :value="1">是</a-radio>
                   <a-radio :value="0">否</a-radio>
                 </a-radio-group>
+                <span v-else>
+                  {{ { 1: '是', 0: '否' }[form.freightType] }}
+                </span>
               </a-form-model-item>
             </td>
             <template v-if="+form.freightType === 1">
