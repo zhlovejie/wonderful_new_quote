@@ -1,14 +1,5 @@
 // eslint-disable-next-line
-import {
-  BasicLayout,
-  BlankLayout,
-  PageView,
-  RouteView,
-  UserLayout
-} from '@/layouts'
-import {
-  bxAnaalyse
-} from '@/core/icons'
+import { PageView, RouteView } from '@/layouts'
 
 export default {
   path: '/system-setting',
@@ -20,7 +11,8 @@ export default {
     permission: ['admin']
   },
   redirect: '/system-setting/permission',
-  children: [{
+  children: [
+    {
       path: '/system-setting/permission/devision-management',
       component: PageView,
       name: 'AuthManagement',
@@ -32,7 +24,6 @@ export default {
         permission: ['permission']
       },
       children: [
-
         {
           path: '/system-setting/permission/devision-management',
           name: 'DevisionManagement',
@@ -115,7 +106,8 @@ export default {
         title: '安全设置',
         icon: 'layout'
       },
-      children: [{
+      children: [
+        {
           path: '/system-setting/work-box/dataDictionary',
           name: 'dataDictionary',
           component: () => import('@/views/system-setting/work-box/dataDictionary'),
@@ -210,7 +202,6 @@ export default {
       ]
     },
     {
-
       path: '/system-setting/work-box',
       component: PageView,
       name: 'workBox',
@@ -220,7 +211,8 @@ export default {
         keepAlive: false,
         permission: ['permission']
       },
-      children: [{
+      children: [
+        {
           path: '/after-sales-management/analysis',
           name: 'after-sales-management_analysis',
           component: () => import('@/views/after-sales-management/analysis/List'),
@@ -229,8 +221,9 @@ export default {
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
-        }, {
+          }
+        },
+        {
           path: '/system-setting/work-box/SoftwareProductList',
           name: 'SoftwareProductList',
           component: () => import('@/views/system-setting/work-box/SoftwareProductList'),
@@ -419,11 +412,10 @@ export default {
             title: '项目专利',
             permission: ['permission']
           }
-        },
+        }
       ]
     },
     {
-
       path: '/system-setting/work-box-foreign-trade',
       component: PageView,
       name: 'workBoxForeignTrade',

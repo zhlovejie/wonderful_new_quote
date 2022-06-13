@@ -1,8 +1,8 @@
 // eslint-disable-next-line
-import {BasicLayout,BlankLayout,PageView,RouteView,UserLayout } from '@/layouts'
-import {bxAnaalyse } from '@/core/icons'
+import { PageView } from '@/layouts'
 
-export default {//会议管理
+export default {
+  //会议管理
   path: '/meeting-management',
   name: 'meeting-management',
   component: PageView,
@@ -12,7 +12,8 @@ export default {//会议管理
     permission: ['permission']
   },
   redirect: '/meeting-management/settings',
-  children: [{
+  children: [
+    {
       path: '/meeting-management/settings',
       name: 'meetingManagementSettings',
       component: () => import('@/views/meeting-management/settings/List'),
@@ -21,7 +22,7 @@ export default {//会议管理
         icon: 'setting',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/meeting-management/records',
@@ -32,7 +33,7 @@ export default {//会议管理
         icon: 'setting',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/meeting-management/penalty-rules',
@@ -43,7 +44,7 @@ export default {//会议管理
         icon: 'setting',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/meeting-management/meeting-leave-record',
@@ -54,7 +55,7 @@ export default {//会议管理
         icon: 'setting',
         keepAlive: false,
         permission: ['permission']
-      },
-    },
+      }
+    }
   ]
 }

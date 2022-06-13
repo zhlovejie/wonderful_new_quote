@@ -1,10 +1,8 @@
 // eslint-disable-next-line
-import {
-  PageView,
-  RouteView
-} from '@/layouts'
+import { PageView } from '@/layouts'
 
-export default { //采购模块
+export default {
+  //采购模块
   path: '/procurement-module-management',
   name: 'procurement-module-management',
   redirect: '/procurement-module-management/apply',
@@ -12,9 +10,10 @@ export default { //采购模块
   meta: {
     title: '采购管理',
     icon: 'dollar',
-    permission: ['permission'],
+    permission: ['permission']
   },
-  children: [{
+  children: [
+    {
       path: '/procurement-module-management/apply',
       name: 'procurement-module-management-apply',
       component: () => import('@/views/procurement-module-management/apply/List'),
@@ -23,7 +22,7 @@ export default { //采购模块
         icon: 'setting',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/procurement-module-management/grab',
@@ -34,7 +33,7 @@ export default { //采购模块
         icon: 'setting',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/procurement-module-management/order',
@@ -45,7 +44,53 @@ export default { //采购模块
         icon: 'setting',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
+    {
+      path: '/procurement-module-management/purchase-contract',
+      name: 'procurement-module-management-purchase-contract',
+      component: () => import('@/views/procurement-module-management/purchase-contract/List'),
+      meta: {
+        title: '采购合同',
+        icon: 'setting',
+        keepAlive: false,
+        permission: ['permission']
+      }
+    },
+    {
+      path: '/procurement-module-management/purchase-contract-action',
+      name: 'procurement-module-management-purchase-contract-action',
+      component: () => import('@/views/procurement-module-management/purchase-contract/modules/AddForm'),
+      props: true,
+      meta: {
+        title: '采购合同',
+        icon: 'setting',
+        keepAlive: false,
+        permission: ['permission']
+      }
+    },
+    {
+      path: '/procurement-module-management/purchase-contract-preview',
+      name: 'procurement-module-management-purchase-contract-preview',
+      component: () => import('@/views/procurement-module-management/purchase-contract/modules/previewContract'),
+      props: true,
+      meta: {
+        title: '预览采购合同',
+        icon: 'setting',
+        keepAlive: false,
+        permission: ['permission']
+      }
+    },
+    {
+      path: '/procurement-module-management/applychange',
+      name: 'procurement-module-management-applychange',
+      component: () => import('@/views/procurement-module-management/applychange/List'),
+      meta: {
+        title: '采购需求变更单',
+        icon: 'setting',
+        keepAlive: false,
+        permission: ['permission']
+      }
+    }
   ]
 }

@@ -1,17 +1,8 @@
 // eslint-disable-next-line
-import {
-  BasicLayout,
-  BlankLayout,
-  PageView,
-  RouteView,
-  UserLayout
-} from '@/layouts'
-import {
-  bxAnaalyse
-} from '@/core/icons'
+import { PageView, RouteView } from '@/layouts'
 
-
-export default { //售后管理
+export default {
+  //售后管理
 
   path: '/after-sales-management',
   name: 'after-sales-management',
@@ -22,7 +13,8 @@ export default { //售后管理
     permission: ['permission']
   },
   redirect: '/after-sales-management',
-  children: [{
+  children: [
+    {
       path: '/after-sales-management/equipment',
       name: 'after-sales-management_equipment',
       component: () => import('@/views/after-sales-management/equipment/List'),
@@ -31,7 +23,7 @@ export default { //售后管理
         icon: 'select',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/after-sales-management/Accessories',
@@ -42,7 +34,7 @@ export default { //售后管理
         icon: 'select',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/after-sales-management/PartsInvoicing',
@@ -53,7 +45,7 @@ export default { //售后管理
         icon: 'select',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/after-sales-management/AfterSalesReceipt',
@@ -64,7 +56,7 @@ export default { //售后管理
         icon: 'select',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/after-sales-management/AfterSalesReceipt/ReceiptAdd',
@@ -137,7 +129,8 @@ export default { //售后管理
         permission: ['permission']
       },
       redirect: '/after-sales-management/taskList/repair/List',
-      children: [{
+      children: [
+        {
           path: '/after-sales-management/taskList/repair',
           name: 'access_office_repair',
           component: () => import('@/views/after-sales-management/taskList/repair/List'),
@@ -146,7 +139,7 @@ export default { //售后管理
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/after-sales-management/taskList/detailed',
@@ -157,7 +150,7 @@ export default { //售后管理
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/after-sales-management/taskList/My-mission',
@@ -168,9 +161,8 @@ export default { //售后管理
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
-        },
-
+          }
+        }
       ]
     },
     {
@@ -184,7 +176,8 @@ export default { //售后管理
         permission: ['permission']
       },
       redirect: '/after-sales-management/Network/networkManagement/List',
-      children: [{
+      children: [
+        {
           path: '/after-sales-management/Network/networkManagement',
           name: 'access_sidewalk_networkManagement',
           component: () => import('@/views/after-sales-management/Network/networkManagement/List'),
@@ -193,7 +186,7 @@ export default { //售后管理
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/after-sales-management/Network/enterprise',
@@ -204,8 +197,9 @@ export default { //售后管理
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
-        }, {
+          }
+        },
+        {
           path: '/after-sales-management/Network/payment',
           name: 'access_sidewalk_payment',
           component: () => import('@/views/after-sales-management/Network/payment/List'),
@@ -214,8 +208,8 @@ export default { //售后管理
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
-        },
+          }
+        }
       ]
     },
     {
@@ -229,7 +223,8 @@ export default { //售后管理
         permission: ['permission']
       },
       redirect: '/after-sales-management/parts/detailedList/List',
-      children: [{
+      children: [
+        {
           path: '/after-sales-management/parts/detailedList',
           name: 'access_sidewalk_detailedList',
           component: () => import('@/views/after-sales-management/parts/detailedList/List'),
@@ -238,7 +233,7 @@ export default { //售后管理
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/after-sales-management/parts/mail',
@@ -249,8 +244,9 @@ export default { //售后管理
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
-        }, {
+          }
+        },
+        {
           path: '/after-sales-management/parts/collectionDetails',
           name: 'access_sidewalk_collectionDetails',
           component: () => import('@/views/after-sales-management/parts/collectionDetails/List'),
@@ -259,8 +255,8 @@ export default { //售后管理
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
-        },
+          }
+        }
       ]
     },
 
@@ -275,7 +271,8 @@ export default { //售后管理
         permission: ['permission']
       },
       redirect: '/after-sales-management/return-goods/receives-customer',
-      children: [{
+      children: [
+        {
           path: '/after-sales-management/return-goods/receives-customer',
           name: 'after-sales-management_return-goods_receives-customer',
           component: () => import('@/views/after-sales-management/return-goods/receives-customer/List'),
@@ -284,7 +281,7 @@ export default { //售后管理
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/after-sales-management/return-goods/receives-sale',
@@ -295,7 +292,7 @@ export default { //售后管理
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/after-sales-management/return-goods/unreceives-customer',
@@ -306,7 +303,7 @@ export default { //售后管理
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/after-sales-management/return-goods/unreceives-sale',
@@ -317,7 +314,7 @@ export default { //售后管理
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         }
       ]
     },
@@ -333,7 +330,8 @@ export default { //售后管理
         permission: ['permission']
       },
       redirect: '/after-sales-management/exception/list',
-      children: [{
+      children: [
+        {
           path: '/after-sales-management/exception/list',
           name: 'after-sales-management_exception_list',
           component: () => import('@/views/after-sales-management/exception/List'),
@@ -342,7 +340,7 @@ export default { //售后管理
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         },
         {
           path: '/after-sales-management/exception/approve',
@@ -353,7 +351,7 @@ export default { //售后管理
             icon: 'select',
             keepAlive: false,
             permission: ['permission']
-          },
+          }
         }
       ]
     },

@@ -1,9 +1,9 @@
 // eslint-disable-next-line
-import {BasicLayout,BlankLayout,PageView,RouteView,UserLayout } from '@/layouts'
-import {bxAnaalyse } from '@/core/icons'
+import { PageView } from '@/layouts'
 
-export default {//培训管理
-        
+export default {
+  //培训管理
+
   path: '/training-management',
   name: 'training-management',
   component: PageView,
@@ -13,7 +13,8 @@ export default {//培训管理
     permission: ['permission']
   },
   redirect: '/training-management',
-  children: [{
+  children: [
+    {
       path: '/training-management/training_materials',
       name: 'training-management_materials',
       component: () => import('@/views/training-management/training_materials/materials_List'),
@@ -22,7 +23,7 @@ export default {//培训管理
         icon: 'select',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/training-management/dispersed',
@@ -33,7 +34,7 @@ export default {//培训管理
         icon: 'select',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/training-management/focus',
@@ -44,7 +45,7 @@ export default {//培训管理
         icon: 'select',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/training-management/annual_programme',
@@ -55,7 +56,7 @@ export default {//培训管理
         icon: 'select',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/training-management/my_information',
@@ -66,7 +67,7 @@ export default {//培训管理
         icon: 'select',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/training-management/my_training',
@@ -77,8 +78,7 @@ export default {//培训管理
         icon: 'select',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     }
-
   ]
 }

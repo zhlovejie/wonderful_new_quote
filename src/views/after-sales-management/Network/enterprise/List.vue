@@ -67,11 +67,11 @@
           }}</a>
         </div>
         <div slot="serviceUser" slot-scope="text, record, index">
-          <span>{{ record.serviceUser.split(',')[0] }}</span>
+          <span>{{ Array.isArray(record.serviceUserVoList) && record.serviceUserVoList.length > 0 ? record.serviceUserVoList[0].serviceUserName : '' }}</span>
         </div>
 
         <div slot="contactInformation" slot-scope="text, record, index">
-          <span>{{ record.serviceUser.split(',')[1] }}</span>
+          <span>{{ Array.isArray(record.serviceUserVoList) && record.serviceUserVoList.length > 0 ? record.serviceUserVoList[0].contactInformation : '' }}</span>
         </div>
         <div slot="tutorialVideo" slot-scope="text, record, index">
           <a-button v-if="text" type="link" @click="tutorialClick(text)">查看</a-button>

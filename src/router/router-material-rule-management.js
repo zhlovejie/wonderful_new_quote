@@ -1,8 +1,5 @@
 // eslint-disable-next-line
-import {
-  PageView,
-  RouteView
-} from '@/layouts'
+import { PageView, RouteView } from '@/layouts'
 
 export default {
   path: '/material-rule-management',
@@ -14,7 +11,8 @@ export default {
     permission: ['permission']
   },
   redirect: '/material-rule-management/rule',
-  children: [{
+  children: [
+    {
       path: '/material-rule-management/rule',
       name: 'material-rule-management-rule',
       redirect: '/material-rule-management/rule/routine',
@@ -25,7 +23,8 @@ export default {
         keepAlive: false,
         permission: ['permission']
       },
-      children: [{
+      children: [
+        {
           path: '/material-rule-management/rule/routine',
           name: 'material-rule-management-routine',
           component: () => import('@/views/material-management/rule/RoutineList'),
@@ -70,7 +69,7 @@ export default {
             permission: ['permission']
           },
           props: true
-        },
+        }
       ]
     },
 
@@ -85,7 +84,8 @@ export default {
         keepAlive: false,
         permission: ['permission']
       },
-      children: [{
+      children: [
+        {
           path: '/material-rule-management/library/normal',
           name: 'material-rule-management-library-normal',
           component: () => import('@/views/material-management/library/NormalList'),
@@ -143,7 +143,6 @@ export default {
       ]
     },
     {
-
       path: '/material-management/library/approve',
       name: 'material-rule-management-approve',
       component: () => import('@/views/material-management/library/approve/List'),
@@ -152,7 +151,7 @@ export default {
         icon: 'setting',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     }
   ]
 }

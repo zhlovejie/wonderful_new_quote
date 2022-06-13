@@ -1232,3 +1232,25 @@ export function getRoutineMaterialInfoCode(parameter) {
     params: parameter
   })
 }
+
+/**通过规格id反查父级树 */
+export function routineMaterialRuleParentTree(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/routineMaterialRule/parentTree',
+    method: 'get',
+    params: parameter
+  })
+}
+
+
+
+/**根据物料id查看详情  获取物料当前库存数据 */
+export function getDetailByMaterialId(parameter) {
+  return axios({
+    baseURL: materialBaseUrl,
+    url: '/inventory/material-inventory/getDetailByMaterialId',
+    method: 'get',
+    params: parameter
+  })
+}

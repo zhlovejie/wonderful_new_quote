@@ -1,15 +1,5 @@
 // eslint-disable-next-line
-import {
-  BasicLayout,
-  BlankLayout,
-  PageView,
-  RouteView,
-  UserLayout
-} from '@/layouts'
-import {
-  bxAnaalyse
-} from '@/core/icons'
-
+import { BasicLayout, UserLayout } from '@/layouts'
 
 import routerDashboard from '@/router/router-dashboard'
 import systemSetting from '@/router/router-system-setting'
@@ -42,8 +32,7 @@ import qualityManagement from '@/router/router-quality-management'
 import storageManagement from '@/router/router-storage'
 
 import outsourcingManagement from '@/router/router-outsourcing-management'
-
-const __ROUTER_MAP__ = [
+var __ROUTER_MAP__ = [
   routerDashboard, //仪表盘
   systemSetting, //系统设置
   salesManagement, //销售管理
@@ -76,8 +65,7 @@ const __ROUTER_MAP__ = [
 /*
 会有权限筛选处理，并作为菜单显示
 */
-export const asyncRouterMap = [
-  // index/dashboard
+export var asyncRouterMap = [
   {
     path: '/',
     name: 'index',
@@ -86,9 +74,7 @@ export const asyncRouterMap = [
       title: '首页'
     },
     redirect: '/dashboard/workplace',
-    children: [
-      ...__ROUTER_MAP__
-    ]
+    children: [...__ROUTER_MAP__]
   }
 ]
 
@@ -97,57 +83,30 @@ export const asyncRouterMap = [
  * 所有角色都可以訪問到的
  * @type { *[] }
  */
-export const constantRouterMap = [{
+export var constantRouterMap = [
+  {
     path: '/user',
     component: UserLayout,
     redirect: '/user/login',
     hidden: true,
-    children: [{
+    children: [
+      {
         path: 'login',
         name: 'login',
-        component: () => import( /* webpackChunkName: "user" */ '@/views/user/Login')
-      },
-      {
-        path: 'register',
-        name: 'register',
-        component: () => import( /* webpackChunkName: "user" */ '@/views/user/Register')
-      },
-      {
-        path: 'register-result',
-        name: 'registerResult',
-        component: () => import( /* webpackChunkName: "user" */ '@/views/user/RegisterResult')
+        component: () => import('@/views/user/Login')
       }
     ]
   },
   {
-    path: '/test',
-    component: BlankLayout,
-    redirect: '/test/home',
-    children: [{
-      path: 'home',
-      name: 'TestHome',
-      component: () => import('@/views/Home')
-    }]
-  },
-  {
     path: '/404',
+    name: '404',
     hideInMenu: true,
-    component: () => import( /* webpackChunkName: "fail" */ '@/views/exception/404')
-  },
-  {
-    path: '/PrivacyPolicy',
-    /* 隐私政策 */
-    component: BlankLayout,
-    children: [{
-      path: '/PrivacyPolicy',
-      name: 'PrivacyPolicy',
-      component: () => import('@/views/PrivacyPolicy')
-    }]
+    component: () => import('@/views/exception/404')
   }
 ]
 
 // 前端未找到页面路由（固定不用改）
-export const notFoundRouter = {
+export var notFoundRouter = {
   path: '*',
   redirect: '/404',
   hidden: true

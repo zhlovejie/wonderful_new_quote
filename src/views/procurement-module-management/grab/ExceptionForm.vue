@@ -18,24 +18,15 @@
         :wrapper-col="wrapperCol"
         class="ask-price-form-wrapper"
       >
-        <a-form-model-item
-          label="处理方式"
-          prop="disposeType"
-        >
-          <a-radio-group
-            name="disposeType"
-            v-model="form.disposeType"
-          >
+        <a-form-model-item label="处理方式" prop="disposeType">
+          <a-radio-group name="disposeType" v-model="form.disposeType">
             <a-radio :value="1">重抢</a-radio>
             <a-radio :value="2">新报价采购</a-radio>
           </a-radio-group>
         </a-form-model-item>
 
         <template v-if="form.disposeType === 1">
-          <a-form-model-item
-            label="抢单时长"
-            prop="grabTime"
-          >
+          <a-form-model-item label="抢单时长" prop="grabTime">
             <a-input-number
               placeholder="抢单时长"
               v-model="form.grabTime"
@@ -47,10 +38,7 @@
               :parser="value => value.replace('分钟', '')"
             />
           </a-form-model-item>
-          <a-form-model-item
-            label="公示时长"
-            prop="publicityTime"
-          >
+          <a-form-model-item label="公示时长" prop="publicityTime">
             <a-input-number
               placeholder="公示时长"
               v-model="form.publicityTime"
@@ -63,22 +51,15 @@
             />
           </a-form-model-item>
         </template>
-        <a-form-model-item
-          label="处理理由"
-          prop="reason"
-        >
-          <a-input
-            v-model="form.reason"
-            type="textarea"
-            placeholder="处理理由"
-          />
+        <a-form-model-item label="处理理由" prop="reason">
+          <a-input v-model="form.reason" type="textarea" placeholder="处理理由" />
         </a-form-model-item>
       </a-form-model>
     </a-spin>
   </a-modal>
 </template>
 <script>
-import { quotationDetail,quotationExceptionAdd } from '@/api/procurementModuleManagement'
+import { quotationDetail, quotationExceptionAdd } from '@/api/procurementModuleManagement'
 
 export default {
   data() {
@@ -95,7 +76,7 @@ export default {
       visible: false,
       spinning: false,
       record: {},
-      detail:{}
+      detail: {}
     }
   },
   computed: {
@@ -125,22 +106,24 @@ export default {
       that.visible = true
       that.form = {
         ...that.form,
-        quotationId: that.record.id,
+        quotationId: that.record.id
       }
       that.spinning = true
-      quotationDetail({id:that.record.id}).then(res => {
-        that.spinning = false
-        that.detail = res.data
+      quotationDetail({ id: that.record.requestId })
+        .then(res => {
+          that.spinning = false
+          that.detail = res.data
 
-        if(that.detail.detail.exception){
-          that.form = {...that.form,id:that.detail.detail.exception.id}
-        }else{
-          console.error('that.detail.exception is not exists.')
-        }
-      }).catch(err => {
-        that.spinning = false
-        that.$message.error(err)
-      })
+          if (that.detail.detail.exception) {
+            that.form = { ...that.form, id: that.detail.detail.exception.id }
+          } else {
+            console.error('that.detail.exception is not exists.')
+          }
+        })
+        .catch(err => {
+          that.spinning = false
+          that.$message.error(err)
+        })
     },
     handleSubmit() {
       const that = this
@@ -148,7 +131,7 @@ export default {
         if (valid) {
           const { modelName, modelType } = that.form
           that.spinning = true
-          quotationExceptionAdd({ ...that.form})
+          quotationExceptionAdd({ ...that.form })
             .then(res => {
               that.spinning = false
               that.$message.info(res.msg)

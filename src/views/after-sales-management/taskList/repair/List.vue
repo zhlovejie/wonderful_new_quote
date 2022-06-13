@@ -266,7 +266,7 @@ export default {
       // 查询参数
       queryParam: {
         taskType: 1,
-        myTask: 0,
+        myTask: 3,
       },
       personincharge: [],
       recordResult: {},

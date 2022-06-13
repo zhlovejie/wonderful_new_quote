@@ -59,28 +59,6 @@ export default {
       }
     },
     {
-      path: '/distribution-management/delivery_give',
-      name: 'distribution_delivery_give',
-      component: () => import('@/views/distribution-management/delivery/GiveList'),
-      meta: {
-        title: '派送单',
-        icon: 'select',
-        keepAlive: false,
-        permission: ['permission']
-      }
-    },
-    {
-      path: '/distribution-management/delivery_take',
-      name: 'distribution_delivery_take',
-      component: () => import('@/views/distribution-management/delivery/TakeList'),
-      meta: {
-        title: '提货单',
-        icon: 'select',
-        keepAlive: false,
-        permission: ['permission']
-      }
-    },
-    {
       path: '/sale/invoice/modules',
       name: 'distribution_InvoiceModules',
       hidden: true,

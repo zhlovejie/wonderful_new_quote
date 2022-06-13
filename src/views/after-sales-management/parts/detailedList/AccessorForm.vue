@@ -36,7 +36,7 @@
                 prop="address"
                 :rules="{
                   required: false,
-                  message: '客户名称',
+                  message: '客户名称'
                 }"
               >
                 <a-input
@@ -52,29 +52,97 @@
             <td>售后人员</td>
             <td>{{ record.createdName }}</td>
           </tr>
+
           <tr>
-            <td>是否开票</td>
-            <td>
+            <td>是否含税</td>
+            <td :colspan="+form.isTax === 1 ? 1 : 3">
               <a-form-model-item
-                prop="needInvoice"
+                prop="isTax"
                 :rules="{
                   required: true,
-                  message: '请选择开票类型',
+                  message: '请选择是否含税'
                 }"
               >
-                <a-radio-group v-if="!isDisabled" v-model="form.needInvoice">
-                  <a-radio :value="0">否</a-radio>
+                <a-radio-group v-if="!isDisabled" v-model="form.isTax">
                   <a-radio :value="1">是</a-radio>
+                  <a-radio :value="0">否</a-radio>
                 </a-radio-group>
               </a-form-model-item>
             </td>
+
+            <template v-if="+form.isTax === 1">
+              <td>是否开票</td>
+              <td>
+                <a-form-model-item
+                  prop="needInvoice"
+                  :rules="{
+                    required: true,
+                    message: '请选择开票类型'
+                  }"
+                >
+                  <a-radio-group v-if="!isDisabled" v-model="form.needInvoice">
+                    <a-radio :value="0">否</a-radio>
+                    <a-radio :value="1">是</a-radio>
+                  </a-radio-group>
+                </a-form-model-item>
+              </td>
+            </template>
+          </tr>
+
+          <tr>
+            <td>是否含运费</td>
+            <td :colspan="+form.freightType === 1 ? 1 : 3">
+              <a-form-model-item
+                prop="freightType"
+                :rules="{
+                  required: true,
+                  message: '请选择是否含运费'
+                }"
+              >
+                <a-radio-group v-if="!isDisabled" v-model="form.freightType" @change="handleFreightAmountChange">
+                  <a-radio :value="1">是</a-radio>
+                  <a-radio :value="0">否</a-radio>
+                </a-radio-group>
+                <span v-else>
+                  {{ { 1: '是', 0: '否' }[form.freightType] }}
+                </span>
+              </a-form-model-item>
+            </td>
+            <template v-if="+form.freightType === 1">
+              <td>运费金额</td>
+              <td>
+                <a-form-model-item
+                  prop="freightAmount"
+                  :rules="{
+                    required: true,
+                    message: '请输入运费金额'
+                  }"
+                >
+                  <a-input-number
+                    style="width:100%;"
+                    placeholder="运费金额"
+                    v-model="form.freightAmount"
+                    :step="1"
+                    :precision="2"
+                    v-if="!isDisabled"
+                    @change="handleFreightAmountChange"
+                  />
+                  <span v-else>
+                    {{ form.freightAmount | moneyFormatNumber }}
+                  </span>
+                </a-form-model-item>
+              </td>
+            </template>
+          </tr>
+
+          <tr>
             <td>是否需要鲜章</td>
-            <td>
+            <td colspan="3">
               <a-form-model-item
                 prop="needSignet"
                 :rules="{
                   required: true,
-                  message: '请选择是否需要鲜章',
+                  message: '请选择是否需要鲜章'
                 }"
               >
                 <a-radio-group v-if="!isDisabled" v-model="form.needSignet">
@@ -85,13 +153,13 @@
             </td>
           </tr>
           <tr>
-            <td v-if="form.needInvoice === 1">开票类型</td>
-            <td v-if="form.needInvoice === 1">
+            <td v-if="+form.isTax === 1 && +form.needInvoice === 1">开票类型</td>
+            <td v-if="+form.isTax === 1 && +form.needInvoice === 1">
               <a-form-model-item
                 prop="invoiceType"
                 :rules="{
                   required: true,
-                  message: '请选择开票类型',
+                  message: '请选择开票类型'
                 }"
               >
                 <a-radio-group v-if="!isDisabled" v-model="form.invoiceType">
@@ -106,7 +174,7 @@
                 prop="signDate"
                 :rules="{
                   required: true,
-                  message: '请选择签订日期',
+                  message: '请选择签订日期'
                 }"
               >
                 <a-date-picker v-if="!isDisabled" v-model="form.signDate" />
@@ -117,6 +185,7 @@
             </td>
           </tr>
         </table>
+
         <div style="margin-top: 20px">
           <h3>合同信息</h3>
           <a-table
@@ -137,7 +206,12 @@
               <div style="text-align: right; font-size: 16px; color: red">
                 <span>数量合计：{{ totalPrice }}</span>
                 <span style="margin: 0 10px">单价合计：{{ totalPhase | moneyFormatNumber }}</span>
-                <span>金额合计：{{ details.totalAmount | moneyFormatNumber }}</span>
+                <span>金额合计：{{ form.totalAmount | moneyFormatNumber }}</span>
+                <span style="margin:0 10px;"
+                  >({{ +form.isTax === 1 ? '含税' : '不含税' }} &nbsp;&nbsp;{{
+                    +form.freightType === 1 ? '含运费' : '不含运费'
+                  }})</span
+                >
               </div>
             </div>
           </a-table>
@@ -151,7 +225,7 @@
                 prop="address"
                 :rules="{
                   required: false,
-                  message: '请输入地址',
+                  message: '请输入地址'
                 }"
               >
                 <a-input v-if="!isDisabled" v-model="form.address" />
@@ -161,10 +235,13 @@
             <td>
               <a-form-model-item
                 prop="telephone"
-                :rules="{
-                  required: false,
-                  message: '请输入电话',
-                }"
+                :rules="[
+                  {
+                    required: false,
+                    message: '请输入电话'
+                  },
+                  { min: 0, max: 400, message: '电话长度0-400位', trigger: 'blur' }
+                ]"
               >
                 <a-input v-if="!isDisabled" v-model="form.telephone" />
               </a-form-model-item>
@@ -177,7 +254,7 @@
                 prop="bankName"
                 :rules="{
                   required: false,
-                  message: '请输入开户行名称',
+                  message: '请输入开户行名称'
                 }"
               >
                 <a-input v-if="!isDisabled" v-model="form.bankName" />
@@ -189,7 +266,7 @@
                 prop="accountNum"
                 :rules="{
                   required: false,
-                  message: '请输入账号',
+                  message: '请输入账号'
                 }"
               >
                 <a-input v-if="!isDisabled" v-model="form.accountNum" />
@@ -206,7 +283,7 @@
 import {
   accessoriesManagementDetail,
   accessoriesAddOrUpdate,
-  accessoriesgetCustomerById,
+  accessoriesgetCustomerById
 } from '@/api/after-sales-management' //机构名称
 //客户列表选择
 import CustomerList from '@/components/CustomerList/CustomerList'
@@ -214,7 +291,7 @@ import moment from 'moment'
 export default {
   name: 'BecomingForm',
   components: {
-    CustomerList,
+    CustomerList
   },
   data() {
     return {
@@ -225,6 +302,8 @@ export default {
         invoiceType: 2,
         needInvoice: 1,
         needSignet: 0,
+        freightType: 1,
+        isTax: 1
       },
       isWarranty: undefined,
       record: {},
@@ -232,7 +311,7 @@ export default {
       visible: false,
       spinning: false,
       type: 'add',
-      userInfo: this.$store.getters.userInfo,
+      userInfo: this.$store.getters.userInfo
     }
   },
   computed: {
@@ -271,50 +350,50 @@ export default {
           title: '序号',
           scopedSlots: { customRender: 'order' },
           width: 60,
-          align: 'center',
+          align: 'center'
         },
         {
           title: '物料代码',
           dataIndex: 'materialCode',
           width: 150,
-          align: 'center',
+          align: 'center'
         },
         {
           title: '物料名称',
           dataIndex: 'materialName',
           width: 130,
-          align: 'center',
+          align: 'center'
         },
         {
           title: '规格型号',
           dataIndex: 'specification',
           width: 340,
-          align: 'center',
+          align: 'center'
         },
         {
           title: '单位',
           dataIndex: 'company',
-          align: 'center',
+          align: 'center'
         },
         {
           title: '数量',
           dataIndex: 'quantity',
-          align: 'center',
+          align: 'center'
         },
         {
           title: '单价（元）',
           dataIndex: 'unitPrice',
-          align: 'center',
+          align: 'center'
         },
         {
           title: '金额（元）',
           dataIndex: 'money',
           scopedSlots: { customRender: 'money' },
-          align: 'center',
-        },
+          align: 'center'
+        }
       ]
       return baseColumns
-    },
+    }
   },
 
   created() {},
@@ -330,7 +409,7 @@ export default {
         this.form = { ...this.form, ...{ customerName: record.name, customerId: record.id } }
       }
     },
-    query(type, record) {
+    async query(type, record) {
       this.visible = true
       this.form = {
         productInfoList: [],
@@ -338,29 +417,33 @@ export default {
         invoiceType: 2,
         needInvoice: 1,
         needSignet: 0,
+        freightType: 1,
+        isTax: 1
       }
       this.type = type
       this.record = record
       this.form.handlerUser = record.saleUserId
       if (type === 'add') {
-        accessoriesManagementDetail({ id: record.id }).then((res) => {
+        await accessoriesManagementDetail({ id: record.id }).then(res => {
           this.spinning = false
           this.details = res.data
-          res.data.productInfoList = res.data.productInfoList.filter((i) => i.isWarranty === 1)
+          res.data.productInfoList = res.data.productInfoList.filter(i => i.isWarranty === 1)
           // this.form.customerName = record.customerName
           // this.form.customerId = record.customerId
-          this.form = { ...this.form, ...res.data }
+          this.form = { ...this.form, ...res.data, isTax: 1 }
           this.form = { ...this.form, ...{ customerName: record.customerName, customerId: record.customerId } }
         })
-        accessoriesgetCustomerById({ id: record.customerId }).then((res) => {
-          this.form = { ...this.form, ...res.data }
+        await accessoriesgetCustomerById({ id: record.customerId }).then(res => {
+          this.form = { ...this.form, ...res.data, isTax: 1 }
         })
+
+        this.handleFreightAmountChange()
       }
     },
     handleOk() {
       console.log('你是要提交')
       let that = this
-      that.$refs['ruleForm'].validate((valid) => {
+      that.$refs['ruleForm'].validate(valid => {
         if (valid) {
           let ret = {}
           const params = that.$_.cloneDeep(that.form || {})
@@ -375,15 +458,19 @@ export default {
           ret.invoiceType = params.invoiceType
           ret.needInvoice = params.needInvoice
           ret.needSignet = params.needSignet
-          ret.signDate = params.signDate.format('YYYY-MM-DD')
+          ret.signDate = moment(params.signDate).format('YYYY-MM-DD')
           ret.address = params.address
           ret.telephone = params.telephone
           ret.bankName = params.bankName
           ret.accountNum = params.accountNum
-          ret.totalAmount = that.details.totalAmount
+          ret.freightType = params.freightType
+          ret.isTax = params.isTax
+          ret.needInvoice = params.needInvoice
+          ret.freightAmount = params.freightAmount || 0
+          ret.totalAmount = params.totalAmount || 0
 
           accessoriesAddOrUpdate(ret)
-            .then((res) => {
+            .then(res => {
               if (res.code === 200) {
                 that.spinning = false
                 that.visible = false
@@ -392,7 +479,10 @@ export default {
                 this.$router.push({ name: 'after-sales-management_Accessories' })
               }
             })
-            .catch((err) => (that.spinning = false))
+            .catch(err => {
+              that.spinning = false
+              that.$message.error(err.message)
+            })
         }
       })
     },
@@ -402,7 +492,23 @@ export default {
     filterOption(input, option) {
       return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
     },
-  },
+    handleFreightAmountChange(val) {
+      this.$nextTick(() => {
+        let { productInfoList, freightType, freightAmount } = this.form
+        let totalAmount = 0
+        productInfoList.map(p => {
+          totalAmount += (Number(p.unitPrice) || 0) * (Number(p.quantity) || 0)
+        })
+        if (+freightType === 1) {
+          totalAmount += Number(freightAmount) || 0
+        }
+        this.form = {
+          ...this.form,
+          totalAmount
+        }
+      })
+    }
+  }
 }
 </script>
 <style scoped>

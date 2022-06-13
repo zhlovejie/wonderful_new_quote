@@ -1,16 +1,8 @@
 // eslint-disable-next-line
-import {
-  BasicLayout,
-  BlankLayout,
-  PageView,
-  RouteView,
-  UserLayout
-} from '@/layouts'
-import {
-  bxAnaalyse
-} from '@/core/icons'
+import { PageView, RouteView } from '@/layouts'
 
-export default { //考勤管理
+export default {
+  //考勤管理
 
   path: '/attendance-management',
   name: 'attendance-management',
@@ -21,7 +13,8 @@ export default { //考勤管理
     permission: ['permission']
   },
   redirect: '/canteen-menu-management/config',
-  children: [{
+  children: [
+    {
       path: '/attendance-management/rules-setting',
       name: 'attendance-rules-setting',
       component: RouteView,
@@ -32,7 +25,8 @@ export default { //考勤管理
         keepAlive: false,
         permission: ['permission']
       },
-      children: [{
+      children: [
+        {
           path: '/attendance-management/rules-setting/shift-rule',
           name: 'attendance-rules-setting-shift-rule',
           component: () => import('@/views/attendance-management/rules-setting/shift-rule/List'),
@@ -154,7 +148,7 @@ export default { //考勤管理
         icon: 'car',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/attendance-management/over-time-apply',
@@ -165,7 +159,7 @@ export default { //考勤管理
         icon: 'setting',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/attendance-management/going-apply',
@@ -176,7 +170,7 @@ export default { //考勤管理
         icon: 'setting',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/attendance-management/attendance-abnormal-events',
@@ -187,7 +181,7 @@ export default { //考勤管理
         icon: 'setting',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/attendance-management/attence-months',
@@ -198,7 +192,7 @@ export default { //考勤管理
         icon: 'setting',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/attendance-management/supplement-card-apply',
@@ -209,7 +203,7 @@ export default { //考勤管理
         icon: 'setting',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/attendance-management/leave-apply',
@@ -220,7 +214,7 @@ export default { //考勤管理
         icon: 'setting',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/attendance-management/face-record',
@@ -231,7 +225,7 @@ export default { //考勤管理
         icon: 'setting',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/attendance-management/attendance-chart',
@@ -244,7 +238,8 @@ export default { //考勤管理
         keepAlive: false,
         permission: ['permission']
       },
-      children: [{
+      children: [
+        {
           path: '/attendance-management/chart/attendance-statistics',
           name: 'attendance-chart-attendance-statistics',
           component: () => import('@/views/attendance-management/chart/AttendanceStatisticsList'),
@@ -265,7 +260,7 @@ export default { //考勤管理
             keepAlive: false,
             permission: ['permission']
           }
-        },
+        }
       ]
     },
     {
@@ -288,7 +283,7 @@ export default { //考勤管理
         icon: 'setting',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
 
     {

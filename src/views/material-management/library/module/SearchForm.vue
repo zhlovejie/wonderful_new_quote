@@ -1,7 +1,7 @@
 <template>
   <a-modal
     :title="modalTitle"
-    :width="900"
+    :width="1000"
     :visible="visible"
     :maskClosable="false"
     @cancel="handleCancel"
@@ -10,22 +10,22 @@
     <a-form :form="form" class="search-form-wrapper">
       <a-row :gutter="0">
         <a-col :span="24">基本信息</a-col>
-        <a-col :span="12">
+        <a-col :span="11" offset="1">
           <a-form-item label="物料代码">
             <a-input v-decorator="['materialCode']" placeholder="物料代码" :allowClear="true" />
           </a-form-item>
         </a-col>
-        <a-col :span="12">
+        <a-col :span="11" offset="1">
           <a-form-item label="中文名称">
             <a-input v-decorator="['materialName']" placeholder="中文名称" :allowClear="true" />
           </a-form-item>
         </a-col>
-        <a-col :span="12">
+        <a-col :span="11" offset="1">
           <a-form-item label="原K3物料代码">
             <a-input v-decorator="['k3Code']" placeholder="原K3物料代码" :allowClear="true" />
           </a-form-item>
         </a-col>
-        <a-col :span="12">
+        <a-col :span="11" offset="1">
           <a-form-item label="物料来源属性">
             <a-select v-decorator="['materialSource']" placeholder="物料来源属性">
 
@@ -44,7 +44,7 @@
           </a-form-item>
         </a-col>
 
-        <a-col :span="12">
+        <a-col :span="11" offset="1">
           <a-form-item label="使用状态">
             <a-select
                 v-decorator="['useStatus']"
@@ -61,7 +61,7 @@
           </a-form-item>
         </a-col>
 
-        <a-col :span="12">
+        <a-col :span="11" offset="1">
           <a-form-item label="使用场景">
             <a-select mode="multiple" v-decorator="['sceneType']" placeholder="使用场景">
               <a-select-option value="生产用">生产用</a-select-option>
@@ -76,7 +76,7 @@
           </a-form-item>
         </a-col>
 
-        <a-col :span="12">
+        <a-col :span="11" offset="1">
           <a-form-item label="物料图片">
             <a-select v-decorator="['materialPicFlag']" placeholder="物料图片">
               <a-select-option :value="0">无</a-select-option>
@@ -86,7 +86,7 @@
         </a-col>
 
         
-        <a-col :span="12" >
+        <a-col :span="11" offset="1" >
           <a-form-item label="审核">
             <a-select v-decorator="['auditStatus']" placeholder="审核状态">
               <a-select-option :value="1">未审核</a-select-option>
@@ -96,23 +96,39 @@
           </a-form-item>
         </a-col>
 
-        <a-col :span="12">
+        <a-col :span="11" offset="1">
           <a-form-item label="录入人">
             <a-input v-decorator="['createdName']" placeholder="录入人" :allowClear="true" />
           </a-form-item>
         </a-col>
-        <a-col :span="12">
+        <a-col :span="11" offset="1">
           <a-form-item label="录入时间">
             <a-range-picker
+              style="width:100%;"
               v-decorator="['sDate']"
-               :show-time="{ format: 'HH:mm:ss' }"
-              format="YYYY-MM-DD HH:mm:ss"
+              format="YYYY-MM-DD"
               :placeholder="['开始时间', '结束时间']"
             />
           </a-form-item>
         </a-col>
 
-        <a-col :span="24" >
+        <a-col :span="11" offset="1">
+          <a-form-item label="修改人">
+            <a-input v-decorator="['modifierName']" placeholder="修改人" :allowClear="true" />
+          </a-form-item>
+        </a-col>
+        <a-col :span="11" offset="1">
+          <a-form-item label="修改时间">
+            <a-range-picker
+              style="width:100%;"
+              v-decorator="['sUpdateDate']"
+              format="YYYY-MM-DD"
+              :placeholder="['开始时间', '结束时间']"
+            />
+          </a-form-item>
+        </a-col>
+
+        <a-col :span="11" offset="1" >
           <a-form-item label="禁用">
             <a-radio-group
               v-decorator="['isForbidden']"
@@ -123,9 +139,19 @@
             </a-radio-group>
           </a-form-item>
         </a-col>
+
+        <a-col :span="11" offset="1" >
+          <a-form-item label="监管状态">
+            <a-select v-decorator="['isCare']" placeholder="监管状态">
+              <a-select-option :value="1">待执行</a-select-option>
+              <a-select-option :value="2">已监管</a-select-option>
+            </a-select>
+          </a-form-item>
+        </a-col>
+
         <template v-if="isNormal">
-          <a-col :span="24">规格型号</a-col>
-          <a-col :span="24">
+          <a-col :span="23" offset="1">规格型号</a-col>
+          <a-col :span="23" offset="1">
               <SpecificationSearch ref="specificationSearch" :info="detail" @change="specificationSearchChange" />
           </a-col>
         </template>
@@ -194,14 +220,26 @@ export default {
         let values = this.form.getFieldsValue()
         values = {...values,specification:this.specification}
 
+        // 创建时间,创建人
         let beginTime = undefined, endTime = undefined;
         if (Array.isArray(values.sDate) && values.sDate.length === 2) {
-          beginTime = values.sDate[0] instanceof moment ? values.sDate[0].format('YYYY-MM-DD HH:mm:ss') : undefined
-          endTime = values.sDate[1] instanceof moment ? values.sDate[1].format('YYYY-MM-DD HH:mm:ss') : undefined
+          beginTime = values.sDate[0] instanceof moment ? values.sDate[0].format('YYYY-MM-DD 00:00:00') : undefined
+          endTime = values.sDate[1] instanceof moment ? values.sDate[1].format('YYYY-MM-DD 23:59:59') : undefined
         }
         values.startTime = beginTime
         values.endTime = endTime
+        delete values.sDate
 
+        // 修改时间,修改人
+        beginTime = undefined, endTime = undefined;
+        if (Array.isArray(values.sUpdateDate) && values.sUpdateDate.length === 2) {
+          beginTime = values.sUpdateDate[0] instanceof moment ? values.sUpdateDate[0].format('YYYY-MM-DD 00:00:00') : undefined
+          endTime = values.sUpdateDate[1] instanceof moment ? values.sUpdateDate[1].format('YYYY-MM-DD 23:59:59') : undefined
+        }
+        values.modifiedStartTime = beginTime
+        values.modifiedEndTime = endTime
+        delete values.sUpdateDate
+        
         if(Array.isArray(values.sceneType)){
           values.sceneType = values.sceneType.join(',')
         }else{
@@ -227,6 +265,7 @@ export default {
 }
 .search-form-wrapper >>> .ant-form-item-label {
   display: inline-block;
-  width: 120px;
+  width: 100px;
+  text-align: left;
 }
 </style>

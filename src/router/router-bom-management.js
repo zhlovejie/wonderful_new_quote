@@ -1,10 +1,8 @@
 // eslint-disable-next-line
-import {
-  PageView,
-  RouteView
-} from '@/layouts'
+import { PageView, RouteView } from '@/layouts'
 
-export default { //BOM管理
+export default {
+  //BOM管理
   path: '/bom-management',
   name: 'bom-management',
   component: PageView,

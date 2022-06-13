@@ -600,6 +600,28 @@ export function accessoriesManagementPage(parameter) {
     params: parameter
   })
 }
+
+//配件清单列表 - 采购申请 专用
+export function purchaseManagementPage(parameter) {
+  return axios({
+    baseURL: baseurl,
+    url: '/csupport/accessories-management/purchaseManagementPage',
+    method: 'get',
+    params: parameter
+  })
+}
+
+//配件清单列表 - 已经使用的售后任务需求单ID列表
+export function listGroupRelatedIdByRequestType(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: '/requestApply/listGroupRelatedIdByRequestType',
+    method: 'get',
+    params: parameter
+  })
+}
+
+
 //维修任务单申请列表
 export function taskDocumentPage(parameter) {
   return axios({

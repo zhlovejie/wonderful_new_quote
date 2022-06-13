@@ -1,13 +1,7 @@
 import Vue from 'vue'
 // 生产环境使用
 import { asyncRouterMap, constantRouterMap, notFoundRouter } from '@/config/router.config'
-
-//// 开发环境 优化webpack 启动使用
-// import { asyncRouterMap, constantRouterMap, notFoundRouter } from '@/config/router.config.dev'
-
-import {
-  routerListByUser
-} from '@/api/login'
+import { routerListByUser } from '@/api/login'
 
 /**
  * 过滤账户是否拥有某一个权限，并将菜单从加载列表移除
@@ -64,7 +58,7 @@ function filterAsyncRouter (routerMap, roles) {
 @param name
 @param routes 路由描述
 * */
-function getRouterComponent (name, routes) {
+function getRouterComponent(name, routes) {
   if (!routes) return null
   for (let route of routes) {
     if (name === route.name) {
@@ -93,7 +87,7 @@ const generator = (routerMap, parent) => {
       // 该路由对应页面的 组件
       component: getRouterComponent(item.name || item.key, asyncRouterMap),
       // meta: 页面标题, 菜单图标, 页面权限(供指令权限用，可去掉)
-      meta: { title: item.title, icon: item.icon || undefined, permission: item.key && [item.key] || null }
+      meta: { title: item.title, icon: item.icon || undefined, permission: (item.key && [item.key]) || null }
     }
     // 为了防止出现后端返回结果不规范，处理有可能出现拼接出两个 反斜杠
     currentRouter.path = currentRouter.path.replace('//', '/')
@@ -119,13 +113,13 @@ const permission = {
     }
   },
   actions: {
-    GenerateRoutes ({ commit }, data) {
+    GenerateRoutes({ commit }, data) {
       return new Promise(resolve => {
         routerListByUser().then(res => {
-          Vue.ls.set('USER_ROUTERS',res.data || [])
+          Vue.ls.set('USER_ROUTERS', res.data || [])
           const accessedRouters = generator(res.code === 200 ? res.data : [])
           //console.log('generator', accessedRouters)
-          accessedRouters.push(notFoundRouter)
+          // accessedRouters.push(notFoundRouter)
           commit('SET_ROUTERS', accessedRouters)
           //console.log('accessedRouters',accessedRouters)
           resolve()

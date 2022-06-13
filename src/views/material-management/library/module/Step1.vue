@@ -355,6 +355,31 @@ export default {
         .map(item => item.code)
         .join(joinSymbol)
     },
+
+    parentPath(_parentId, _dataList) {
+      const that = this
+      let arr = []
+      let parentId = _parentId
+      // if(+parentId === 0){
+      //   return '0'
+      // }
+      while (+parentId) {
+        let target = _dataList.find(item => +item.key === +parentId)
+        /**
+         * @ApiModelProperty(value = "是否计入物料代码：1是，2否，默认值1")
+         * private Integer isBringCode;
+         */
+        if (+target.isBringCode === 1) {
+          arr.push({ ...target })
+        }
+        parentId = target.parentId
+      }
+      return arr
+        .reverse()
+        .map(item => (item.sourceTitle || item.title))
+        .slice(0,-1)
+        .join('-')
+    },
     formatMaterialCode(codeStr, joinSymbol = '') {
       if (typeof codeStr !== 'string') {
         console.warn(`${codeStr} is not string type..`)
@@ -422,6 +447,8 @@ export default {
             }
             console.log(materialCode)
 
+            let materialRoute = that.parentPath(ruleId, that.dataList)
+
             that.tip = '检测物料代码是否重复...'
             that.spinning = true
             const isMaterialCodeDuplicate = await routineMaterialInfoCheckCode({
@@ -479,7 +506,8 @@ export default {
               specification: that.getSpecification(),
               specificationIds: that.form.specificationsList.map(item => item.selectedID).join(','),
               isCable: ruleItem.isCable,
-              ruleCode
+              ruleCode,
+              materialRoute
             }
 
             that.$emit('change', { __action__: 'nextStep', values: params })
@@ -500,7 +528,6 @@ export default {
       const that = this
       let { parentId, texture, thickness, width, length } = this.form
       let prefixCode = this.parentCodes(parentId, that.dataList, joinSymbol)
-
       let arr = []
       that.form.specificationsList.map(item => {
         let target = item.subList.find(s => +s.id === +item.selectedID)

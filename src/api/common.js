@@ -106,8 +106,9 @@ export function findApprovedNodeListByMaterial(parameter) {
 //获取供应商审批实例列表
 export function findApprovedNodeListdep(parameter) {
   return axios({
-    baseURL: system.baseURL,
-    url: '/common/findApprovedNodeDeptList',
+    baseURL: system.materialBaseUrl,
+    // url: '/common/findApprovedNodeDeptList',
+    url: '/common/findApprovedNodeList',
     method: 'get',
     params: parameter
   })

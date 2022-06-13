@@ -1,10 +1,8 @@
 // eslint-disable-next-line
-import {
-  PageView,
-  RouteView
-} from '@/layouts'
+import { PageView, RouteView } from '@/layouts'
 
-export default { //工艺管理
+export default {
+  //工艺管理
   path: '/product-process-management',
   name: 'product-process-management',
   component: PageView,
@@ -14,7 +12,8 @@ export default { //工艺管理
     permission: ['permission']
   },
   redirect: '/product-process-management/workshop-management',
-  children: [{
+  children: [
+    {
       path: '/product-process-management/workshop-management',
       name: 'product-process-management_workshop-management',
       component: () => import('@/views/product-process-management/workshop/List'),
@@ -35,7 +34,7 @@ export default { //工艺管理
         icon: 'select',
         keepAlive: false,
         permission: ['permission']
-      },
+      }
     },
     {
       path: '/product-process-management/step-management',
@@ -60,7 +59,8 @@ export default { //工艺管理
         permission: ['permission']
       },
       redirect: '/product-process-management/equipment-management/list',
-      children: [{
+      children: [
+        {
           path: '/product-process-management/equipment-management/list',
           name: 'product-process-management_equipment-management_list',
           component: () => import('@/views/product-process-management/equipment/List'),
@@ -95,7 +95,7 @@ export default { //工艺管理
             permission: ['permission']
           },
           children: []
-        },
+        }
       ]
     },
 
@@ -110,7 +110,8 @@ export default { //工艺管理
         permission: ['permission']
       },
       redirect: '/product-process-management/process-route-management/route',
-      children: [{
+      children: [
+        {
           path: '/product-process-management/process-route-management/route',
           name: 'product-process-management_process-route-management_route',
           component: () => import('@/views/product-process-management/process-route/List'),

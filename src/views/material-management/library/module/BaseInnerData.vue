@@ -116,6 +116,15 @@
           </td>
         </tr>
 
+        <tr >
+          <td>路径</td>
+          <td colspan="3">
+            <a-form-model-item>
+              {{form.materialRoute}}
+            </a-form-model-item>
+          </td>
+        </tr>
+
         <tr>
           <td>
             <span class="icon-required">采购计量单位</span>
