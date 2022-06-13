@@ -26,7 +26,7 @@
             <td style="width:150px;">换料单号</td>
             <td style="width:350px;">
               <a-form-model-item>
-                {{ detail.applyCode ? detail.applyCode : '*' }}
+                {{ detail.applyCode ? detail.applyCode : '--' }}
               </a-form-model-item>
             </td>
             <td style="width:150px;">关联技改单</td>

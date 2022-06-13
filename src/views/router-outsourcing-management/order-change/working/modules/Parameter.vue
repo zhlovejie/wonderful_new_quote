@@ -21,12 +21,7 @@ const renderContent = (text, record, index) => {
     children: text,
     attrs: {}
   }
-  obj.attrs.rowSpan = 1
-  // if (index == 0) {
-  //   obj.attrs.rowSpan = 4
-  // } else {
-  //   obj.attrs.rowSpan = 0
-  // }
+  obj.attrs.rowSpan = record.rowSpan
   return obj
 }
 
@@ -86,14 +81,31 @@ export default {
     dataArr() {
       //相同的属性合并行显示
       //[{fileUrl: "http://22",propertiesDicCode: "002",propertiesDicId: 2,propertiesDicName: "文件2",state: 3}]
+      console.log('转换前：', this.list)
+      this.list.sort((a, b) => {
+        return a.propertiesDicId - b.propertiesDicId
+      })
+      const count = this.list.length
       let arr = this.list.map((item, index) => {
         item.key = index + 1
         //变更后的参数相较于之前的参数状态变化：1、原参数 2、新参数 3、被替换
         item.stateText = { 1: '原参数', 2: '新参数', 3: '被替换' }[item.state] || '未知'
-        // let subIndex = item.fileUrl.lastIndexOf('//')
-        //item.fileName = item.fileUrl.substring(subIndex + 2, item.fileUrl.length) //截取fileURL//后的字符
+        if ((!item.rowSpan) && item.rowSpan!==0) {
+          var num = 1
+          for (var i = index + 1; i < count; i++) {
+            let dicId = this.list[i].propertiesDicId
+            if (+item.propertiesDicId === +dicId) {
+              num++
+              this.list[i].rowSpan = 0
+            } else {
+              break
+            }
+          }
+          item.rowSpan = num
+        }
         return item
       })
+      console.log('转换后：', arr)
       return arr
     }
   },

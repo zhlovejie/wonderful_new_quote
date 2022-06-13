@@ -2,55 +2,7 @@
   <!-- 换料单 -->
   <div class="wdf-custom-wrapper" id="agency-contract-wrapper">
     <!-- 筛选-开始 -->
-    <div class="search-wrapper">
-      <a-form layout="inline">
-        <a-form-item>
-          <a-select
-            placeholder="请选择成品物料"
-            v-model="searchParam.materialId"
-            style="width: 250px"
-            :allowClear="true"
-            show-search
-            option-filter-prop="children"
-            :filter-option="filterOption"
-          >
-            <a-select-option v-for="val in storageMaterialList" :key="val.materialId" :value="val.materialId">{{
-              `${val.materialName}(${val.materialCode})`
-            }}</a-select-option>
-          </a-select>
-        </a-form-item>
-        <!-- 审批状态：1待提交 2待审批，3通过，4不通过，5已撤回 -->
-        <a-form-item v-if="+activeKey === 0">
-          <a-select
-            placeholder="请选择审批状态"
-            v-model="searchParam.approveStatus"
-            style="width:150px;"
-            :allowClear="true"
-          >
-            <a-select-option :value="1">待提交</a-select-option>
-            <a-select-option :value="2">待审批</a-select-option>
-            <a-select-option :value="3">通过</a-select-option>
-            <a-select-option :value="4">不通过</a-select-option>
-            <a-select-option :value="5">已撤回</a-select-option>
-          </a-select>
-        </a-form-item>
-        <a-form-item>
-          <a-input
-            placeholder="需求单号/成品物料名称/换料单号"
-            v-model="searchParam.parameter"
-            style="width:300px;"
-            :allowClear="true"
-          />
-        </a-form-item>
-        <a-form-item>
-          <a-button type="text" @click="onClean" style="margin-right:10px;">清除</a-button>
-          <a-button type="primary" icon="search" @click="searchAction({ current: 1 })">查询</a-button>
-          <a-button type="text" @click="doAction('add', { orderId: 1, needId: 10 })" style="margin-left:10px;"
-            >测试新增</a-button
-          >
-        </a-form-item>
-      </a-form>
-    </div>
+    <SearchKey :activeKey="activeKey" @clean="onClean" @search="onSearchKey" @add="onAdd"></SearchKey>
     <!-- 筛选-结束 -->
     <div class="main-wrapper">
       <a-tabs :activeKey="String(activeKey)" defaultActiveKey="0" @change="tabChange">
@@ -132,13 +84,12 @@ import {
   refuellingDelete, //换料单-删除
   refuellingWithdraw //换料单-撤回
 } from '@/api/orderChange'
-import {
-  exWarehouseApplyGetMaterial //条件检索-物料列表
-} from '@/api/storage_wzz'
+import DepartmentSelect from '@/components/CustomerList/DepartmentSelect' //生产车间
 import MaterialChange from './modules/MaterialChange.vue' //原物料变化-查看
 import AddForm from './modules/AddForm.vue' //新增/详情
 import ApproveInfo from '@/components/CustomerList/ApproveInfo' //审批预览
 import ChangeQuotation from './modules/ChangeQuotation.vue' //变更报价
+import SearchKey from './modules/SearchKey.vue'
 
 const columns = [
   {
@@ -185,6 +136,8 @@ const columns = [
 export default {
   name: 'outsourcing-order-change-refuelling',
   components: {
+    SearchKey,
+    DepartmentSelect,
     AddForm,
     MaterialChange,
     ApproveInfo,
@@ -218,26 +171,15 @@ export default {
     $route: {
       handler: function(to) {
         if (to.name === 'outsourcing-order-change-refuelling') {
-          this.init()
+          this.searchAction()
         }
       },
       immediate: true
     }
   },
-  created() {
-    this.init()
-  },
+  created() {},
   mounted() {},
   methods: {
-    //获取初始数据源-物料列表
-    init() {
-      let that = this
-      let queue = []
-      let task1 = exWarehouseApplyGetMaterial().then(res => (that.storageMaterialList = res.data))
-      queue.push(task1)
-      that.searchAction()
-      return Promise.all(queue)
-    },
     // 查询-换料单列表
     searchAction(opt = {}) {
       let that = this
@@ -271,7 +213,7 @@ export default {
           pagination.current = res.data.current || 1
           that.pagination = pagination
 
-          let { current, pages } = res.data
+          const { current, pages } = res.data
           if (+pages > 0 && +current > +pages) {
             that.pagination = { ...pagination, current: pages }
             that.searchAction()
@@ -291,7 +233,6 @@ export default {
     },
     //原物料变化-查看
     onMaterialView(record) {
-      console.log('原物料变化-查看:', record)
       this.$refs.materialChangeModal.query('view', record || {})
     },
     //列表操作-查看/删除
@@ -320,23 +261,15 @@ export default {
             that.$message.info(`错误：${err.message}`)
           })
       } else if (actionType === 'change') {
-        that.$refs.changeQuotation.query(record || {},1)
+        that.$refs.changeQuotation.query(record || {}, 1)
       } else {
         that.$refs.addForm.query(actionType, record || {})
       }
     },
-    // 切换 待出库/已出库 选项卡，并刷新数据
+    // 切换 选项卡，并刷新数据
     tabChange(tagKey) {
       this.activeKey = parseInt(tagKey)
       this.searchAction({ current: 1 })
-    },
-    //筛选-选择物料-是否根据输入项进行筛选。当其为一个函数时，会接收 inputValue option 两个参数，当 option 符合筛选条件时，应返回 true，反之则返回 false。
-    filterOption(input, option) {
-      return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
-    },
-    //选择物料代码 type 1 加工商 2订单
-    openFacOrderModel(type) {
-      this.$refs.facAndOrderSelect.query(type)
     },
     //筛选条件-根据加工商/加工单号 检索
     onFacOrderChange({ selectItem, type }) {
@@ -348,13 +281,24 @@ export default {
         this.searchParam.orderNo = selectItem.orderNo
       }
     },
+    //查看审批流程
+    onApproveList(record) {
+      this.$refs.approveInfoCard.init(record.instanceId, 'material')
+    },
     //清空筛选条件
     onClean() {
       this.searchParam = {}
     },
-    //查看审批流程
-    onApproveList(record) {
-      this.$refs.approveInfoCard.init(record.instanceId, 'material')
+    //搜索
+    onSearchKey(params) {
+      this.searchParam = { ...params, newMaterialId: params.materialId, newMaterialName: params.materialName }
+      delete this.searchParam.materialId
+      delete this.searchParam.materialName
+      this.searchAction({ current: 1 })
+    },
+    //测试新增
+    onAdd() {
+      this.doAction('add', { orderId: 1, needId: 10 })
     }
   }
 }
