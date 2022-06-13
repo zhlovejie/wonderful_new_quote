@@ -194,4 +194,80 @@ export function facinfoneedWithdraw(parameter) {
 
 
 
+//---------------------报价单--------------------------
+
+/**审批 */
+export function offerApproval(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: `/offer/approval`,
+    method: 'post',
+    data: parameter
+  })
+}
+
+/**询价 */
+export function offerInquiry(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: `/offer/inquiry`,
+    method: 'post',
+    data: parameter
+  })
+}
+
+/**报价 */
+export function offerQuotation(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: `/offer/offerQuotation`,
+    method: 'post',
+    data: parameter
+  })
+}
+
+/**详情 */
+export function offerDetail(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: '/offer/getDetailById',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**分页列表 */
+export function offerPageList(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: '/offer/getListByPage',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**放弃 */
+export function offerGiveUp(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: '/offer/giveUp',
+    method: 'get',
+    params: parameter
+  })
+}
+
+/**待报价分页列表 */
+export function offerPageListStayOffer(parameter) {
+  return axios({
+    baseURL: system.materialBaseUrl,
+    url: '/offer/listStayOffer',
+    method: 'get',
+    params: parameter
+  })
+}
+
+//---------------------报价单----END-------------------
+
+
+
 

@@ -86,6 +86,28 @@ export default { //委外管理
           }
         }
       ]
-    }
+    },
+    {
+      path: '/router-outsourcing-management/offer',
+      name: 'outsourcing-offer',
+      component: () => import('@/views/router-outsourcing-management/offer/List'),
+      meta: {
+        title: '报价单',
+        icon: 'setting',
+        keepAlive: false,
+        permission: ['permission']
+      },
+    },
+    {
+      path: '/router-outsourcing-management/processing',
+      name: 'outsourcing-processing',
+      component: () => import('@/views/router-outsourcing-management/processing/List'),
+      meta: {
+        title: '加工单',
+        icon: 'setting',
+        keepAlive: false,
+        permission: ['permission']
+      },
+    },
   ]
 }
