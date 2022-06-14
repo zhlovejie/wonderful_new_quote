@@ -78,6 +78,7 @@ export default {
   name: 'SchemeModal',
   data() {
     return {
+      form: this.$form.createForm(this),
       labelCol: {
         xs: { span: 24 },
         sm: { span: 7 },
@@ -100,14 +101,6 @@ export default {
       uploadPath: getUploadPath(),
     }
   },
-  beforeCreate() {
-    this.form = this.$form.createForm(this)
-  },
-  computed: {
-    player() {
-      return this.$refs.videoPlayer.player
-    },
-  },
   methods: {
     add: function (type) {
       this.visible = true
@@ -122,6 +115,7 @@ export default {
     edit: function (record) {
       console.log('record', record)
       this.addOredit = 'edit'
+      this.type = +record.type
       this.visible = true
       this.$nextTick(() => {
         this.form.setFieldsValue({
@@ -131,13 +125,19 @@ export default {
         })
       })
       if (record.fileUrl != null && record.fileUrl.length > 0) {
-        const split = record.fileUrl.split('/')
-        this.fileList[0] = {
-          uid: '-1',
-          status: 'done',
-          name: split[6],
-          fileUrl: record.fileUrl,
-        }
+        let fname = record.fileUrl.slice(record.fileUrl.lastIndexOf('/')+1) 
+        fname = this.formatFileName(decodeURIComponent(fname))
+        console.log(`fname:${fname}`)
+        this.fileList = [
+          {
+            uid: this._uuid(),
+            status: 'done',
+            name: fname,
+            url: record.fileUrl,
+          }
+        ]
+        this.fileName = fname
+        this.fileUrl = record.fileUrl
       }
     },
     close() {
@@ -230,6 +230,10 @@ export default {
       this.close()
       this.fileList = []
     },
+    formatFileName(fname){
+      let reg = /[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}/g
+      return fname.replace(reg,'')
+    }
   },
 }
 </script>
